@@ -1,0 +1,24 @@
+4a5
+> // modified  2011 Ed Spittles  added IOin port
+7c8
+< `define Xilinx
+---
+> //`define Xilinx  // seems to synthesise OK without this
+11c12
+< module I2CslaveWith8bitsIO(SDA, SCL, IOout);
+---
+> module i2cslave(SDA, SCL, IOout, IOin);
+14a16
+> input [7:0] IOin;
+80c82,86
+<     if(adr_phase & bitcnt==0) op_read <= SDAr;
+---
+>     if(adr_phase & bitcnt==0) begin
+>         op_read <= SDAr;
+>         if(SDAr) mem <= IOin; // memory write (from parallel)
+>     end;
+> 
+83c89
+<     if(adr_match & bit_DATA & data_phase & op_write) mem[bitcnt] <= SDAr;  // memory write
+---
+>     if(adr_match & bit_DATA & data_phase & op_write) mem[bitcnt] <= SDAr;  // memory write (from serial)

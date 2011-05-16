@@ -1,0 +1,7 @@
+`include "../system-rtl/gop16.v"
+`include "../system-rtl/uart.v"
+`include "../system-rtl/i2cslave.v"
+//`include "../system-rtl/tinybootrom.v"
+`include "../system-rtl/tinytestrom.v"
+`include "../cpu.v"
+`include "../ALU.v"
