@@ -2,3 +2,22 @@ A Verilog HDL version of the old MOS 6502 CPU.
 
 Have fun. 
 
+Notes on the cpu core:
+
+- clk is active on the positive edge (is a phi1 clock)
+- reset, IRQ and NMI are active high
+- WE replaces, and is inverse sense of, read not write.
+- databus has separate DI and DO
+- RDY is not implemented
+- external memory is assumed synchronous, so external pipelining is needed
+- `define SIM for extra simulation instrumentation
+- memory accesses may diverge from the original
+
+Web: http://ladybug.xs4all.nl/arlet/fpga/6502/
+
+Note on licensing:
+
+"Just to clarify the licensing terms. My core is free to use for
+whatever purpose, as long as you don't blame me when it doesn't work."
+Posted: Tue Nov 16, 2010 8:22 am
+http://forum.6502.org/viewtopic.php?p=12487#12487
