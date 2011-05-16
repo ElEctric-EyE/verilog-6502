@@ -1,6 +1,25 @@
-A Verilog HDL version of the old MOS 6502 CPU.
+A Verilog HDL project for CPU cores related to the old MOS 6502 CPU.
 
 Have fun. 
+
+The 65Org16-master branch is for a CPU core with:
+  - 32-bit address space
+    - by using 16-bit bytes
+  - with no specific support for 8-bit bytes
+  - with BCD mode as unspecified behaviour
+  - and otherwise all opcodes and addressing modes like NMOS 6502
+
+Please use other branches and add a suffix to your core name for
+CPU cores with other goals.
+
+Please note:
+
+- As a secondary goal it might be possible to configure the HDL as
+  a 6502-compatible core with 8-bit bytes.
+
+- LGPL license v2.1 is used for compatibility with opencores.org and to
+  encourage redistribution of any source code improvements.
+  (The license can be changed by agreement of all the copyright holders)
 
 Notes on the cpu core:
 
@@ -8,11 +27,12 @@ Notes on the cpu core:
 - reset, IRQ and NMI are active high
 - WE replaces, and is inverse sense of, read not write.
 - databus has separate DI and DO
+- RDY is not implemented
 - external memory is assumed synchronous, so external pipelining is needed
 - `define SIM for extra simulation instrumentation
 - memory accesses may diverge from the original
 
-Web: http://ladybug.xs4all.nl/arlet/fpga/6502/
+Website for the original: http://ladybug.xs4all.nl/arlet/fpga/6502/
 
 Note on licensing:
 

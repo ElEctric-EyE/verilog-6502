@@ -1,9 +1,10 @@
 /*
- * ALU.
+ * parameterisable ALU for 6502 and 65Org16
  *
- * verilog-6502 project: verilog model of 6502 CPU.
+ * verilog-6502 project: verilog model of 6502 and 65Org16 CPU core
  *
- * (C) Arlet Ottens, <arlet@c-scape.nl>
+ * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
+ * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -26,14 +27,17 @@
  */
 
 module ALU( clk, op, right, AI, BI, CI, CO, BCD, OUT, V, Z, N, HC, RDY );
+
+	parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
+
 	input clk;
 	input right;
 	input [3:0] op;		// operation
-	input [7:0] AI;
-	input [7:0] BI;
+	input [dw-1:0] AI;
+	input [dw-1:0] BI;
 	input CI;
 	input BCD;		// BCD style carry
-	output [7:0] OUT;
+	output [dw-1:0] OUT;
 	output CO;
 	output V;
 	output Z;
@@ -41,18 +45,18 @@ module ALU( clk, op, right, AI, BI, CI, CO, BCD, OUT, V, Z, N, HC, RDY );
 	output HC;
 	input RDY;
 
-reg [7:0] OUT;
+reg [dw-1:0] OUT;
 reg CO;
 reg V;
 reg Z;
 reg N;
 reg HC;
 
-reg [8:0] logic;
-reg [7:0] temp_BI;
+reg [dw:0] logical;
+reg [dw-1:0] temp_BI;
 reg [4:0] temp_l;
-reg [4:0] temp_h;
-wire [8:0] temp = { temp_h, temp_l[3:0] };
+reg [dw-4:0] temp_h;
+wire [dw:0] temp = { temp_h, temp_l[3:0] };
 wire adder_CI = (right | (op[3:2] == 2'b11)) ? 0 : CI;
 
 // calculate the logic operations. The 'case' can be done in 1 LUT per
@@ -60,14 +64,14 @@ wire adder_CI = (right | (op[3:2] == 2'b11)) ? 0 : CI;
 // F5MUX.
 always @*  begin
 	case( op[1:0] )
-	    2'b00: logic = AI | BI;
-	    2'b01: logic = AI & BI;
-	    2'b10: logic = AI ^ BI;
-	    2'b11: logic = AI;
+	    2'b00: logical = AI | BI;
+	    2'b01: logical = AI & BI;
+	    2'b10: logical = AI ^ BI;
+	    2'b11: logical = AI;
 	endcase
 
 	if( right )
-	    logic = { AI[0], CI, AI[7:1] };
+	    logical = { AI[0], CI, AI[dw-1:1] };
 end
 
 // Add logic result to BI input. This only makes sense when logic = AI.
@@ -76,7 +80,7 @@ always @* begin
 	case( op[3:2] )
 	    2'b00: temp_BI = BI;	// A+B
 	    2'b01: temp_BI = ~BI;	// A-B
-	    2'b10: temp_BI = logic;	// A+A
+	    2'b10: temp_BI = logical;	// A+A
 	    2'b11: temp_BI = 0;		// A+0
 	endcase	
 end
@@ -93,18 +97,18 @@ wire temp_HC = temp_l[4] | HC9;
 // perform the addition as 2 separate nibble, so we get
 // access to the half carry flag
 always @* begin
-	temp_l = logic[3:0] + temp_BI[3:0] + adder_CI;
-	temp_h = logic[8:4] + temp_BI[7:4] + temp_HC;
+	temp_l = logical[3:0] + temp_BI[3:0] + adder_CI;
+	temp_h = logical[dw:4] + temp_BI[dw-1:4] + temp_HC;
 end
 
 // calculate the flags 
 always @(posedge clk)
     if( RDY ) begin
-	OUT <= temp[7:0];
-	CO  <= temp[8] | CO9;
-	Z   <= ~|temp[7:0];
-	N   <= temp[7];
-	V   <= AI[7] ^ BI[7] ^ temp[7] ^ temp[8]; 
+	OUT <= temp[dw-1:0];
+	CO  <= temp[dw] | CO9;
+	Z   <= ~|temp[dw-1:0];
+	N   <= temp[dw-1];
+	V   <= AI[dw-1] ^ BI[dw-1] ^ temp[dw-1] ^ temp[dw]; 
 	HC  <= temp_HC;
     end
 
