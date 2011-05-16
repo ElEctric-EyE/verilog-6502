@@ -8,7 +8,6 @@ Notes on the cpu core:
 - reset, IRQ and NMI are active high
 - WE replaces, and is inverse sense of, read not write.
 - databus has separate DI and DO
-- RDY is not implemented
 - external memory is assumed synchronous, so external pipelining is needed
 - `define SIM for extra simulation instrumentation
 - memory accesses may diverge from the original
