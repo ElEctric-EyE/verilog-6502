@@ -14,6 +14,17 @@ CPU cores with other goals.
 
 Please note:
 
+- The core has had next to no testing,
+
+- A very simple assembler will be released shortly.
+
+- There are also verilog and support files here for a small system on
+  FPGA, intended for xilinx spartan 3 as found on OHO GOP 24-pin module.
+  The system has a uart module for communication to a host computer,
+  which is implemented over i2c. The i2c module is not included for
+  copyright reasons.  The system is absolutely minimal but is a work
+  in progress,
+
 - As a secondary goal it might be possible to configure the HDL as
   a 6502-compatible core with 8-bit bytes.
 
