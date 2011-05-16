@@ -1,6 +1,14 @@
 /*
  * ALU.
  *
+ * verilog-6502 project: verilog model of 6502 CPU.
+ *
+ * (C) Arlet Ottens, <arlet@c-scape.nl>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License version 2.1 as published by the Free Software Foundation.
+ *
  * AI and BI are 8 bit inputs. Result in OUT.
  * CI is Carry In.
  * CO is Carry Out.
