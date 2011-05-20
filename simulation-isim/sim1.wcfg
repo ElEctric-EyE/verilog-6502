@@ -5,88 +5,127 @@
    <db_ref_list>
       <db_ref path="./isim.wdb" id="1" type="auto">
          <top_modules>
-            <top_module name="tb_gop16" />
+            <top_module name="testbench" />
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="17" />
-   <wvobject fp_name="/tb_gop16/dut/_cpu/reset" type="logic" db_ref_id="1">
+   <WVObjectSize size="21" />
+   <wvobject fp_name="/testbench/dut/_cpu/reset" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/_cpu/clk" type="logic" db_ref_id="1">
+   <wvobject fp_name="/testbench/dut/_cpu/clk" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/addrbus_w" type="array" db_ref_id="1">
+   <wvobject fp_name="/testbench/dut/addrbus_w" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">addrbus_w[31:0]</obj_property>
       <obj_property name="ObjectShortName">addrbus_w[31:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/_cpu/DI" type="array" db_ref_id="1">
+   <wvobject fp_name="/testbench/dut/_cpu/DI" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">DI[15:0]</obj_property>
       <obj_property name="ObjectShortName">DI[15:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/_cpu/IR" type="array" db_ref_id="1">
+   <wvobject fp_name="/testbench/dut/_cpu/DO" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">DO[15:0]</obj_property>
+      <obj_property name="ObjectShortName">DO[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/IR" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">IR[15:0]</obj_property>
       <obj_property name="ObjectShortName">IR[15:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/_cpu/state" type="array" db_ref_id="1">
+   <wvobject fp_name="/testbench/dut/_cpu/state" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">state[5:0]</obj_property>
       <obj_property name="ObjectShortName">state[5:0]</obj_property>
       <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/rnw" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">rnw</obj_property>
-      <obj_property name="ObjectShortName">rnw</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/led_select_w" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">led_select_w</obj_property>
-      <obj_property name="ObjectShortName">led_select_w</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/rom_select_w" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">rom_select_w</obj_property>
-      <obj_property name="ObjectShortName">rom_select_w</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/uart_select_w" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">uart_select_w</obj_property>
-      <obj_property name="ObjectShortName">uart_select_w</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/databus_uart_w" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">databus_uart_w[15:0]</obj_property>
-      <obj_property name="ObjectShortName">databus_uart_w[15:0]</obj_property>
-      <obj_property name="Radix">HEXRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/databus_rom_w" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">databus_rom_w[15:0]</obj_property>
-      <obj_property name="ObjectShortName">databus_rom_w[15:0]</obj_property>
-      <obj_property name="Radix">HEXRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/databus_r" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">databus_r[15:0]</obj_property>
-      <obj_property name="ObjectShortName">databus_r[15:0]</obj_property>
-      <obj_property name="Radix">HEXRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/databus_cpu_w" type="array" db_ref_id="1">
+   <wvobject fp_name="/testbench/dut/databus_cpu_w" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">databus_cpu_w[15:0]</obj_property>
       <obj_property name="ObjectShortName">databus_cpu_w[15:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/userled_r" type="array" db_ref_id="1">
+   <wvobject fp_name="/testbench/dut/rnw" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">rnw</obj_property>
+      <obj_property name="ObjectShortName">rnw</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/databus_r" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">databus_r[15:0]</obj_property>
+      <obj_property name="ObjectShortName">databus_r[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/databus_rr" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">databus_rr[15:0]</obj_property>
+      <obj_property name="ObjectShortName">databus_rr[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/ram_select_w" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ram_select_w</obj_property>
+      <obj_property name="ObjectShortName">ram_select_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/databus_ram_w" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">databus_ram_w[15:0]</obj_property>
+      <obj_property name="ObjectShortName">databus_ram_w[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/rom_select_w" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">rom_select_w</obj_property>
+      <obj_property name="ObjectShortName">rom_select_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/databus_rom_w" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">databus_rom_w[15:0]</obj_property>
+      <obj_property name="ObjectShortName">databus_rom_w[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/uart_select_w" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">uart_select_w</obj_property>
+      <obj_property name="ObjectShortName">uart_select_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/databus_uart_w" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">databus_uart_w[15:0]</obj_property>
+      <obj_property name="ObjectShortName">databus_uart_w[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/led_select_w" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">led_select_w</obj_property>
+      <obj_property name="ObjectShortName">led_select_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/userled_r" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">userled_r[7:0]</obj_property>
       <obj_property name="ObjectShortName">userled_r[7:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/userled" type="array" db_ref_id="1">
+   <wvobject fp_name="/testbench/dut/userled" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">userled[7:0]</obj_property>
       <obj_property name="ObjectShortName">userled[7:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_gop16/dut/databus_rr" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">databus_rr[15:0]</obj_property>
-      <obj_property name="ObjectShortName">databus_rr[15:0]</obj_property>
+   <wvobject fp_name="/testbench/dut/_cpu/AXYS" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">AXYS[3:0,15:0]</obj_property>
+      <obj_property name="ObjectShortName">AXYS[3:0,15:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
+      <wvobject fp_name="/testbench/dut/_cpu/AXYS[3]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[3,15:0]</obj_property>
+         <obj_property name="ObjectShortName">AXYS[3,15:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/dut/_cpu/AXYS[2]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[2,15:0]</obj_property>
+         <obj_property name="ObjectShortName">AXYS[2,15:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/dut/_cpu/AXYS[1]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[1,15:0]</obj_property>
+         <obj_property name="ObjectShortName">AXYS[1,15:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/testbench/dut/_cpu/AXYS[0]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[0,15:0]</obj_property>
+         <obj_property name="ObjectShortName">AXYS[0,15:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>
