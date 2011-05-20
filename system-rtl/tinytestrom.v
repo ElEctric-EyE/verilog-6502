@@ -6,7 +6,7 @@
 // over a combinatorial ROM
 //
 module tinybootrom(address,dataout);
-   input[4:0]   address;
+   input[7:0]   address;
    output[15:0]   dataout;
 
    // following the idiom in the xilinx guide
@@ -17,22 +17,37 @@ module tinybootrom(address,dataout);
    always @ (*)
      begin
        case ( address )
-         5'b01110:  dataout_d = 16'h00a2; // LDX
-         5'b01111:  dataout_d = 16'hffff;
-         5'b10000:  dataout_d = 16'h009a; // TXS
-         5'b10001:  dataout_d = 16'h0018; // CLC
-         5'b10010:  dataout_d = 16'h00ad; // LDA
-         5'b10011:  dataout_d = 16'hfff9;
-         5'b10100:  dataout_d = 16'hfffe;
-         5'b10101:  dataout_d = 16'h0049; // EOR
-         5'b10110:  dataout_d = 16'h000F;
-         5'b10111:  dataout_d = 16'h008d; // STA
-         5'b11000:  dataout_d = 16'h0000;
-         5'b11001:  dataout_d = 16'hfffd;
-         5'b11010:  dataout_d = 16'h0090; // BCC
-         5'b11011:  dataout_d = 16'hfff6;
-         5'b11100:  dataout_d = 16'hfff0;
-         5'b11101:  dataout_d = 16'hffff;
+         8'hdf: dataout_d = 16'h00a2;
+         8'he0: dataout_d = 16'hffff;
+         8'he1: dataout_d = 16'h009a;
+         8'he2: dataout_d = 16'h0018;
+         8'he3: dataout_d = 16'h00a9;
+         8'he4: dataout_d = 16'ha5c3;
+         8'he5: dataout_d = 16'h008d;
+         8'he6: dataout_d = 16'h0111;
+         8'he7: dataout_d = 16'h0000;
+         8'he8: dataout_d = 16'h008a;
+         8'he9: dataout_d = 16'h008d;
+         8'hea: dataout_d = 16'h0222;
+         8'heb: dataout_d = 16'h0000;
+         8'hec: dataout_d = 16'h00ad;
+         8'hed: dataout_d = 16'h0111;
+         8'hee: dataout_d = 16'h0000;
+         8'hef: dataout_d = 16'h00ad;
+         8'hf0: dataout_d = 16'h0222;
+         8'hf1: dataout_d = 16'h0000;
+         8'hf2: dataout_d = 16'h00ad;
+         8'hf3: dataout_d = 16'hfff9;
+         8'hf4: dataout_d = 16'hfffe;
+         8'hf5: dataout_d = 16'h0049;
+         8'hf6: dataout_d = 16'h000f;
+         8'hf7: dataout_d = 16'h008d;
+         8'hf8: dataout_d = 16'h0000;
+         8'hf9: dataout_d = 16'hfffd;
+         8'hfa: dataout_d = 16'h0090;
+         8'hfb: dataout_d = 16'hfff6;
+         8'hfc: dataout_d = 16'hffdf;
+         8'hfd: dataout_d = 16'hffff;
 
 	 default:
 	   begin

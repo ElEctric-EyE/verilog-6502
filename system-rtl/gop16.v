@@ -29,8 +29,7 @@
 // and some diagnostic LEDs
 // also two push buttons are available
 //
-// presently in very early stages
-// (no RAM)
+// limited to on-FPGA RAM at present (12 blocks of 2k by 9bits)
 
 module gop16 (
 	input res,   // active low
@@ -50,6 +49,7 @@ module gop16 (
 	wire [`addresswidth] addrbus_w;
 	reg  [`datawidth]    databus_r;
 	wire [`datawidth]    databus_cpu_w;
+	wire [`datawidth]    databus_ram_w;
 	wire [`datawidth]    databus_rom_w;
 	wire [`datawidth]    databus_uart_w;
 
@@ -73,21 +73,57 @@ DCM #(
 assign clk=phi0;
 `endif
 
-// This core demands an external pipeline
+// user LEDs address decode (placed at 0xfd00 or 0xfffd0000)
+wire led_select_w = (addrbus_w[`bytesize+7:`bytesize] == 8'hfd);
+
+// RAM address decode (covers lower half of memory map)
+wire ram_select_w = (addrbus_w[`addresssize-1] == 1'b0);
+
+// ROM address decode
+wire rom_select_w = (addrbus_w[`bytesize+7:`bytesize] == 8'hff);
+
+// UART address decode
+wire uart_select_w = (addrbus_w[`bytesize+7:`bytesize] == 8'hfe);
+
+// There's probably scope to simplify the pipelining arrangements here
+// but this has the merit of working in simulation
+
+// This core requires that the peripherals are registered
+// so we do them all on their own databus
 reg  [`datawidth]    databus_rr;
 always @(posedge clk)
   databus_rr <= databus_r;
 
+// The pipelined memory needs an output valid signal
+reg ram_valid_data_r;
+always @(posedge clk)
+  ram_valid_data_r = rnw & ram_select_w;
+
+// The CPU reads the (registered) outputs of the peripherals, or the ram
+//     (OR might be preferred to a mux)
+wire  [`datawidth]    databus_to_cpu;
+assign databus_to_cpu = (ram_valid_data_r) ? databus_ram_w : databus_rr;
+
 cpu _cpu (
-	.clk(clk),
-	.reset(reset),
+	.clk(clk),      // positive edge (phi1)
+	.reset(reset),  // active high
 	.AB(addrbus_w),
-	.DI(databus_rr),
+	.DI(databus_to_cpu),
 	.DO(databus_cpu_w),
 	.WE(write),
 	.IRQ(1'b0),
 	.NMI(1'b0),
 	.RDY(1'b1)
+  );
+
+// block ram is registered (incorporates a pipeline stage)
+ram4k _ram0 (
+	.Clk(clk),
+	.We(write & ram_select_w),
+	.Waddr(addrbus_w[11:0]),
+	.Raddr(addrbus_w[11:0]),
+	.Din(databus_r),
+	.Dout(databus_ram_w)
   );
 
 // uart function: bidirectional, bytewide, asynchronous, in this case over i2c
@@ -100,7 +136,7 @@ uart _uart(
 	);
 
 tinybootrom _rom1 (
-	.address(addrbus_w[4:0]),
+	.address(addrbus_w[7:0]),
 	.dataout(databus_rom_w)
   );
 
@@ -111,23 +147,14 @@ always @(posedge clk)
     userled_r <= databus_r;
 assign userled = userled_r;
 
-// user LEDs address decode (placed at 0xfd00 or 0xfffd0000)
-wire led_select_w = (addrbus_w[`bytesize+7:`bytesize] == 8'hfd);
-
-// ROM address decode
-wire rom_select_w = (addrbus_w[`bytesize+7:`bytesize] == 8'hff);
-
-// UART address decode
-wire uart_select_w = (addrbus_w[`bytesize+7:`bytesize] == 8'hfe);
-
 // fpga normal practice: an onchip bus is the output of a wide mux
-//    although wired-OR might be more efficient
+//    (wired-OR might be more efficient)
 always @(*)
 	begin
-	  casex ( {write, uart_select_w} )
-            2'b1x:    databus_r = databus_cpu_w;
-            2'bx1:    databus_r = databus_uart_w;
-            default:  databus_r = databus_rom_w;
+	  casex ( {write, rom_select_w} )
+            2'b1x:   databus_r = databus_cpu_w;
+            2'bx1:   databus_r = databus_rom_w;
+            default: databus_r = databus_uart_w;
           endcase
         end
 

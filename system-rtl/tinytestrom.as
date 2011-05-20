@@ -9,7 +9,7 @@
 	;; python3 ../../cpu65Org16/tools/asm65Org16.py tinytestrom.as
 
 ;; place the bootstrap so the reset vector lands at FFFFFFFC
-bootstrap=0xFFFFFFEE
+bootstrap=0xFFFFFFDF
 
 UartS1=0xFFFEFFF8
 UartR1=0xFFFEFFF9
@@ -19,6 +19,14 @@ bootstrap:
 	LDX #0xFFFF
 	TXS  ;; initialise stack pointer
 	CLC
+
+testram:
+	LDA #0xA5C3
+	STA 0x0111
+	TXA
+	STA 0x0222
+	LDA 0x0111
+	LDA 0x0222
 
 loop:
 	LDA UartR1
