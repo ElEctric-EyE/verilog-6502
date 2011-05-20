@@ -1,6 +1,6 @@
 # GOP_XC3S200 .UCF definition template 24pin
 
-#NET clock PERIOD = 20.0ns ;
+NET phi0 PERIOD = 20.0ns ;
 
 # 8 user LEDs are multi-purpose with some SRAM address lines
 NET "userled<0>"  LOC = "P81" | IOSTANDARD = LVCMOS33 ;
