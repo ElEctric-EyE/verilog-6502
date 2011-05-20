@@ -1,6 +1,7 @@
 //**************************************************************************
 //    gop16.v - system-on-chip 65Org16 CPU experiment
 //   
+//    COPYRIGHT 2011 Richard Evans
 //    COPYRIGHT 2011 Ed Spittles
 // 
 //    This file is part of verilog-6502 project

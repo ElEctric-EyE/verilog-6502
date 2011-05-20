@@ -1,6 +1,7 @@
 //**************************************************************************
 //    testbench.v - top level module testbench for the GOP-based 65Org16 CPU
 //   
+//    COPYRIGHT 2011 Richard Evans
 //    COPYRIGHT 2011 Ed Spittles
 // 
 //    This file is part of verilog-6502 project
