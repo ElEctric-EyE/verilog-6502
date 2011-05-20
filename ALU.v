@@ -26,7 +26,12 @@
  *
  */
 
-module ALU( clk, op, right, AI, BI, CI, CO, BCD, OUT, V, Z, N, HC, RDY );
+module ALU( clk, op, right, AI, BI, CI, CO, OUT, V, Z, N,
+`ifdef BCD_ENABLED
+            BCD,
+            HC,
+`endif
+            RDY );
 
 	parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
 
@@ -36,13 +41,15 @@ module ALU( clk, op, right, AI, BI, CI, CO, BCD, OUT, V, Z, N, HC, RDY );
 	input [dw-1:0] AI;
 	input [dw-1:0] BI;
 	input CI;
-	input BCD;		// BCD style carry
 	output [dw-1:0] OUT;
 	output CO;
 	output V;
 	output Z;
 	output N;
+`ifdef BCD_ENABLED
+	input BCD;		// BCD style carry
 	output HC;
+`endif
 	input RDY;
 
 reg [dw-1:0] OUT;
@@ -50,13 +57,19 @@ reg CO;
 reg V;
 reg Z;
 reg N;
-reg HC;
 
 reg [dw:0] logical;
 reg [dw-1:0] temp_BI;
+
+`ifdef BCD_ENABLED
+reg HC;
 reg [4:0] temp_l;
 reg [dw-4:0] temp_h;
 wire [dw:0] temp = { temp_h, temp_l[3:0] };
+`else
+wire [dw:0] temp = logical + temp_BI + adder_CI;
+`endif
+
 wire adder_CI = (right | (op[3:2] == 2'b11)) ? 0 : CI;
 
 // calculate the logic operations. The 'case' can be done in 1 LUT per
@@ -85,6 +98,8 @@ always @* begin
 	endcase	
 end
 
+`ifdef BCD_ENABLED
+
 // HC9 is the half carry bit when doing BCD add
 wire HC9 = BCD & (temp_l[3:1] >= 3'd5);
 
@@ -101,15 +116,23 @@ always @* begin
 	temp_h = logical[dw:4] + temp_BI[dw-1:4] + temp_HC;
 end
 
+`endif
+
 // calculate the flags 
 always @(posedge clk)
     if( RDY ) begin
 	OUT <= temp[dw-1:0];
-	CO  <= temp[dw] | CO9;
+	CO  <= temp[dw]
+`ifdef BCD_ENABLED
+                         | CO9
+`endif
+                       ;
 	Z   <= ~|temp[dw-1:0];
 	N   <= temp[dw-1];
 	V   <= AI[dw-1] ^ BI[dw-1] ^ temp[dw-1] ^ temp[dw]; 
+`ifdef BCD_ENABLED
 	HC  <= temp_HC;
+`endif
     end
 
 endmodule

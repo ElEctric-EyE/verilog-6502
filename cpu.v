@@ -141,8 +141,10 @@ reg shift_right;	// Instruction ALU shift/rotate right
 reg alu_shift_right;	// Current cycle shift right enable
 reg [3:0] op;		// Main ALU operation for instruction
 reg [3:0] alu_op;	// Current cycle ALU operation 
+`ifdef BCD_ENABLED
 reg adc_bcd;		// ALU should do BCD style carry 
 reg adj_bcd;		// results should be BCD adjusted
+`endif
 
 /* 
  * some flip flops to remember we're doing special instructions. These
@@ -494,6 +496,7 @@ always @*
        default: write_register <= 0;
     endcase
 
+`ifdef BCD_ENABLED
 /*
  * BCD adjust logic
  */
@@ -531,6 +534,10 @@ always @* begin
 	 3'b111: ADJH = 4'd6;   // ADC, and decimal/digital carry
     endcase
 end
+`else
+parameter ADJH = 4'd0;
+parameter ADJL = 4'd0;
+`endif
 
 /*
  * write to a register. Usually this is the (BCD corrected) output of the
@@ -583,13 +590,15 @@ ALU #(.dw(dw)) _ALU(
 	 .AI(AI),
 	 .BI(BI),
 	 .CI(CI),
-	 .BCD(adc_bcd),
 	 .CO(CO),
 	 .OUT(ADD),
 	 .V(AV),
 	 .Z(AZ),
 	 .N(AN),
+`ifdef BCD_ENABLED
+	 .BCD(adc_bcd),
 	 .HC(HC),
+`endif
 	 .RDY(RDY) );
 
 /*
@@ -1100,6 +1109,7 @@ always @(posedge clk )
 		default:	adc_sbc <= 0;
 	endcase
 
+`ifdef BCD_ENABLED
 always @(posedge clk )
      if( (state == DECODE || state == BRK0) && RDY )
      	casex( IR[7:0] )  // just decode the low 8 bits
@@ -1108,6 +1118,7 @@ always @(posedge clk )
 
 		default:	adc_bcd <= 0;
 	endcase
+`endif
 
 always @(posedge clk )
      if( state == DECODE && RDY )
