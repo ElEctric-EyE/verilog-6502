@@ -4,14 +4,17 @@ DEVICE=XC3S200-4VQ100
 
 TOP=gop16
 
+DESIGN=chip
+
 all:
-	echo "run -ifn chip.v -ifmt Verilog -top ${TOP} -ofn chip -p ${DEVICE}" | xst
-	ngdbuild -p ${DEVICE} -uc chip.ucf chip
-	map -w -timing -detail -ol high -p ${DEVICE} chip.ngd chip.pcf
-	par -w -ol high chip.ncd chip.ncd chip.pcf
-	trce -v 20 chip.ncd chip.pcf
-	bitgen -g StartupClk:CClk -g GTS_cycle:3 -g LCK_cycle:4 -g GWE_cycle:5 -g DONE_cycle:6 -w chip.ncd chip.bit chip.pcf
-	promgen -w -spi -p mcs -s 4096 -u 0 chip.bit
+	echo "run -ifn ${DESIGN}.v -ifmt Verilog -top ${TOP} -ofn ${DESIGN} -p ${DEVICE}" | xst
+	ngdbuild -p ${DEVICE} -uc ${DESIGN}.ucf ${DESIGN}
+	map -w -timing -detail -ol high -p ${DEVICE} ${DESIGN}.ngd ${DESIGN}.pcf
+	par -w -ol high ${DESIGN}.ncd ${DESIGN}.ncd ${DESIGN}.pcf
+	trce -v 20 -u 20 ${DESIGN}.ncd ${DESIGN}.pcf
+	bitgen -g StartupClk:CClk -g GTS_cycle:3 -g LCK_cycle:4 -g GWE_cycle:5 -g DONE_cycle:6 -w ${DESIGN}.ncd ${DESIGN}.bit ${DESIGN}.pcf
+	promgen -w -spi -p mcs -s 4096 -u 0 ${DESIGN}.bit
+	netgen -sim -w -ofmt verilog -sdf_anno true -ism -aka ${DESIGN}.ncd ${DESIGN}_annot.v
 
 clean:
 	rm -rf xst _xmsgs xlnx_auto_0_xdb
