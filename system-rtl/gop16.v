@@ -58,20 +58,18 @@ module gop16 (
 	wire write;
 	wire rnw = ! write;
 
-`ifdef SIMULATION
-// 50MHz clock in from crystal is too fast for this core
-DCM #(
-   .CLKFX_MULTIPLY(3),    // Can be any integer from 2 to 32
-   .CLKFX_DIVIDE(5),      // Can be any integer from 1 to 32
-   .STARTUP_WAIT("TRUE"), // Delay configuration DONE until DCM LOCK, TRUE/FALSE
-   .CLK_FEEDBACK("NONE")  // External closed loop?
-) _divider (
-   .CLKFX(clk),     // DCM CLK synthesis out (Mult/Div)
-   .CLKIN(phi0)     // Clock input (from IBUFG, BUFG or DCM)
-);
-`else
+// if 50MHz clock in from crystal is too fast for this core
+// DCM #(
+//    .CLKFX_MULTIPLY(3),    // Can be any integer from 2 to 32
+//    .CLKFX_DIVIDE(5),      // Can be any integer from 1 to 32
+//    .STARTUP_WAIT("TRUE"), // Delay configuration DONE until DCM LOCK, TRUE/FALSE
+//    .CLK_FEEDBACK("NONE")  // External closed loop?
+// ) _divider (
+//    .CLKFX(clk),     // DCM CLK synthesis out (Mult/Div)
+//    .CLKIN(phi0)     // Clock input (from IBUFG, BUFG or DCM)
+// );
+
 assign clk=phi0;
-`endif
 
 // user LEDs address decode (placed at 0xfd00 or 0xfffd0000)
 wire led_select_w = (addrbus_w[`bytesize+7:`bytesize] == 8'hfd);
