@@ -9,7 +9,7 @@
 	;; python3 ../../cpu65Org16/tools/asm65Org16.py tinytestrom.as
 
 ;; place the bootstrap so the reset vector lands at FFFFFFFC
-bootstrap=0xFFFFFFDF
+bootstrap=0xFFFFFFCC
 
 UartS1=0xFFFEFFF8
 UartR1=0xFFFEFFF9
@@ -26,7 +26,19 @@ testram:
 	TXA
 	STA 0x0222
 	LDA 0x0111
+	CMP #0xA5C3
+	BNE fail
 	LDA 0x0222
+	CMP #0xFFFF
+	BNE fail
+okpass:
+	LDA #0x0081
+	BNE done
+fail:
+	LDA #0x007E
+done:
+	STA UserLeds
+	BNE done
 
 loop:
 	LDA UartR1
