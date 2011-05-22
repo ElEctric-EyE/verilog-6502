@@ -6,10 +6,10 @@
 	;;	cl65 tinytestrom.o --target none --start-addr 0xFFF0 -o tinytestrom.bin
         ;;	xxd -c 1 tinytestrom.bin
 	;;
-	;; python3 ../../cpu65Org16/tools/asm65Org16.py tinytestrom.as
+	;; python3 ../tools/asm65Org16.py tinytestrom.as
 
 ;; place the bootstrap so the reset vector lands at FFFFFFFC
-bootstrap=0xFFFFFFCC
+bootstrap=0xFFFFFFBA
 
 UartS1=0xFFFEFFF8
 UartR1=0xFFFEFFF9
@@ -30,22 +30,48 @@ testram:
 	BNE fail
 	LDA 0x0222
 	CMP #0xFFFF
-	BNE fail
-okpass:
-	LDA #0x0081
-	BNE done
+	BEQ uartinit
+
 fail:
 	LDA #0x007E
-done:
 	STA UserLeds
-	BNE done
+	BNE fail
 
-loop:
-	LDA UartR1
-	EOR #0xF
+uartinit:
+	LDA #3
+	STA UartS1
+
+uartloop:
+;	LDY #1
+;	STY UserLeds
+	LDA UartS1
+        LSR
+        BCS dealWithIncoming
+;	LDY #0xF0
+;	STY UserLeds
+	LSR         ; any room for transmission?
+	BCC uartloop
+okToSend:
+;	LDY #3
+;	STY UserLeds
+	INX         ; outgoing data is a simple counter
+                    ; outgoing data is rate-limited at the receiver
+                    ; so we just send as fast as we can
+	TXA
+	STA UartR1
+	JMP uartloop
+
+dealWithIncoming:
+;	LDY #6
+;	STY UserLeds
+	LDA UartR1  ; incoming data is shown on LEDs
 	STA UserLeds
-	BCC loop
+	
+	INX         ; also increment the outgoing counter
+                    ; to demonstrate we're not duplicating incoming bytes
+	JMP uartloop
 
+resetvector:
 ; this is arranged to be placed in the reset vector, by careful initial .Org
         DATA # LOW(bootstrap)  ;reset vector
 	DATA # HIGH(bootstrap)
