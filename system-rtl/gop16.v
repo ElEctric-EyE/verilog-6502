@@ -48,7 +48,7 @@ module gop16 (
 
 	wire [`addresswidth] addrbus_w;
 	reg  [`datawidth]    databus_r;
-	wire [`datawidth]    databus_cpu_w;
+	wire [`datawidth]    databus_from_cpu_w;
 	wire [`datawidth]    databus_ram_w;
 	wire [`datawidth]    databus_rom_w;
 	wire [`datawidth]    databus_uart_w;
@@ -107,7 +107,7 @@ cpu _cpu (
 	.reset(reset),  // active high
 	.AB(addrbus_w),
 	.DI(databus_to_cpu),
-	.DO(databus_cpu_w),
+	.DO(databus_from_cpu_w),
 	.WE(write),
 	.IRQ(1'b0),
 	.NMI(1'b0),
@@ -120,7 +120,7 @@ ram4k _ram0 (
 	.We(write & ram_select_w),
 	.Waddr(addrbus_w[11:0]),
 	.Raddr(addrbus_w[11:0]),
-	.Din(databus_r),
+	.Din(databus_from_cpu_w),
 	.Dout(databus_ram_w)
   );
 
@@ -128,8 +128,11 @@ ram4k _ram0 (
 uart _uart(
 	.SDA(SDA),
 	.SCL(SCL),
+	.clk(clk),
+	.read(!write & uart_select_w),
+	.write(write & uart_select_w),
 	.address(addrbus_w[0]),
-	.datain(databus_rr),
+	.datain(databus_from_cpu_w),
 	.dataout(databus_uart_w)
 	);
 
@@ -150,7 +153,7 @@ assign userled = userled_r;
 always @(*)
 	begin
 	  casex ( {write, rom_select_w} )
-            2'b1x:   databus_r = databus_cpu_w;
+            2'b1x:   databus_r = databus_from_cpu_w;
             2'bx1:   databus_r = databus_rom_w;
             default: databus_r = databus_uart_w;
           endcase
