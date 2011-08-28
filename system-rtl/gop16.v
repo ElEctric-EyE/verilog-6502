@@ -137,7 +137,7 @@ uart _uart(
 	);
 
 tinybootrom _rom1 (
-	.address(addrbus_w[7:0]),
+	.address(addrbus_w[9:0]),
 	.dataout(databus_rom_w)
   );
 
