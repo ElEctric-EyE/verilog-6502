@@ -9,7 +9,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="14" />
+   <WVObjectSize size="16" />
    <wvobject fp_name="/testbench/dut/_cpu/reset" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
@@ -93,5 +93,14 @@
          <obj_property name="ObjectShortName">AXYS[0,15:0]</obj_property>
          <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/led_select_w" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">led_select_w</obj_property>
+      <obj_property name="ObjectShortName">led_select_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/PC" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">PC[31:0]</obj_property>
+      <obj_property name="ObjectShortName">PC[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
 </wave_config>
