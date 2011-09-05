@@ -12,7 +12,7 @@ all:
 	map -w -timing -detail -ol high -p ${DEVICE} ${DESIGN}.ngd ${DESIGN}.pcf
 	par -w -ol high ${DESIGN}.ncd ${DESIGN}.ncd ${DESIGN}.pcf
 	trce -v 20 -u 20 ${DESIGN}.ncd ${DESIGN}.pcf
-	bitgen -g StartupClk:CClk -g GTS_cycle:3 -g LCK_cycle:4 -g GWE_cycle:5 -g DONE_cycle:6 -w ${DESIGN}.ncd ${DESIGN}.bit ${DESIGN}.pcf
+	bitgen -m -g StartupClk:CClk -g GTS_cycle:3 -g LCK_cycle:4 -g GWE_cycle:5 -g DONE_cycle:6 -w ${DESIGN}.ncd ${DESIGN}.bit ${DESIGN}.pcf
 	promgen -w -spi -p mcs -s 4096 -u 0 ${DESIGN}.bit
 	netgen -sim -w -ofmt verilog -sdf_anno true -ism -aka ${DESIGN}.ncd ${DESIGN}_annot.v
 
