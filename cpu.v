@@ -643,7 +643,7 @@ always @*
 
 always @(posedge clk)
     if( RDY )
-	backwards = DIMUX[dw-1];
+	backwards <= DIMUX[dw-1];
 
 /* 
  * ALU A Input MUX 
