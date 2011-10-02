@@ -425,10 +425,13 @@ always @*
  * This can be used to keep the current address, freeing up the original
  * source of the address, such as the ALU or DI.
  */
-always @(posedge clk) begin
-    ABL <= AB[dw-1:0];
-    ABH <= AB[aw-1:dw];
-end
+always @(posedge clk)
+    if( state != PUSH0 && state != PUSH1 &&
+	state != PULL0 && state != PULL1 && state != PULL2 )
+    begin
+	ABL <= AB[dw-1:0];
+	ABH <= AB[aw-1:dw];
+    end
 
 /*
  * Data Out MUX 
