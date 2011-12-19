@@ -15,77 +15,77 @@ module tinybootrom(address,dataout);
 
    // following the idiom in the xilinx guide
    reg  [15:0]  dataout_d;
-   
+
    assign dataout  = dataout_d ;
 
    always @ (*)
      begin
        case ( address )
-         10'h180: dataout_d = 16'h0078;
-         10'h181: dataout_d = 16'h00d8;
-         10'h182: dataout_d = 16'h00a2;
-         10'h183: dataout_d = 16'h01ff;
-         10'h184: dataout_d = 16'h009a;
-         10'h185: dataout_d = 16'h00a9;
-         10'h186: dataout_d = 16'h0000;
-         10'h187: dataout_d = 16'h0085;
-         10'h188: dataout_d = 16'h0040;
-         10'h189: dataout_d = 16'h0085;
-         10'h18a: dataout_d = 16'h0081;
-         10'h18b: dataout_d = 16'h0085;
-         10'h18c: dataout_d = 16'h0082;
-         10'h18d: dataout_d = 16'h00a9;
-         10'h18e: dataout_d = 16'h0003;
-         10'h18f: dataout_d = 16'h008d;
-         10'h190: dataout_d = 16'hfff8;
-         10'h191: dataout_d = 16'hfffe;
-         10'h192: dataout_d = 16'h008d;
-         10'h193: dataout_d = 16'h0000;
-         10'h194: dataout_d = 16'hfffd;
-         10'h195: dataout_d = 16'h00a9;
-         10'h196: dataout_d = 16'h0000;
-         10'h197: dataout_d = 16'h0085;
-         10'h198: dataout_d = 16'h0089;
-         10'h199: dataout_d = 16'h0085;
-         10'h19a: dataout_d = 16'h008c;
-         10'h19b: dataout_d = 16'h0020;
-         10'h19c: dataout_d = 16'hff5d;
-         10'h19d: dataout_d = 16'hffff;
-         10'h19e: dataout_d = 16'h000d;
-         10'h19f: dataout_d = 16'h000a;
-         10'h1a0: dataout_d = 16'h000d;
-         10'h1a1: dataout_d = 16'h000a;
-         10'h1a2: dataout_d = 16'h0053;
-         10'h1a3: dataout_d = 16'h0065;
-         10'h1a4: dataout_d = 16'h006e;
-         10'h1a5: dataout_d = 16'h0064;
-         10'h1a6: dataout_d = 16'h0020;
-         10'h1a7: dataout_d = 16'h0036;
-         10'h1a8: dataout_d = 16'h0035;
-         10'h1a9: dataout_d = 16'h004f;
-         10'h1aa: dataout_d = 16'h0072;
-         10'h1ab: dataout_d = 16'h0067;
-         10'h1ac: dataout_d = 16'h0031;
-         10'h1ad: dataout_d = 16'h0036;
-         10'h1ae: dataout_d = 16'h0020;
-         10'h1af: dataout_d = 16'h0063;
+         10'h180: dataout_d = 16'h00a2; // ldx#
+         10'h181: dataout_d = 16'h0004;
+         10'h182: dataout_d = 16'h009b; // txd special!
+         10'h183: dataout_d = 16'h00a2; // ldx#
+         10'h184: dataout_d = 16'h0011; //      17
+         10'h185: dataout_d = 16'h00a9; // lda#
+         10'h186: dataout_d = 16'hf10f; //
+         10'h187: dataout_d = 16'h002a; // rol a
+         10'h188: dataout_d = 16'h00ca; // dex
+         10'h189: dataout_d = 16'h00d0; // bne
+         10'h18a: dataout_d = 16'hfffc; //     fc
+         10'h18b: dataout_d = 16'h00a2; // ldx#
+         10'h18c: dataout_d = 16'h0011; //
+         10'h18d: dataout_d = 16'h006a; // ror a
+         10'h18e: dataout_d = 16'h00ca; // dex
+         10'h18f: dataout_d = 16'h00d0; // bne
+         10'h190: dataout_d = 16'hfffc; //     fc
+         10'h191: dataout_d = 16'h00a2; // ldx#
+         10'h192: dataout_d = 16'h0011; //
+         10'h193: dataout_d = 16'h000a; // asl a
+         10'h194: dataout_d = 16'h00ca; // dex
+         10'h195: dataout_d = 16'h00d0; // bne
+         10'h196: dataout_d = 16'hfffc; //     fc
+         10'h197: dataout_d = 16'h00a2; // ldx#
+         10'h198: dataout_d = 16'h0011; //
+         10'h199: dataout_d = 16'h00a9; // lda#
+         10'h19a: dataout_d = 16'hF105; //
+         10'h19b: dataout_d = 16'h004a; // lsr a
+         10'h19c: dataout_d = 16'h00ca; // dex
+         10'h19d: dataout_d = 16'h00d0; // bne
+         10'h19e: dataout_d = 16'hfffc; //     fc
+         10'h19f: dataout_d = 16'h00a2; // ldx#
+         10'h1a0: dataout_d = 16'h0011; //
+         10'h1a1: dataout_d = 16'h00a9; // lda#
+         10'h1a2: dataout_d = 16'h71F5; //
+         10'h1a3: dataout_d = 16'h004a; // lsr a
+         10'h1a4: dataout_d = 16'h00ca; // dex
+         10'h1a5: dataout_d = 16'h00d0; // bne
+         10'h1a6: dataout_d = 16'hfffc; //     fc
+         10'h1a7: dataout_d = 16'h00f0; // beq
+         10'h1a8: dataout_d = 16'hfffe; //     fe (here)
+         10'h1a9: dataout_d = 16'h00ea; // nop
+         10'h1aa: dataout_d = 16'h00ea; // nop
+         10'h1ab: dataout_d = 16'h00ea; // nop
+         10'h1ac: dataout_d = 16'h00ea; // nop
+         10'h1ad: dataout_d = 16'h00f0; // beq
+         10'h1ae: dataout_d = 16'hfffe; //     fe (here)
+         10'h1af: dataout_d = 16'h00ea; // nop
          10'h1b0: dataout_d = 16'h006f;
          10'h1b1: dataout_d = 16'h0064;
          10'h1b2: dataout_d = 16'h0065;
          10'h1b3: dataout_d = 16'h0020;
          10'h1b4: dataout_d = 16'h0069;
-         10'h1b5: dataout_d = 16'h006e;
+         10'h1b5: dataout_d = 16'h006a;
          10'h1b6: dataout_d = 16'h0020;
          10'h1b7: dataout_d = 16'h0076;
          10'h1b8: dataout_d = 16'h0061;
          10'h1b9: dataout_d = 16'h0072;
          10'h1ba: dataout_d = 16'h0069;
          10'h1bb: dataout_d = 16'h0061;
-         10'h1bc: dataout_d = 16'h006e;
+         10'h1bc: dataout_d = 16'h006a;
          10'h1bd: dataout_d = 16'h0074;
          10'h1be: dataout_d = 16'h0020;
          10'h1bf: dataout_d = 16'h0049;
-         10'h1c0: dataout_d = 16'h006e;
+         10'h1c0: dataout_d = 16'h006a;
          10'h1c1: dataout_d = 16'h0074;
          10'h1c2: dataout_d = 16'h0065;
          10'h1c3: dataout_d = 16'h006c;
@@ -110,14 +110,14 @@ module tinybootrom(address,dataout);
          10'h1d6: dataout_d = 16'h0030;
          10'h1d7: dataout_d = 16'h0030;
          10'h1d8: dataout_d = 16'h002c;
-         10'h1d9: dataout_d = 16'h006e;
+         10'h1d9: dataout_d = 16'h006a;
          10'h1da: dataout_d = 16'h002c;
          10'h1db: dataout_d = 16'h0038;
          10'h1dc: dataout_d = 16'h002c;
          10'h1dd: dataout_d = 16'h0031;
          10'h1de: dataout_d = 16'h0020;
          10'h1df: dataout_d = 16'h002d;
-         10'h1e0: dataout_d = 16'h003e;
+         10'h1e0: dataout_d = 16'h003a;
          10'h1e1: dataout_d = 16'h000d;
          10'h1e2: dataout_d = 16'h000a;
          10'h1e3: dataout_d = 16'h0000;
@@ -174,7 +174,7 @@ module tinybootrom(address,dataout);
          10'h216: dataout_d = 16'h0023;
          10'h217: dataout_d = 16'h008d;
          10'h218: dataout_d = 16'hfff9;
-         10'h219: dataout_d = 16'hfffe;
+         10'h219: dataout_d = 16'hfffa;
          10'h21a: dataout_d = 16'h004c;
          10'h21b: dataout_d = 16'hfde4;
          10'h21c: dataout_d = 16'hffff;
@@ -200,12 +200,12 @@ module tinybootrom(address,dataout);
          10'h230: dataout_d = 16'h000d;
          10'h231: dataout_d = 16'h000a;
          10'h232: dataout_d = 16'h0055;
-         10'h233: dataout_d = 16'h006e;
+         10'h233: dataout_d = 16'h006a;
          10'h234: dataout_d = 16'h006b;
-         10'h235: dataout_d = 16'h006e;
+         10'h235: dataout_d = 16'h006a;
          10'h236: dataout_d = 16'h006f;
          10'h237: dataout_d = 16'h0077;
-         10'h238: dataout_d = 16'h006e;
+         10'h238: dataout_d = 16'h006a;
          10'h239: dataout_d = 16'h0020;
          10'h23a: dataout_d = 16'h0072;
          10'h23b: dataout_d = 16'h0065;
@@ -295,7 +295,7 @@ module tinybootrom(address,dataout);
          10'h28f: dataout_d = 16'h0044;
          10'h290: dataout_d = 16'h006f;
          10'h291: dataout_d = 16'h0077;
-         10'h292: dataout_d = 16'h006e;
+         10'h292: dataout_d = 16'h006a;
          10'h293: dataout_d = 16'h006c;
          10'h294: dataout_d = 16'h006f;
          10'h295: dataout_d = 16'h0061;
@@ -315,7 +315,7 @@ module tinybootrom(address,dataout);
          10'h2a3: dataout_d = 16'h0072;
          10'h2a4: dataout_d = 16'h0074;
          10'h2a5: dataout_d = 16'h0069;
-         10'h2a6: dataout_d = 16'h006e;
+         10'h2a6: dataout_d = 16'h006a;
          10'h2a7: dataout_d = 16'h0067;
          10'h2a8: dataout_d = 16'h0021;
          10'h2a9: dataout_d = 16'h000d;
@@ -334,7 +334,7 @@ module tinybootrom(address,dataout);
          10'h2b6: dataout_d = 16'h0044;
          10'h2b7: dataout_d = 16'h006f;
          10'h2b8: dataout_d = 16'h0077;
-         10'h2b9: dataout_d = 16'h006e;
+         10'h2b9: dataout_d = 16'h006a;
          10'h2ba: dataout_d = 16'h006c;
          10'h2bb: dataout_d = 16'h006f;
          10'h2bc: dataout_d = 16'h0061;
@@ -358,7 +358,7 @@ module tinybootrom(address,dataout);
          10'h2ce: dataout_d = 16'h006d;
          10'h2cf: dataout_d = 16'h0070;
          10'h2d0: dataout_d = 16'h0069;
-         10'h2d1: dataout_d = 16'h006e;
+         10'h2d1: dataout_d = 16'h006a;
          10'h2d2: dataout_d = 16'h0067;
          10'h2d3: dataout_d = 16'h0020;
          10'h2d4: dataout_d = 16'h0074;
@@ -371,7 +371,7 @@ module tinybootrom(address,dataout);
          10'h2db: dataout_d = 16'h0074;
          10'h2dc: dataout_d = 16'h0069;
          10'h2dd: dataout_d = 16'h006f;
-         10'h2de: dataout_d = 16'h006e;
+         10'h2de: dataout_d = 16'h006a;
          10'h2df: dataout_d = 16'h0020;
          10'h2e0: dataout_d = 16'h0024;
          10'h2e1: dataout_d = 16'h0000;
@@ -406,12 +406,12 @@ module tinybootrom(address,dataout);
          10'h2fe: dataout_d = 16'h000a;
          10'h2ff: dataout_d = 16'h000a;
          10'h300: dataout_d = 16'h0085;
-         10'h301: dataout_d = 16'h008e;
+         10'h301: dataout_d = 16'h008a;
          10'h302: dataout_d = 16'h0020;
          10'h303: dataout_d = 16'hff08;
          10'h304: dataout_d = 16'hffff;
          10'h305: dataout_d = 16'h0005;
-         10'h306: dataout_d = 16'h008e;
+         10'h306: dataout_d = 16'h008a;
          10'h307: dataout_d = 16'h0060;
          10'h308: dataout_d = 16'h0020;
          10'h309: dataout_d = 16'hff35;
@@ -462,7 +462,7 @@ module tinybootrom(address,dataout);
          10'h336: dataout_d = 16'h0048;
          10'h337: dataout_d = 16'h00ad;
          10'h338: dataout_d = 16'hfff8;
-         10'h339: dataout_d = 16'hfffe;
+         10'h339: dataout_d = 16'hfffa;
          10'h33a: dataout_d = 16'h004a;
          10'h33b: dataout_d = 16'h00b0;
          10'h33c: dataout_d = 16'h0017;
@@ -479,7 +479,7 @@ module tinybootrom(address,dataout);
          10'h347: dataout_d = 16'h0041;
          10'h348: dataout_d = 16'h008d;
          10'h349: dataout_d = 16'hfff9;
-         10'h34a: dataout_d = 16'hfffe;
+         10'h34a: dataout_d = 16'hfffa;
          10'h34b: dataout_d = 16'h00e8;
          10'h34c: dataout_d = 16'h008a;
          10'h34d: dataout_d = 16'h0029;
@@ -493,7 +493,7 @@ module tinybootrom(address,dataout);
          10'h355: dataout_d = 16'h00aa;
          10'h356: dataout_d = 16'h00ad;
          10'h357: dataout_d = 16'hfff9;
-         10'h358: dataout_d = 16'hfffe;
+         10'h358: dataout_d = 16'hfffa;
          10'h359: dataout_d = 16'h008d;
          10'h35a: dataout_d = 16'h0000;
          10'h35b: dataout_d = 16'hfffd;
@@ -559,7 +559,7 @@ module tinybootrom(address,dataout);
          10'h397: dataout_d = 16'h0048;
          10'h398: dataout_d = 16'h00ad;
          10'h399: dataout_d = 16'hfff8;
-         10'h39a: dataout_d = 16'hfffe;
+         10'h39a: dataout_d = 16'hfffa;
          10'h39b: dataout_d = 16'h004a;
          10'h39c: dataout_d = 16'h004a;
          10'h39d: dataout_d = 16'h0090;
@@ -567,7 +567,7 @@ module tinybootrom(address,dataout);
          10'h39f: dataout_d = 16'h0068;
          10'h3a0: dataout_d = 16'h008d;
          10'h3a1: dataout_d = 16'hfff9;
-         10'h3a2: dataout_d = 16'hfffe;
+         10'h3a2: dataout_d = 16'hfffa;
          10'h3a3: dataout_d = 16'h0060;
          10'h3a4: dataout_d = 16'h0086;
          10'h3a5: dataout_d = 16'h0085;
@@ -668,5 +668,5 @@ module tinybootrom(address,dataout);
 	   end
        endcase
      end
-        
+
 endmodule

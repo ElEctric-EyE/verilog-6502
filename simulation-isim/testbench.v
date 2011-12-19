@@ -48,7 +48,7 @@ module testbench ();
       @ ( negedge phi0_w );
       @ ( negedge phi0_w )
         res_r <= 1'b1;
-      #100000 $display("Simulation time out");
+      #300000 $display("Simulation time out");
       $finish;
    end // initial begin
 

@@ -9,7 +9,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="16" />
+   <WVObjectSize size="32" />
    <wvobject fp_name="/testbench/dut/_cpu/reset" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
@@ -69,6 +69,11 @@
       <obj_property name="ObjectShortName">userled[7:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/regsel" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regsel[1:0]</obj_property>
+      <obj_property name="ObjectShortName">regsel[1:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
    <wvobject fp_name="/testbench/dut/_cpu/AXYS" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">AXYS[3:0,15:0]</obj_property>
       <obj_property name="ObjectShortName">AXYS[3:0,15:0]</obj_property>
@@ -101,6 +106,80 @@
    <wvobject fp_name="/testbench/dut/_cpu/PC" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">PC[31:0]</obj_property>
       <obj_property name="ObjectShortName">PC[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/_ALU/right" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">right</obj_property>
+      <obj_property name="ObjectShortName">right</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/_ALU/op" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">op[3:0]</obj_property>
+      <obj_property name="ObjectShortName">op[3:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/_ALU/AI" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">AI[15:0]</obj_property>
+      <obj_property name="ObjectShortName">AI[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/_ALU/BI" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">BI[15:0]</obj_property>
+      <obj_property name="ObjectShortName">BI[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/_ALU/tempshifted" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">tempshifted[16:0]</obj_property>
+      <obj_property name="ObjectShortName">tempshifted[16:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/_ALU/OUT" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">OUT[15:0]</obj_property>
+      <obj_property name="ObjectShortName">OUT[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/_ALU/highmask" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">highmask[15:0]</obj_property>
+      <obj_property name="ObjectShortName">highmask[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/_ALU/lowmask" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">lowmask[15:0]</obj_property>
+      <obj_property name="ObjectShortName">lowmask[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/_ALU/tempmasked" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">tempmasked[16:0]</obj_property>
+      <obj_property name="ObjectShortName">tempmasked[16:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/regfile" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regfile[15:0]</obj_property>
+      <obj_property name="ObjectShortName">regfile[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/D_Reg" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">D_Reg[3:0]</obj_property>
+      <obj_property name="ObjectShortName">D_Reg[3:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/IR" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">IR[15:0]</obj_property>
+      <obj_property name="ObjectShortName">IR[15:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/state" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">state[5:0]</obj_property>
+      <obj_property name="ObjectShortName">state[5:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/statename" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">statename[47:0]</obj_property>
+      <obj_property name="ObjectShortName">statename[47:0]</obj_property>
+      <obj_property name="Radix">ASCIIRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/dut/_cpu/ADD" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ADD[15:0]</obj_property>
+      <obj_property name="ObjectShortName">ADD[15:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
 </wave_config>
