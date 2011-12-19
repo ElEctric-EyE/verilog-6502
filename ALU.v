@@ -26,7 +26,7 @@
  *
  */
 
-module ALU( clk, op, right, AI, BI, CI, CO, OUT, V, Z, N,
+module ALU( clk, op, right, rotate, multiply, AI, BI, DI, CI, CO, OUT, OUTHI, V, Z, N,
 `ifdef BCD_ENABLED
             BCD,
             HC,
@@ -34,14 +34,19 @@ module ALU( clk, op, right, AI, BI, CI, CO, OUT, V, Z, N,
             RDY );
 
 	parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
+   parameter logdw = 4; // log of data width (for shifts)
 
 	input clk;
 	input right;
+	input rotate;        // rotate not shift
+	input multiply;
 	input [3:0] op;		// operation
 	input [dw-1:0] AI;
 	input [dw-1:0] BI;
+	input [logdw-1:0] DI;  // distance to shift/rotate
 	input CI;
 	output [dw-1:0] OUT;
+	output [dw-1:0] OUTHI;
 	output CO;
 	output V;
 	output Z;
@@ -53,6 +58,7 @@ module ALU( clk, op, right, AI, BI, CI, CO, OUT, V, Z, N,
 	input RDY;
 
 reg [dw-1:0] OUT;
+reg [dw-1:0] OUTHI;
 reg CO;
 reg V;
 reg Z;
@@ -60,6 +66,8 @@ reg N;
 
 reg [dw:0] logical;
 reg [dw-1:0] temp_BI;
+
+wire adder_CI = (right | (op[3:2] == 2'b11)) ? 0 : CI;
 
 `ifdef BCD_ENABLED
 reg HC;
@@ -70,7 +78,6 @@ wire [dw:0] temp = { temp_h, temp_l[3:0] };
 wire [dw:0] temp = logical + temp_BI + adder_CI;
 `endif
 
-wire adder_CI = (right | (op[3:2] == 2'b11)) ? 0 : CI;
 
 // calculate the logic operations. The 'case' can be done in 1 LUT per
 // bit. The 'right' shift is a simple mux that can be implemented by
@@ -118,18 +125,42 @@ end
 
 `endif
 
+// perform a long-distance shift
+wire [dw:0]tempshifted = right ? ({CI, AI, CI, AI} << (~DI)) >> (dw-1) :
+                                 ({CI, AI, CI, AI} << DI) >> (dw+1);
+
+// need to mask off incoming bits in the case of a shift rather than a rotate
+wire [dw-1:0]highmask = ~((1 << DI)-1);
+wire [dw-1:0]lowmask = (2 << (~DI))-1;
+
+// rotate is easy, and left is just a masking.  Sign extension is a bit more work.
+wire [dw:0]tempmasked = rotate ? tempshifted
+                               : right ? (tempshifted & lowmask) | ({dw{AI[dw-1]}} & ~lowmask)
+				       : tempshifted & highmask;
+
+// bypass the 6502-style ALU if we're doing OP_ROL or OP_A
+wire shiftrotate = op[3] == 1'b1 & op[1:0] == 2'b11;
+
+wire [2*dw-1:0]product = AI * BI;
+
 // calculate the flags 
 always @(posedge clk)
     if( RDY ) begin
-	OUT <= temp[dw-1:0];
-	CO  <= temp[dw]
+//	OUT <= multiply ? product
+//	                : shiftrotate ? tempmasked[dw-1:0] : temp[dw-1:0];
+	OUT <= shiftrotate ? tempmasked[dw-1:0] : temp[dw-1:0];
+	OUTHI <= product[2*dw-1:dw];
+	CO  <= (shiftrotate ? tempshifted[dw] : temp[dw])
 `ifdef BCD_ENABLED
                          | CO9
 `endif
                        ;
+//	Z   <= ~|OUT[dw-1:0];
+//	N   <= OUT[dw-1];
+//	V   <= AI[dw-1] ^ BI[dw-1] ^ OUT[dw-1] ^ CO;
 	Z   <= ~|temp[dw-1:0];
 	N   <= temp[dw-1];
-	V   <= AI[dw-1] ^ BI[dw-1] ^ temp[dw-1] ^ temp[dw]; 
+	V   <= AI[dw-1] ^ BI[dw-1] ^ temp[dw-1] ^ temp[dw];
 `ifdef BCD_ENABLED
 	HC  <= temp_HC;
 `endif

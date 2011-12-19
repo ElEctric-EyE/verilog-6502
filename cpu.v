@@ -28,10 +28,11 @@
  * on the output pads if external memory is required.
  */
 
-module cpu( clk, reset, AB, DI, DO, WE, IRQ, NMI, RDY );
+module cpu( clk, reset, AB, DI, DO, WE, IRQ, NMI, RDY);
 
 parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
 parameter aw = 32; // address width (16 for 6502, 32 for 65Org16)
+parameter logdw = 4;  // log base 2 of data width for shift distance: 4 for 65Org16
 
 input clk;		// CPU clock 
 input reset;		// reset signal
@@ -47,6 +48,8 @@ input RDY;		// Ready signal. Pauses CPU when RDY=0
  * internal signals
  */
 
+//wire RDY = 1'b1;  // tie off RDY to see how much it costs
+
 reg  [aw-1:0] PC;	// Program Counter 
 reg  [dw-1:0] ABL;	// Address Bus Register LSB
 reg  [dw-1:0] ABH;	// Address Bus Register MSB
@@ -55,6 +58,7 @@ wire [dw-1:0] ADD;	// Adder Hold Register (registered in ALU)
 reg  [dw-1:0] DIHOLD;	// Hold for Data In
 reg  DIHOLD_valid; 	//
 wire [dw-1:0] DIMUX;	//
+wire [dw-1:0] ProductHighBus;	//
 
 reg  [dw-1:0] IRHOLD;	// Hold for Instruction register 
 reg  IRHOLD_valid;	// Valid instruction in IRHOLD
@@ -74,6 +78,8 @@ wire HC;		// ALU half carry
 
 reg  [dw-1:0] AI;	// ALU Input A
 reg  [dw-1:0] BI;  	// ALU Input B
+reg  [dw-1:0] B_Reg;  	// Alternate accumulater (used for multiplication)
+reg  [logdw-1:0] D_Reg; // Shift Distance Register
 wire [dw-1:0] DI;	// Data In
 wire [dw-1:0] IR;	// Instruction register
 reg  [dw-1:0] DO;	// Data Out 
@@ -126,6 +132,8 @@ reg [1:0] dst_reg;	// destination register index
 
 reg index_y;		// if set, then Y is index reg rather than X 
 reg load_reg;		// loading a register (A, X, Y, S) in this instruction
+reg load_b_reg;	// loading the B register in this instruction (multiplication)
+reg load_d_reg;	// loading the D register in this instruction (shifting)
 reg inc;		// increment
 reg write_back;		// set if memory is read/modified/written 
 reg load_only;		// LDA/LDX/LDY instruction
@@ -134,6 +142,7 @@ reg adc_sbc;		// doing ADC/SBC
 reg compare;		// doing CMP/CPY/CPX
 reg shift;		// doing shift/rotate instruction
 reg rotate;		// doing rotate (no shift)
+reg multiply;
 reg backwards;		// backwards branch
 reg cond_true;		// branch condition is true
 reg [2:0] cond_code;	// condition code bits from instruction
@@ -175,7 +184,8 @@ parameter
 	OP_ADD = 4'b0011,
 	OP_SUB = 4'b0111,
 	OP_ROL = 4'b1011,
-	OP_A   = 4'b1111;
+	OP_A   = 4'b1111,
+	OP_MUL = 4'b0000;
 
 /*
  * Microcode state machine. Basically, every addressing mode has its own
@@ -236,7 +246,7 @@ parameter
     ZPX0   = 6'd48, // ZP, X   - fetch ZP, and send to ALU (+X)
     ZPX1   = 6'd49; // ZP, X   - load from memory
 
-`ifdef SIM
+`ifndef SIM
 
 /*
  * easy to read names in simulator output
@@ -297,8 +307,8 @@ always @*
 	    JMPI1:  statename <= "JMPI1";
     endcase
 
-//always @( PC )
-	//$display( "%t, PC:%04x A:%02x X:%02x Y:%02x S:%02x C:%d Z:%d V:%d N:%d", $time, PC, A, X, Y, S, C, Z, V, N );
+always @( PC )
+	$display( "%t, PC:%04x A:%02x X:%02x Y:%02x S:%02x C:%d Z:%d V:%d N:%d", $time, PC, AXYS[0], AXYS[2], AXYS[3], AXYS[1], C, Z, V, N );
 
 `endif
 
@@ -481,6 +491,8 @@ always @*
  */
 
 reg write_register;		// set when register file is written
+reg write_b_reg;	    	// set when b_reg special register is written (multiplication, XBA)
+reg write_d_reg;	    	// set when d_reg special register is written (TXD, shift distance)
 
 always @*
     case( state )
@@ -494,6 +506,18 @@ always @*
 	 JSR2 : write_register <= 1;
 
        default: write_register <= 0;
+    endcase
+
+always @*
+    case( state )
+	DECODE: write_b_reg <= load_b_reg;
+       default: write_b_reg <= 0;
+    endcase
+
+always @*
+    case( state )
+	DECODE: write_d_reg <= load_d_reg;
+       default: write_d_reg <= 0;
     endcase
 
 `ifdef BCD_ENABLED
@@ -547,7 +571,22 @@ parameter ADJL = 4'd0;
  */
 always @(posedge clk)
     if( write_register & RDY )
-	AXYS[regsel] <= (state == JSR0) ? DIMUX : { ADD[dw-1:4] + ADJH, ADD[3:0] + ADJL };
+        // this version will get us a RAM - denser!
+        AXYS[regsel] <= (state == JSR0) ? DIMUX : { ADD[dw-1:4] + ADJH, ADD[3:0] + ADJL };
+        //case( state )
+        //    JSR0: AXYS[regsel] <= DIMUX;
+        //    default : AXYS[regsel] <= { ADD[dw-1:4] + ADJH, ADD[3:0] + ADJL };
+        //endcase
+
+// D_Reg is like a register, but not in the register file
+always @(posedge clk )
+     if( write_d_reg & RDY )
+        D_Reg <= ADD;
+
+// B_Reg is like a register, but not in the register file
+always @(posedge clk )
+     if( write_b_reg & RDY )
+        B_Reg <= multiply ? ProductHighBus : ADD;
 
 /*
  * register select logic. This determines which of the A, X, Y or
@@ -583,15 +622,19 @@ always @*
  * ALU
  */
 
-ALU #(.dw(dw)) _ALU(
+ALU #(.dw(dw), .logdw(logdw)) _ALU(
 	 .clk(clk),
 	 .op(alu_op),
 	 .right(alu_shift_right),
+	 .rotate(rotate),
+	 .multiply(1'b0),
 	 .AI(AI),
 	 .BI(BI),
 	 .CI(CI),
+	 .DI(D_Reg),
 	 .CO(CO),
 	 .OUT(ADD),
+	 .OUTHI(ProductHighBus),
 	 .V(AV),
 	 .Z(AZ),
 	 .N(AN),
@@ -716,6 +759,8 @@ always @*
 
 	 DECODE,
 	 ABS1:  BI <= {dw{1'bx}};	// don't care
+
+//	 FETCH:	BI <= multiply ? B_Reg : DIMUX;
 
 	 default:	BI <= DIMUX;
     endcase
@@ -914,6 +959,7 @@ always @(posedge clk or posedge reset)
 		8'bxxx1_1001:	state <= ABSX0; // odd 9 column
 		8'bxxx1_11xx:	state <= ABSX0; // odd C, D, E, F columns
 		8'bxxxx_1010:	state <= REG;   // <shift> A, TXA, ...  NOP
+		8'bxxxx_1011:	state <= REG;   // TXD special
 	    endcase
 
         ZP0	: state <= write_back ? READ : FETCH;
@@ -1010,6 +1056,24 @@ always @(posedge clk)
 always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[7:0] )  // just decode the low 8 bits
+		8'b1110_1011:	// XBA special $EB
+            load_b_reg <= 1;
+
+		default:	load_b_reg <= 0;
+	endcase
+
+always @(posedge clk)
+     if( state == DECODE && RDY )
+	casex( IR[7:0] )  // just decode the low 8 bits
+		8'b1001_1011:	// TXD special $9B
+            load_d_reg <= 1;
+
+		default:	load_d_reg <= 0;
+	endcase
+
+always @(posedge clk)
+     if( state == DECODE && RDY )
+	casex( IR[7:0] )  // just decode the low 8 bits
 		8'b1110_1000,	// INX
 		8'b1100_1010,	// DEX
 		8'b101x_xx10:	// LDX, TAX, TSX
@@ -1035,6 +1099,7 @@ always @(posedge clk)
 
 		8'b100x_x110,	// STX
 		8'b100x_1x10,	// TXA, TXS
+		8'b1001_1011,	// TXD special (also TXY in other 65xx family)
 		8'b1110_xx00,	// INX, CPX
 		8'b1100_1010:	// DEX
 				src_reg <= SEL_X; 
@@ -1077,7 +1142,6 @@ always @(posedge clk )
 		8'b0xxx_x110,	// ASL, ROL, LSR, ROR
 		8'b11xx_x110:	// DEC/INC 
 				write_back <= 1;
-
 		default:	write_back <= 0;
 	endcase
 
@@ -1093,6 +1157,15 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[7:0] )  // just decode the low 8 bits
+		8'b1101_1011:	// MPY special $DB (stp on other 65xx)
+				multiply <= 1;
+
+		default:	multiply <= 0;
+	endcase
+
+always @(posedge clk )
+     if( state == DECODE && RDY )
+	casex( IR[7:0] )  // just decode the low 8 bits
 		8'b111x_x110,	// INC 
 		8'b11x0_1000: 	// INX, INY
 				inc <= 1;
@@ -1183,6 +1256,9 @@ always @(posedge clk )
 		8'b00xx_xx01:	// ORA, AND
 				op <= { 2'b11, IR[6:5] };
 		
+		8'b1101_1011:	// MPY special $DB (stp on other 65xx)
+				op <= OP_MUL;
+
 		default: 	op <= OP_ADD; 
 	endcase
 
