@@ -5,6 +5,7 @@
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
+ * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -23,15 +24,9 @@
  * 1101   AI & BI
  * 1110   AI ^ BI
  * 1111   AI
- *
  */
 
-module ALU( clk, op, right, AI, BI, CI, CO, OUT, V, Z, N,
-`ifdef BCD_ENABLED
-            BCD,
-            HC,
-`endif
-            RDY );
+module ALU( clk, op, right, AI, BI, CI, CO, OUT, V, N, RDY );
 
 	parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
 
@@ -44,32 +39,17 @@ module ALU( clk, op, right, AI, BI, CI, CO, OUT, V, Z, N,
 	output [dw-1:0] OUT;
 	output CO;
 	output V;
-	output Z;
 	output N;
-`ifdef BCD_ENABLED
-	input BCD;		// BCD style carry
-	output HC;
-`endif
 	input RDY;
 
 reg [dw-1:0] OUT;
 reg CO;
 reg V;
-reg Z;
 reg N;
 
 reg [dw:0] logical;
 reg [dw-1:0] temp_BI;
-
-`ifdef BCD_ENABLED
-reg HC;
-reg [4:0] temp_l;
-reg [dw-4:0] temp_h;
-wire [dw:0] temp = { temp_h, temp_l[3:0] };
-`else
-wire [dw:0] temp = logical + temp_BI + adder_CI;
-`endif
-
+reg [dw:0] temp;
 wire adder_CI = (right | (op[3:2] == 2'b11)) ? 0 : CI;
 
 // calculate the logic operations. The 'case' can be done in 1 LUT per
@@ -98,41 +78,20 @@ always @* begin
 	endcase	
 end
 
-`ifdef BCD_ENABLED
-
-// HC9 is the half carry bit when doing BCD add
-wire HC9 = BCD & (temp_l[3:1] >= 3'd5);
-
-// CO9 is the carry-out bit when doing BCD add
-wire CO9 = BCD & (temp_h[3:1] >= 3'd5);
-
-// combined half carry bit
-wire temp_HC = temp_l[4] | HC9;
-
 // perform the addition as 2 separate nibble, so we get
 // access to the half carry flag
-always @* begin
-	temp_l = logical[3:0] + temp_BI[3:0] + adder_CI;
-	temp_h = logical[dw:4] + temp_BI[dw-1:4] + temp_HC;
-end
+always @(logical or temp_BI or adder_CI)
+	temp = logical + temp_BI + adder_CI;
 
-`endif
+//end
 
 // calculate the flags 
 always @(posedge clk)
     if( RDY ) begin
 	OUT <= temp[dw-1:0];
-	CO  <= temp[dw]
-`ifdef BCD_ENABLED
-                         | CO9
-`endif
-                       ;
-	Z   <= ~|temp[dw-1:0];
+	CO  <= temp[dw];
 	N   <= temp[dw-1];
 	V   <= AI[dw-1] ^ BI[dw-1] ^ temp[dw-1] ^ temp[dw]; 
-`ifdef BCD_ENABLED
-	HC  <= temp_HC;
-`endif
     end
 
 endmodule
