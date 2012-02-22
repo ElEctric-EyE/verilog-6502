@@ -1,8 +1,9 @@
-/*
+/*/*
  * verilog-6502 project: verilog model of 6502 and 65Org16 CPU core
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
+ * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Tested OK.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -13,13 +14,12 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
  *
+ *  
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- */
-
-/*
+ *
  * Note that not all 6502 interface signals are supported (yet).  The goal
  * is to create an Acorn Atom model, and the Atom didn't use all signals on
  * the main board.
@@ -46,7 +46,7 @@ input RDY;		// Ready signal. Pauses CPU when RDY=0
 /*
  * internal signals
  */
-
+ 
 reg  [aw-1:0] PC;	// Program Counter 
 reg  [dw-1:0] ABL;	// Address Bus Register LSB
 reg  [dw-1:0] ABH;	// Address Bus Register MSB
@@ -64,13 +64,11 @@ reg  [dw-1:0] AXYS[3:0]; 	// A, X, Y and S register file
 reg  C = 0;		// carry flag (init at zero to avoid X's in ALU sim)
 reg  Z = 0;		// zero flag
 reg  I = 0;		// interrupt flag
-reg  D = 0;		// decimal flag
 reg  V = 0;		// overflow flag
 reg  N = 0;		// negative flag
 wire AZ;		// ALU Zero flag
 wire AV;		// ALU overflow flag
 wire AN;		// ALU negative flag
-wire HC;		// ALU half carry
 
 reg  [dw-1:0] AI;	// ALU Input A
 reg  [dw-1:0] BI;  	// ALU Input B
@@ -90,23 +88,31 @@ wire [dw-1:0] regfile = AXYS[regsel];	// Selected register output
 
 parameter 
 	SEL_A    = 2'd0,
-	SEL_S	 = 2'd1,
-	SEL_X    = 2'd2, 
-	SEL_Y    = 2'd3;
+	SEL_X	   = 2'd2,
+	SEL_Y    = 2'd3, 
+	SEL_S    = 2'd1;
+	
+initial
+	begin
+		AXYS[SEL_A] = 0; //init accumulator
+		AXYS[SEL_X] = 0; //init x register
+		AXYS[SEL_Y] = 0; //init y register
+		AXYS[SEL_S] = 16'hffff; //init stack
+	end
 
 /*
  * define some signals for watching in simulator output
  */
 
 
-`ifdef SIM
+//`ifdef SIM
 wire [dw-1:0]   A = AXYS[SEL_A];	// Accumulator
 wire [dw-1:0]   X = AXYS[SEL_X];	// X register
 wire [dw-1:0]   Y = AXYS[SEL_Y];	// Y register 
 wire [dw-1:0]   S = AXYS[SEL_S];	// Stack pointer 
-`endif
+//`endif
 
-wire [dw-1:0] P = { N, V, 2'b0, D, I, Z, C };
+wire [dw-1:0] P = { N, V, 2'b0, I, Z, C };
 
 /*
  * instruction decoder/sequencer
@@ -141,22 +147,17 @@ reg shift_right;	// Instruction ALU shift/rotate right
 reg alu_shift_right;	// Current cycle shift right enable
 reg [3:0] op;		// Main ALU operation for instruction
 reg [3:0] alu_op;	// Current cycle ALU operation 
-`ifdef BCD_ENABLED
-reg adc_bcd;		// ALU should do BCD style carry 
-reg adj_bcd;		// results should be BCD adjusted
-`endif
 
 /* 
  * some flip flops to remember we're doing special instructions. These
  * get loaded at the DECODE state, and used later
  */
+ 
 reg bit;		// doing BIT instruction
 reg plp;		// doing PLP instruction
 reg php;		// doing PHP instruction 
 reg clc;		// clear carry
 reg sec;		// set carry
-reg cld;		// clear decimal
-reg sed;		// set decimal
 reg cli;		// clear interrupt
 reg sei;		// set interrupt
 reg clv;		// clear overflow 
@@ -236,7 +237,7 @@ parameter
     ZPX0   = 6'd48, // ZP, X   - fetch ZP, and send to ALU (+X)
     ZPX1   = 6'd49; // ZP, X   - load from memory
 
-`ifdef SIM
+//`ifdef SIM
 
 /*
  * easy to read names in simulator output
@@ -300,7 +301,7 @@ always @*
 //always @( PC )
 	//$display( "%t, PC:%04x A:%02x X:%02x Y:%02x S:%02x C:%d Z:%d V:%d N:%d", $time, PC, A, X, Y, S, C, Z, V, N );
 
-`endif
+//`endif
 
 
 
@@ -321,7 +322,7 @@ always @*
 	JSR3,
 	RTS3,	 	
 	RTI4:		PC_temp = { DIMUX, ADD };
-			
+
 	BRA1:		PC_temp = { ABH, ADD };
 
 	BRA2:		PC_temp = { ADD, PCL };
@@ -370,9 +371,9 @@ always @(posedge clk)
  */
 
 parameter
-	ZEROPAGE  = 0, // {dw{1'b0}},		// all zero
-	STACKPAGE = 1; // {(dw-1){1'b0}, 1};	// one
-
+	ZEROPAGE  = 16'h0000, 
+	STACKPAGE = 16'h0001; 
+	
 always @*
     case( state )
 	ABSX1,
@@ -404,7 +405,7 @@ always @*
 	RTI2,
 	RTI3,
 	BRK2:		AB = { STACKPAGE, ADD };
-	
+
 	INDY1,
 	INDX1,
 	ZPX1,
@@ -425,13 +426,10 @@ always @*
  * This can be used to keep the current address, freeing up the original
  * source of the address, such as the ALU or DI.
  */
-always @(posedge clk)
-    if( state != PUSH0 && state != PUSH1 && RDY && 
-	state != PULL0 && state != PULL1 && state != PULL2 )
-    begin
-	ABL <= AB[dw-1:0];
-	ABH <= AB[aw-1:dw];
-    end
+always @(posedge clk) begin
+    ABL <= AB[dw-1:0];
+    ABH <= AB[aw-1:dw];
+end
 
 /*
  * Data Out MUX 
@@ -448,7 +446,7 @@ always @*
 
 	PUSH1:	 DO = php ? P : ADD;
 
-	BRK2:	 DO = (IRQ | NMI_edge) ? P : P | 8'b0001_0000; // B bit should be parameterised
+	BRK2:	 DO = (IRQ | NMI_edge) ? P : P | 16'b0000_0000_0001_0000; // B bit should be parameterised
 
 	default: DO = regfile;
     endcase
@@ -499,49 +497,6 @@ always @*
        default: write_register = 0;
     endcase
 
-`ifdef BCD_ENABLED
-/*
- * BCD adjust logic
- */
-
-always @(posedge clk)
-    adj_bcd <= adc_sbc & D;	// '1' when doing a BCD instruction
-
-reg [3:0] ADJL;
-reg [3:0] ADJH;
-
-// adjustment term to be added to ADD[3:0] based on the following
-// adj_bcd: '1' if doing ADC/SBC with D=1
-// adc_bcd: '1' if doing ADC with D=1
-// HC     : half carry bit from ALU
-always @* begin
-    casex( {adj_bcd, adc_bcd, HC} )
-         3'b0xx: ADJL = 4'd0;	// no BCD instruction
-	 3'b100: ADJL = 4'd10;  // SBC, and digital borrow
-	 3'b101: ADJL = 4'd0;	// SBC, but no borrow
-	 3'b110: ADJL = 4'd0;	// ADC, but no carry
-	 3'b111: ADJL = 4'd6;   // ADC, and decimal/digital carry
-    endcase
-end
-
-// adjustment term to be added to ADD[dw-1:4] based on the following
-// adj_bcd: '1' if doing ADC/SBC with D=1
-// adc_bcd: '1' if doing ADC with D=1
-// CO     : carry out bit from ALU
-always @* begin
-    casex( {adj_bcd, adc_bcd, CO} )
-         3'b0xx: ADJH = 4'd0;	// no BCD instruction
-	 3'b100: ADJH = 4'd10;  // SBC, and digital borrow
-	 3'b101: ADJH = 4'd0;	// SBC, but no borrow
-	 3'b110: ADJH = 4'd0;	// ADC, but no carry
-	 3'b111: ADJH = 4'd6;   // ADC, and decimal/digital carry
-    endcase
-end
-`else
-parameter ADJH = 4'd0;
-parameter ADJL = 4'd0;
-`endif
-
 /*
  * write to a register. Usually this is the (BCD corrected) output of the
  * ALU, but in case of the JSR0 we use the S register to temporarily store
@@ -550,7 +505,7 @@ parameter ADJL = 4'd0;
  */
 always @(posedge clk)
     if( write_register & RDY )
-	AXYS[regsel] <= (state == JSR0) ? DIMUX : { ADD[dw-1:4] + ADJH, ADD[3:0] + ADJL };
+	AXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
 
 /*
  * register select logic. This determines which of the A, X, Y or
@@ -562,10 +517,10 @@ always @*
 	INDY1,
 	INDX0,
 	ZPX0,
-	ABSX0  : regsel = index_y ? SEL_Y : SEL_X;
+    	ABSX0  : regsel = index_y ? SEL_Y : SEL_X;
 
 
-	DECODE : regsel = dst_reg;
+	DECODE : regsel = dst_reg; 
 
 	BRK0,
 	BRK3,
@@ -578,8 +533,8 @@ always @*
 	RTI3,
 	RTS0,
 	RTS2   : regsel = SEL_S;
-	
-        default: regsel = src_reg;
+
+        default: regsel = src_reg; 
     endcase
 
 /*
@@ -596,13 +551,10 @@ ALU #(.dw(dw)) _ALU(
 	 .CO(CO),
 	 .OUT(ADD),
 	 .V(AV),
-	 .Z(AZ),
 	 .N(AN),
-`ifdef BCD_ENABLED
-	 .BCD(adc_bcd),
-	 .HC(HC),
-`endif
 	 .RDY(RDY) );
+	 
+assign AZ = ~|ADD; 	//calculate the Z flag inside the cpu.v module
 
 /*
  * Select current ALU operation
@@ -612,10 +564,10 @@ always @*
     case( state )
 	READ:	alu_op = op;
 
-	BRA1:  	alu_op = backwards ? OP_SUB : OP_ADD;
+	BRA1:  	alu_op = backwards ? OP_SUB : OP_ADD; 
 
 	FETCH,
-	REG : 	alu_op = op;
+	REG : 	alu_op = op; 
 
 	DECODE,
 	ABS1: 	alu_op = 1'bx;
@@ -679,14 +631,14 @@ always @*
 	BRA0,
 	READ:	AI = DIMUX;
 
-	BRA1: 	AI = ABH;	// don't use PCH in case we're
+	BRA1: 	AI = ABH;	// don't use PCH in case we're 
 
 	FETCH:	AI = load_only ? 0 : regfile;
 
 	DECODE,
 	ABS1:	AI = {dw{1'bx}};	// don't care
 
-	default:  AI = 0;
+	default: 	AI = 0;
     endcase
 
 
@@ -714,7 +666,7 @@ always @*
 	 PUSH1,
 	 PULL0,
 	 RTS0:	BI = {dw{1'b0}};
-	
+
 	 BRA0:	BI = PCL;
 
 	 DECODE,
@@ -734,13 +686,13 @@ always @*
 	ABSX1:	CI = CO;
 
 	DECODE,
-	ABS1:	CI = 1'bx;
+ 	ABS1:	CI = 1'bx;
 
 	READ,
 	REG:	CI = rotate ? C :
 		     shift ? 0 : inc;
 
-	FETCH:	CI = rotate  ? C :
+	FETCH:	CI = rotate  ? C : 
 		     compare ? 1 : 
 		     (shift | load_only) ? 0 : C;
 
@@ -751,9 +703,9 @@ always @*
 	RTS0,
 	RTS1,
 	INDY0,
-	INDX1:	CI = 1;
+	INDX1:	CI = 1; 
 
-	default: 	CI = 0;
+	default:	CI = 0;
     endcase
 
 /*
@@ -818,22 +770,10 @@ always @(posedge clk)
 	I <= 1;
     else if( state == RTI2 )
     	I <= DIMUX[2];
-    else if( state == REG ) begin
+    else if( state == DECODE ) begin
 	if( sei ) I <= 1;
 	if( cli ) I <= 0;
-    end else if( state == DECODE )
 	if( plp ) I <= ADD[2];
-
-/*
- * Update D flag
- */
-always @(posedge clk ) 
-    if( state == RTI2 )
-    	D <= DIMUX[3];
-    else if( state == DECODE ) begin
-	if( sed ) D <= 1;
-	if( cld ) D <= 0;
-	if( plp ) D <= ADD[3];
     end
 
 /*
@@ -892,31 +832,31 @@ always @(posedge clk or posedge reset)
         state <= BRK0;
     else if( RDY ) case( state )
 	DECODE  : 
-	    casex ( IR[7:0] )  // just decode the low 8 bits
-		8'b0000_0000:	state <= BRK0;
-		8'b0010_0000:	state <= JSR0;
-		8'b0010_1100:	state <= ABS0;  // BIT abs
-		8'b0100_0000:	state <= RTI0;  // 
-		8'b0100_1100:	state <= JMP0;
-		8'b0110_0000:	state <= RTS0;
-		8'b0110_1100:	state <= JMPI0;
-		8'b0x00_1000:	state <= PUSH0;
-		8'b0x10_1000:	state <= PULL0;
-		8'b0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI 
-		8'b1xx0_00x0:	state <= FETCH; // IMM
-		8'b1xx0_1100:	state <= ABS0;  // X/Y abs
-		8'b1xxx_1000:	state <= REG;   // DEY, TYA, ... 
-		8'bxxx0_0001:	state <= INDX0;
-		8'bxxx0_01xx:	state <= ZP0;
-		8'bxxx0_1001:	state <= FETCH; // IMM
-		8'bxxx0_1101:	state <= ABS0;  // even E column
-		8'bxxx0_1110:	state <= ABS0;  // even E column
-		8'bxxx1_0000:	state <= BRA0;  // odd 0 column
-		8'bxxx1_0001:	state <= INDY0; // odd 1 column
-		8'bxxx1_01xx:	state <= ZPX0;  // odd 4,5,6,7 columns
-		8'bxxx1_1001:	state <= ABSX0; // odd 9 column
-		8'bxxx1_11xx:	state <= ABSX0; // odd C, D, E, F columns
-		8'bxxxx_1010:	state <= REG;   // <shift> A, TXA, ...  NOP
+	    casex ( IR[15:0] )  							 // decode all 16 bits
+		16'b0000_0000_0000_0000:	state <= BRK0;
+		16'b0000_0000_0010_0000:	state <= JSR0;
+		16'b0000_0000_0010_1100:	state <= ABS0;  // BIT abs
+		16'b0000_0000_0100_0000:	state <= RTI0;  // 
+		16'b0000_0000_0100_1100:	state <= JMP0;
+		16'b0000_0000_0110_0000:	state <= RTS0;
+		16'b0000_0000_0110_1100:	state <= JMPI0;
+		16'b0000_0000_0x00_1000:	state <= PUSH0;
+		16'b0000_0000_0x10_1000:	state <= PULL0;
+		16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI 
+		16'b0000_0000_1xx0_00x0:	state <= FETCH; // IMM
+		16'b0000_0000_1xx0_1100:	state <= ABS0;  // X/Y abs
+		16'b0000_0000_1xxx_1000:	state <= REG;   // DEY, TYA, ... 
+		16'b0000_0000_xxx0_0001:	state <= INDX0;
+		16'b0000_0000_xxx0_01xx:	state <= ZP0;
+		16'b0000_0000_xxx0_1001:	state <= FETCH; // IMM
+		16'b0000_0000_xxx0_1101:	state <= ABS0;  // even E column
+		16'b0000_0000_xxx0_1110:	state <= ABS0;  // even E column
+		16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd 0 column
+		16'b0000_0000_xxx1_0001:	state <= INDY0; // odd 1 column
+		16'b0000_0000_xxx1_01xx:	state <= ZPX0;  // odd 4,5,6,7 columns
+		16'b0000_0000_xxx1_1001:	state <= ABSX0; // odd 9 column
+		16'b0000_0000_xxx1_11xx:	state <= ABSX0; // odd C, D, E, F columns
+		16'b0000_0000_xxxx_1010:	state <= REG;   // <shift> A, TXA, ...  NOP
 	    endcase
 
         ZP0	: state <= write_back ? READ : FETCH;
@@ -946,7 +886,7 @@ always @(posedge clk or posedge reset)
 	FETCH   : state <= DECODE;
 
 	REG 	: state <= DECODE;
-	
+
 	PUSH0   : state <= PUSH1;
 	PUSH1	: state <= DECODE;
 
@@ -999,14 +939,14 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b0xxx_xx01,	// ORA, AND, EOR, ADC
-     		8'b1x1x_xx01,	// LDA, SBC
-     		8'bxxxx_1010,	// ASLA, ROLA, LSRA, RORA, T[XS][SX], DEX, NOP,
-     		8'bxxx0_1000,	// PHP, PLP, PHA, PLA, DEY, TAY, INY, INX
-     		8'b1001_1000,	// TYA
-		8'b1011_x1x0,	// LDX/LDY
-		8'b1010_xxx0:	// LDA/LDX/LDY 
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_0xxx_xx01,	// ORA, AND, EOR, ADC
+	 	16'b0000_0000_1x1x_xx01,	// LDA, SBC
+		16'b0000_0000_xxxx_10x0,	// ASLA, ROLA, LSRA, RORA, T[XS][SX], DEX, NOP,
+		16'b0000_0000_xxx0_1000,   // PHP, PLP, PHA, PLA, DEY, TAY, INY, INX
+		16'b0000_0000_1001_1000,	// TYA
+		16'b0000_0000_1011_x1x0,	// LDX/LDY
+		16'b0000_0000_1010_xxx0:	// LDA/LDX/LDY 
 				load_reg <= 1;
 
 		default:	load_reg <= 0;
@@ -1014,19 +954,19 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b1110_1000,	// INX
-		8'b1100_1010,	// DEX
-		8'b101x_xx10:	// LDX, TAX, TSX
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_1110_1000,	// INX
+		16'b0000_0000_1100_1010,	// DEX
+		16'b0000_0000_101x_xx10:	// LDX, TAX, TSX
 				dst_reg <= SEL_X;
 
-		8'b0x00_1000,	// PHP, PHA
-		8'b1001_1010:	// TXS
+		16'b0000_0000_0x00_1000,	// PHP, PHA
+		16'b0000_0000_1001_1010:	// TXS
 				dst_reg <= SEL_S;
 
-		8'b1x00_1000,	// DEY, DEX
-		8'b101x_x100,	// LDY
-		8'b1010_x000: 	// LDY #imm, TAY
+		16'b0000_0000_1x00_1000,	// DEY, DEX
+		16'b0000_0000_101x_x100,	// LDY
+		16'b0000_0000_1010_x000: 	// LDY #imm, TAY
 				dst_reg <= SEL_Y;
 
 		default:	dst_reg <= SEL_A;
@@ -1034,20 +974,20 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b1011_1010:	// TSX 
+     	casex( IR[15:0] ) 		   // decode all 16 bits
+		16'b0000_0000_1011_1010:	// TSX 
 				src_reg <= SEL_S; 
 
-		8'b100x_x110,	// STX
-		8'b100x_1x10,	// TXA, TXS
-		8'b1110_xx00,	// INX, CPX
-		8'b1100_1010:	// DEX
+		16'b0000_0000_100x_x110,	// STX
+		16'b0000_0000_100x_1x10,	// TXA, TXS
+		16'b0000_0000_1110_xx00,	// INX, CPX
+		16'b0000_0000_1100_1010:	// DEX
 				src_reg <= SEL_X; 
 
-		8'b100x_x100,	// STY
-		8'b1001_1000,   // TYA
-		8'b1100_xx00,	// CPY
-		8'b1x00_1000:	// DEY, INY
+		16'b0000_0000_100x_x100,	// STY
+		16'b0000_0000_1001_1000,   // TYA
+		16'b0000_0000_1100_xx00,	// CPY
+		16'b0000_0000_1x00_1000:	// DEY, INY
 				src_reg <= SEL_Y;
 
 		default:	src_reg <= SEL_A;
@@ -1055,10 +995,10 @@ always @(posedge clk)
 
 always @(posedge clk) 
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'bxxx1_0001,	// INDY
-		8'b10x1_x110, 	// LDX/STX zpg/abs, Y
-		8'bxxxx_1001:	// abs, Y
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_xxx1_0001,	// INDY
+		16'b0000_0000_10x1_x110, 	// LDX/STX zpg/abs, Y
+		16'b0000_0000_xxxx_1001:	// abs, Y
 				index_y <= 1;
 
 		default:	index_y <= 0;
@@ -1067,9 +1007,9 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b100x_x1x0,	// STX, STY
-		8'b100x_xx01:	// STA
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_100x_x1x0,	// STX, STY
+		16'b0000_0000_100x_xx01:	// STA
 				store <= 1;
 
 		default:	store <= 0;
@@ -1078,9 +1018,9 @@ always @(posedge clk)
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b0xxx_x110,	// ASL, ROL, LSR, ROR
-		8'b11xx_x110:	// DEC/INC 
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_0xxx_x110,	// ASL, ROL, LSR, ROR
+		16'b0000_0000_11xx_x110:	// DEC/INC 
 				write_back <= 1;
 
 		default:	write_back <= 0;
@@ -1089,17 +1029,17 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b101x_xxxx:	// LDA, LDX, LDY
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_101x_xxxx:	// LDA, LDX, LDY
 				load_only <= 1;
 		default:	load_only <= 0;
 	endcase
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b111x_x110,	// INC 
-		8'b11x0_1000: 	// INX, INY
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_111x_x110,	// INC 
+		16'b0000_0000_11x0_1000: 	// INX, INY
 				inc <= 1;
 
 		default:	inc <= 0;
@@ -1107,29 +1047,18 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( (state == DECODE || state == BRK0) && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'bx11x_xx01:	// SBC, ADC
+     	casex( IR[15:0] ) 	   // decode all 16 bits
+		16'b0000_0000_011x_xx01:	// ADC
 				adc_sbc <= 1;
 
 		default:	adc_sbc <= 0;
 	endcase
 
-`ifdef BCD_ENABLED
-always @(posedge clk )
-     if( (state == DECODE || state == BRK0) && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b011x_xx01:	// ADC
-				adc_bcd <= D;
-
-		default:	adc_bcd <= 0;
-	endcase
-`endif
-
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b0xxx_x110,	// ASL, ROL, LSR, ROR (abs, absx, zpg, zpgx)
-		8'b0xxx_1010:	// ASL, ROL, LSR, ROR (acc)
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_0xxx_x110,	// ASL, ROL, LSR, ROR (abs, absx, zpg, zpgx)
+		16'b0000_0000_0xxx_1010:	// ASL, ROL, LSR, ROR (acc)
 				shift <= 1;
 
 		default:	shift <= 0;
@@ -1137,10 +1066,10 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b11x0_0x00,	// CPX, CPY (imm/zp)
-		8'b11x0_1100,	// CPX, CPY (abs)
-		8'b110x_xx01:	// CMP 
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm/zp)
+		16'b0000_0000_11x0_1100,	// CPX, CPY (abs)
+		16'b0000_0000_110x_xx01:	// CMP 
 				compare <= 1;
 
 		default:	compare <= 0;
@@ -1148,8 +1077,8 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b01xx_xx10:	// ROR, LSR
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_01xx_xx10:	// ROR, LSR
 				shift_right <= 1;
 
 		default:	shift_right <= 0; 
@@ -1157,9 +1086,9 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b0x1x_1010,	// ROL A, ROR A
-		8'b0x1x_x110:	// ROR, ROL 
+     	casex( IR[15:0] )  			// decode all 16 bits
+		16'b0000_0000_0x1x_1010,	// ROL A, ROR A
+		16'b0000_0000_0x1x_x110:	// ROR, ROL 
 				rotate <= 1;
 
 		default:	rotate <= 0; 
@@ -1167,34 +1096,34 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b00xx_xx10:	// ROL, ASL
+     	casex( IR[15:0] ) 			// decode all 16 bits
+		16'b0000_0000_00xx_xx10:	// ROL, ASL
 				op <= OP_ROL;
 
-		8'b0010_x100:   // BIT zp/abs	
+		16'b0000_0000_0010_x100:   // BIT zp/abs	
 				op <= OP_AND;
 
-		8'b01xx_xx10:	// ROR, LSR
+		16'b0000_0000_01xx_xx10:	// ROR, LSR
 				op <= OP_A;
 
-		8'b1000_1000,	// DEY
-		8'b1100_1010, 	// DEX 
-		8'b110x_x110,	// DEC 
-		8'b11xx_xx01,	// CMP, SBC
-		8'b11x0_0x00,	// CPX, CPY (imm, zpg)
-		8'b11x0_1100:	op <= OP_SUB;
+		16'b0000_0000_1000_1000,	// DEY
+		16'b0000_0000_1100_1010, 	// DEX 
+		16'b0000_0000_110x_x110,	// DEC 
+		16'b0000_0000_11xx_xx01,	// CMP, SBC
+		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm, zpg)
+		16'b0000_0000_11x0_1100:	op <= OP_SUB;
 
-		8'b010x_xx01,	// EOR
-		8'b00xx_xx01:	// ORA, AND
+		16'b0000_0000_010x_xx01,	// EOR
+		16'b0000_0000_00xx_xx01:	// ORA, AND
 				op <= { 2'b11, IR[6:5] };
-		
+
 		default: 	op <= OP_ADD; 
 	endcase
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[7:0] )  // just decode the low 8 bits
-		8'b0010_x100:   // BIT zp/abs	
+     	casex( IR[15:0] ) 			// decode all 16 bits
+		16'b0000_0000_0010_x100:   // BIT zp/abs	
 				bit <= 1;
 
 		default:	bit <= 0; 
@@ -1205,16 +1134,14 @@ always @(posedge clk )
  */
 always @(posedge clk )
      if( state == DECODE && RDY ) begin
-	php <= (IR[7:0] == 8'h08);
-	clc <= (IR[7:0] == 8'h18);
-	plp <= (IR[7:0] == 8'h28);
-	sec <= (IR[7:0] == 8'h38);
-	cli <= (IR[7:0] == 8'h58);
-	sei <= (IR[7:0] == 8'h78);
-	clv <= (IR[7:0] == 8'hb8);
-	cld <= (IR[7:0] == 8'hd8);
-	sed <= (IR[7:0] == 8'hf8);
-	brk <= (IR[7:0] == 8'h00);
+	php <= (IR[15:0] == 16'h0008);
+	clc <= (IR[15:0] == 16'h0018);
+	plp <= (IR[15:0] == 16'h0028);
+	sec <= (IR[15:0] == 16'h0038);
+	cli <= (IR[15:0] == 16'h0058);
+	sei <= (IR[15:0] == 16'h0078);
+	clv <= (IR[15:0] == 16'h00b8);
+	brk <= (IR[15:0] == 16'h0000);
      end
 
 always @(posedge clk)
@@ -1223,14 +1150,14 @@ always @(posedge clk)
 
 always @*
     case( cond_code )
-	    3'b000: cond_true = ~N;
-	    3'b001: cond_true = N;
-	    3'b010: cond_true = ~V;
-	    3'b011: cond_true = V;
-	    3'b100: cond_true = ~C;
-	    3'b101: cond_true = C;
-	    3'b110: cond_true = ~Z;
-	    3'b111: cond_true = Z;
+	    3'b000: cond_true <= ~N;
+	    3'b001: cond_true <= N;
+	    3'b010: cond_true <= ~V;
+	    3'b011: cond_true <= V;
+	    3'b100: cond_true <= ~C;
+	    3'b101: cond_true <= C;
+	    3'b110: cond_true <= ~Z;
+	    3'b111: cond_true <= Z;
     endcase
 
 
