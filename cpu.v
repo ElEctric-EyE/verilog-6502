@@ -1,9 +1,9 @@
-/*/*
+/*
  * verilog-6502 project: verilog model of 6502 and 65Org16 CPU core
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
- * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Tested OK.
+ * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B,C,D accumulators. Added full accumulator transfers.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -59,7 +59,7 @@ wire [dw-1:0] DIMUX;	//
 reg  [dw-1:0] IRHOLD;	// Hold for Instruction register 
 reg  IRHOLD_valid;	// Valid instruction in IRHOLD
 
-reg  [dw-1:0] AXYS[3:0]; 	// A, X, Y and S register file
+reg  [dw-1:0] DCBAXYS[6:0]; 	// A, X, Y and S register file
 
 reg  C = 0;		// carry flag (init at zero to avoid X's in ALU sim)
 reg  Z = 0;		// zero flag
@@ -83,21 +83,27 @@ wire [dw-1:0] PCL = PC[dw-1:0];
 
 reg NMI_edge = 0;	// captured NMI edge
 
-reg [1:0] regsel;			// Select A, X, Y or S register
-wire [dw-1:0] regfile = AXYS[regsel];	// Selected register output
+reg [2:0] regsel;			// Select A, X, Y or S register
+wire [dw-1:0] regfile = DCBAXYS[regsel];	// Selected register output
 
 parameter 
-	SEL_A    = 2'd0,
-	SEL_X	   = 2'd2,
-	SEL_Y    = 2'd3, 
-	SEL_S    = 2'd1;
+	SEL_A    = 3'd0,
+	SEL_X	   = 3'd2,
+	SEL_Y    = 3'd3, 
+	SEL_S    = 3'd1,
+	SEL_B		= 3'd4,
+	SEL_C		= 3'd5,
+	SEL_D		= 3'd6;
 	
 initial
 	begin
-		AXYS[SEL_A] = 0; //init accumulator
-		AXYS[SEL_X] = 0; //init x register
-		AXYS[SEL_Y] = 0; //init y register
-		AXYS[SEL_S] = 16'hffff; //init stack
+		DCBAXYS[SEL_D] = 0;
+		DCBAXYS[SEL_C] = 0;
+		DCBAXYS[SEL_B] = 0;
+		DCBAXYS[SEL_A] = 0; //init accumulator
+		DCBAXYS[SEL_X] = 0; //init x register
+		DCBAXYS[SEL_Y] = 0; //init y register
+		DCBAXYS[SEL_S] = 16'hffff; //init stack
 	end
 
 /*
@@ -105,12 +111,15 @@ initial
  */
 
 
-//`ifdef SIM
-wire [dw-1:0]   A = AXYS[SEL_A];	// Accumulator
-wire [dw-1:0]   X = AXYS[SEL_X];	// X register
-wire [dw-1:0]   Y = AXYS[SEL_Y];	// Y register 
-wire [dw-1:0]   S = AXYS[SEL_S];	// Stack pointer 
-//`endif
+`ifdef SIM
+wire [dw-1:0]   Dacc = DCBAXYS[SEL_D];	// Accumulator
+wire [dw-1:0]   Cacc = DCBAXYS[SEL_C];	// Accumulator
+wire [dw-1:0]   Bacc = DCBAXYS[SEL_B]; // Accumulator
+wire [dw-1:0]   Aacc = DCBAXYS[SEL_A];	// Accumulator
+wire [dw-1:0]   X = DCBAXYS[SEL_X];	// X register
+wire [dw-1:0]   Y = DCBAXYS[SEL_Y];	// Y register 
+wire [dw-1:0]   S = DCBAXYS[SEL_S];	// Stack pointer 
+`endif
 
 wire [dw-1:0] P = { N, V, 2'b0, I, Z, C };
 
@@ -127,8 +136,8 @@ reg [5:0] state;
 reg PC_inc;		// Increment PC
 reg [aw-1:0] PC_temp; 	// intermediate value of PC 
 
-reg [1:0] src_reg;	// source register index
-reg [1:0] dst_reg;	// destination register index
+reg [2:0] src_reg;	// source register index
+reg [2:0] dst_reg;	// destination register index
 
 reg index_y;		// if set, then Y is index reg rather than X 
 reg load_reg;		// loading a register (A, X, Y, S) in this instruction
@@ -237,7 +246,7 @@ parameter
     ZPX0   = 6'd48, // ZP, X   - fetch ZP, and send to ALU (+X)
     ZPX1   = 6'd49; // ZP, X   - load from memory
 
-//`ifdef SIM
+`ifdef SIM
 
 /*
  * easy to read names in simulator output
@@ -301,7 +310,7 @@ always @*
 //always @( PC )
 	//$display( "%t, PC:%04x A:%02x X:%02x Y:%02x S:%02x C:%d Z:%d V:%d N:%d", $time, PC, A, X, Y, S, C, Z, V, N );
 
-//`endif
+`endif
 
 
 
@@ -327,8 +336,8 @@ always @*
 
 	BRA2:		PC_temp = { ADD, PCL };
 
-	BRK2: 		PC_temp =      res ? 32'hfffffffc : 
-				  NMI_edge ? 32'hfffffffa : 32'hfffffffe; // width should be parameterised
+	BRK2: 		PC_temp =      res ? 32'hffff_fffc : 
+				  NMI_edge ? 32'hffff_fffa : 32'hffff_fffe; // width should be parameterised
 
 	default:	PC_temp = PC;
     endcase
@@ -505,7 +514,7 @@ always @*
  */
 always @(posedge clk)
     if( write_register & RDY )
-	AXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
+	DCBAXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
 
 /*
  * register select logic. This determines which of the A, X, Y or
@@ -840,23 +849,24 @@ always @(posedge clk or posedge reset)
 		16'b0000_0000_0100_1100:	state <= JMP0;
 		16'b0000_0000_0110_0000:	state <= RTS0;
 		16'b0000_0000_0110_1100:	state <= JMPI0;
-		16'b0000_0000_0x00_1000:	state <= PUSH0;
-		16'b0000_0000_0x10_1000:	state <= PULL0;
-		16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI 
+		16'b0000_00xx_0x00_1000:	state <= PUSH0;
+		16'b0000_00xx_0x10_1000:	state <= PULL0;
+		16'b0000_00xx_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
 		16'b0000_0000_1xx0_00x0:	state <= FETCH; // IMM
 		16'b0000_0000_1xx0_1100:	state <= ABS0;  // X/Y abs
-		16'b0000_0000_1xxx_1000:	state <= REG;   // DEY, TYA, ... 
-		16'b0000_0000_xxx0_0001:	state <= INDX0;
-		16'b0000_0000_xxx0_01xx:	state <= ZP0;
-		16'b0000_0000_xxx0_1001:	state <= FETCH; // IMM
-		16'b0000_0000_xxx0_1101:	state <= ABS0;  // even E column
-		16'b0000_0000_xxx0_1110:	state <= ABS0;  // even E column
+		16'b0000_00xx_1xxx_1000:	state <= REG;   // DEY, TYA, ...
+		16'b0000_00xx_xxx0_0001:	state <= INDX0;
+		16'b0000_00xx_xxx0_01xx:	state <= ZP0;
+		16'b0000_00xx_xxx0_1001:	state <= FETCH; // IMM
+		16'b0000_00xx_xxx0_1101:	state <= ABS0;  // even D column
+		16'b0000_00xx_xxx0_1110:	state <= ABS0;  // even E column
 		16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd 0 column
-		16'b0000_0000_xxx1_0001:	state <= INDY0; // odd 1 column
-		16'b0000_0000_xxx1_01xx:	state <= ZPX0;  // odd 4,5,6,7 columns
-		16'b0000_0000_xxx1_1001:	state <= ABSX0; // odd 9 column
-		16'b0000_0000_xxx1_11xx:	state <= ABSX0; // odd C, D, E, F columns
-		16'b0000_0000_xxxx_1010:	state <= REG;   // <shift> A, TXA, ...  NOP
+		16'b0000_00xx_xxx1_0001:	state <= INDY0; // odd 1 column
+		16'b0000_00xx_xxx1_01xx:	state <= ZPX0;  // odd 4,5,6,7 columns
+		16'b0000_00xx_xxx1_1001:	state <= ABSX0; // odd 9 column
+		16'b0000_00xx_xxx1_11xx:	state <= ABSX0; // odd C, D, E, F columns
+		16'b0000_00xx_xxxx_1010:	state <= REG;   // <shift> A, TXA, ...  NOP
+		16'b0000_00xx_10xx_1011:	state <= REG;	 // TBA,TCA,TDA,TAB,TCB,TDB,TAC,TBC,TDC,TAD,TBD,TCD
 	    endcase
 
         ZP0	: state <= write_back ? READ : FETCH;
@@ -940,14 +950,15 @@ always @(posedge clk)
 always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
-		16'b0000_0000_0xxx_xx01,	// ORA, AND, EOR, ADC
-	 	16'b0000_0000_1x1x_xx01,	// LDA, SBC
-		16'b0000_0000_xxxx_10x0,	// ASLA, ROLA, LSRA, RORA, T[XS][SX], DEX, NOP,
-		16'b0000_0000_xxx0_1000,   // PHP, PLP, PHA, PLA, DEY, TAY, INY, INX
-		16'b0000_0000_1001_1000,	// TYA
+		16'b0000_00xx_0xxx_xx01,	// ORA, AND, EOR, ADC
+	 	16'b0000_00xx_1x1x_xx01,	// LDA, SBC,
+		16'b0000_00xx_xxxx_10x0,	// ASLA, ROLA, LSRA, RORA, T[XS][SX], DEX, NOP,
+		16'b0000_00xx_xxx0_1000,   // PHP, PLP, PHA, PLA, DEY, TAY, INY, INX
+		16'b0000_00xx_1001_1000,	// TYA
 		16'b0000_0000_1011_x1x0,	// LDX/LDY
-		16'b0000_0000_1010_xxx0:	// LDA/LDX/LDY 
-				load_reg <= 1;
+		16'b0000_00xx_1010_xxx0,	// LDA, LDX, LDY, LDB
+		16'b0000_00xx_10xx_1011:	//
+					load_reg <= 1;
 
 		default:	load_reg <= 0;
 	endcase
@@ -957,19 +968,48 @@ always @(posedge clk)
      	casex( IR[15:0] )  			// decode all 16 bits
 		16'b0000_0000_1110_1000,	// INX
 		16'b0000_0000_1100_1010,	// DEX
-		16'b0000_0000_101x_xx10:	// LDX, TAX, TSX
+		16'b0000_00xx_101x_xx10:	// LDX, TAX, TBX, TSX
 				dst_reg <= SEL_X;
 
-		16'b0000_0000_0x00_1000,	// PHP, PHA
+		16'b0000_00xx_0x00_1000,	// PHP, PHA, PHB
 		16'b0000_0000_1001_1010:	// TXS
 				dst_reg <= SEL_S;
 
 		16'b0000_0000_1x00_1000,	// DEY, DEX
 		16'b0000_0000_101x_x100,	// LDY
-		16'b0000_0000_1010_x000: 	// LDY #imm, TAY
+		16'b0000_00xx_1010_x000: 	// LDY #imm, TAY, TBY
 				dst_reg <= SEL_Y;
-
-		default:	dst_reg <= SEL_A;
+				
+		16'b0000_0000_1011_1011,   // TDA 
+      16'b0000_0000_1010_1011,   // TCA  
+      16'b0000_0000_1001_1011,   // TBA
+		16'b0000_0000_1000_1011:	// TAA
+            dst_reg <= SEL_A; 
+             
+      16'b0000_0001_1011_1011,   // TDB  
+      16'b0000_0001_1010_1011,   // TCB 
+      16'b0000_0001_1001_1011,   // TBB
+		16'b0000_0001_1000_1011:	// TAB
+            dst_reg <= SEL_B; 
+             
+      16'b0000_0010_1011_1011,   // TDC 
+      16'b0000_0010_1010_1011,   // TCC 
+      16'b0000_0010_1001_1011,   // TBC
+		16'b0000_0010_1000_1011:	// TAC
+            dst_reg <= SEL_C; 
+             
+      16'b0000_0011_1011_1011,   // TDD  
+      16'b0000_0011_1010_1011,   // TCD  
+      16'b0000_0011_1001_1011,   // TBD
+		16'b0000_0011_1000_1011:	// TAD
+            dst_reg <= SEL_D;
+			
+		default: case( IR[9:8] ) 
+						2'b00: dst_reg <= SEL_A; 
+						2'b01: dst_reg <= SEL_B; 
+						2'b10: dst_reg <= SEL_C; 
+						2'b11: dst_reg <= SEL_D;
+					endcase        
 	endcase
 
 always @(posedge clk)
@@ -979,18 +1019,47 @@ always @(posedge clk)
 				src_reg <= SEL_S; 
 
 		16'b0000_0000_100x_x110,	// STX
-		16'b0000_0000_100x_1x10,	// TXA, TXS
+		16'b0000_00xx_100x_1x10,	// TXA, TXS
 		16'b0000_0000_1110_xx00,	// INX, CPX
 		16'b0000_0000_1100_1010:	// DEX
 				src_reg <= SEL_X; 
 
 		16'b0000_0000_100x_x100,	// STY
-		16'b0000_0000_1001_1000,   // TYA
+		16'b0000_00xx_1001_1000,   // TYA, TYB
 		16'b0000_0000_1100_xx00,	// CPY
 		16'b0000_0000_1x00_1000:	// DEY, INY
 				src_reg <= SEL_Y;
-
-		default:	src_reg <= SEL_A;
+		
+		16'b0000_0000_1000_1011,	// TAA
+		16'b0000_0001_1000_1011,   // TAB  
+      16'b0000_0010_1000_1011,   // TAC 
+      16'b0000_0011_1000_1011:   // TAD 
+            src_reg <= SEL_A; 
+      
+		16'b0000_0000_1001_1011,	// TBA
+      16'b0000_0001_1001_1011,   // TBB  
+      16'b0000_0010_1001_1011,   // TBC 
+      16'b0000_0011_1001_1011:   // TBD 
+            src_reg <= SEL_B; 
+             
+      16'b0000_0000_1010_1011,   // TCA 
+      16'b0000_0001_1010_1011,   // TCB
+		16'b0000_0010_1010_1011,	// TCC
+      16'b0000_0011_1010_1011:   // TCD 
+            src_reg <= SEL_C; 
+             
+      16'b0000_0000_1011_1011,   // TDA 
+      16'b0000_0001_1011_1011,   // TDB 
+      16'b0000_0010_1011_1011,   // TDC
+		16'b0000_0011_1011_1011:	// TDD
+            src_reg <= SEL_D;
+				
+		default: case( IR[9:8] ) 
+						2'b00: src_reg <= SEL_A; 
+						2'b01: src_reg <= SEL_B; 
+						2'b10: src_reg <= SEL_C; 
+						2'b11: src_reg <= SEL_D;
+					endcase		
 	endcase
 
 always @(posedge clk) 
@@ -998,7 +1067,7 @@ always @(posedge clk)
      	casex( IR[15:0] )  			// decode all 16 bits
 		16'b0000_0000_xxx1_0001,	// INDY
 		16'b0000_0000_10x1_x110, 	// LDX/STX zpg/abs, Y
-		16'b0000_0000_xxxx_1001:	// abs, Y
+		16'b0000_00xx_xxxx_1001:	// abs, Y
 				index_y <= 1;
 
 		default:	index_y <= 0;
@@ -1009,7 +1078,7 @@ always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
 		16'b0000_0000_100x_x1x0,	// STX, STY
-		16'b0000_0000_100x_xx01:	// STA
+		16'b0000_00xx_100x_xx01:	// STA, STB
 				store <= 1;
 
 		default:	store <= 0;
@@ -1019,8 +1088,8 @@ always @(posedge clk)
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
-		16'b0000_0000_0xxx_x110,	// ASL, ROL, LSR, ROR
-		16'b0000_0000_11xx_x110:	// DEC/INC 
+		16'b0000_00xx_0xxx_x110,	// ASL, ROL, LSR, ROR
+		16'b0000_00xx_11xx_x110:	// DEC/INC
 				write_back <= 1;
 
 		default:	write_back <= 0;
@@ -1030,7 +1099,7 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
-		16'b0000_0000_101x_xxxx:	// LDA, LDX, LDY
+		16'b0000_00xx_101x_xxxx:	// LDA, LDX, LDY
 				load_only <= 1;
 		default:	load_only <= 0;
 	endcase
@@ -1038,7 +1107,7 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
-		16'b0000_0000_111x_x110,	// INC 
+		16'b0000_00xx_111x_x110,	// INC
 		16'b0000_0000_11x0_1000: 	// INX, INY
 				inc <= 1;
 
@@ -1048,7 +1117,7 @@ always @(posedge clk )
 always @(posedge clk )
      if( (state == DECODE || state == BRK0) && RDY )
      	casex( IR[15:0] ) 	   // decode all 16 bits
-		16'b0000_0000_011x_xx01:	// ADC
+		16'b0000_00xx_011x_xx01:	// ADC
 				adc_sbc <= 1;
 
 		default:	adc_sbc <= 0;
@@ -1057,8 +1126,8 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
-		16'b0000_0000_0xxx_x110,	// ASL, ROL, LSR, ROR (abs, absx, zpg, zpgx)
-		16'b0000_0000_0xxx_1010:	// ASL, ROL, LSR, ROR (acc)
+		16'b0000_00xx_0xxx_x110,	// ASL, ROL, LSR, ROR (abs, absx, zpg, zpgx)
+		16'b0000_00xx_0xxx_1010:	// ASL, ROL, LSR, ROR (acc)
 				shift <= 1;
 
 		default:	shift <= 0;
@@ -1069,7 +1138,7 @@ always @(posedge clk )
      	casex( IR[15:0] )  			// decode all 16 bits
 		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm/zp)
 		16'b0000_0000_11x0_1100,	// CPX, CPY (abs)
-		16'b0000_0000_110x_xx01:	// CMP 
+		16'b0000_00xx_110x_xx01:	// CMP
 				compare <= 1;
 
 		default:	compare <= 0;
@@ -1078,7 +1147,7 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
-		16'b0000_0000_01xx_xx10:	// ROR, LSR
+		16'b0000_00xx_01xx_xx10:	// ROR, LSR
 				shift_right <= 1;
 
 		default:	shift_right <= 0; 
@@ -1087,8 +1156,8 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
-		16'b0000_0000_0x1x_1010,	// ROL A, ROR A
-		16'b0000_0000_0x1x_x110:	// ROR, ROL 
+		16'b0000_00xx_0x1x_1010,	// ROL A, ROR A
+		16'b0000_00xx_0x1x_x110:	// ROR, ROL
 				rotate <= 1;
 
 		default:	rotate <= 0; 
@@ -1097,24 +1166,24 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] ) 			// decode all 16 bits
-		16'b0000_0000_00xx_xx10:	// ROL, ASL
+		16'b0000_00xx_00xx_xx10:	// ROL, ASL
 				op <= OP_ROL;
 
-		16'b0000_0000_0010_x100:   // BIT zp/abs	
+		16'b0000_00xx_0010_x100:   // BIT zp/abs
 				op <= OP_AND;
 
-		16'b0000_0000_01xx_xx10:	// ROR, LSR
+		16'b0000_00xx_01xx_xx10:	// ROR, LSR
 				op <= OP_A;
 
 		16'b0000_0000_1000_1000,	// DEY
 		16'b0000_0000_1100_1010, 	// DEX 
-		16'b0000_0000_110x_x110,	// DEC 
-		16'b0000_0000_11xx_xx01,	// CMP, SBC
+		16'b0000_00xx_110x_x110,	// DEC
+		16'b0000_00xx_11xx_xx01,	// CMP, SBC
 		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm, zpg)
 		16'b0000_0000_11x0_1100:	op <= OP_SUB;
 
-		16'b0000_0000_010x_xx01,	// EOR
-		16'b0000_0000_00xx_xx01:	// ORA, AND
+		16'b0000_00xx_010x_xx01,	// EOR
+		16'b0000_00xx_00xx_xx01:	// ORA, AND
 				op <= { 2'b11, IR[6:5] };
 
 		default: 	op <= OP_ADD; 
@@ -1123,7 +1192,7 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] ) 			// decode all 16 bits
-		16'b0000_0000_0010_x100:   // BIT zp/abs	
+		16'b0000_00xx_0010_x100:   // BIT zp/abs
 				bit <= 1;
 
 		default:	bit <= 0; 
