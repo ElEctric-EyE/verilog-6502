@@ -88,12 +88,12 @@ wire [dw-1:0] regfile = DCBAXYS[regsel];	// Selected register output
 
 parameter 
 	SEL_A    = 3'd0,
-	SEL_X	   = 3'd2,
-	SEL_Y    = 3'd3, 
-	SEL_S    = 3'd1,
-	SEL_B		= 3'd4,
-	SEL_C		= 3'd5,
-	SEL_D		= 3'd6;
+	SEL_X	   = 3'd4,
+	SEL_Y    = 3'd5, 
+	SEL_S    = 3'd6,
+	SEL_B		= 3'd1,
+	SEL_C		= 3'd2,
+	SEL_D		= 3'd3;
 	
 initial
 	begin
@@ -977,7 +977,10 @@ always @(posedge clk)
 
 		16'b0000_0000_1x00_1000,	// DEY, DEX
 		16'b0000_0000_101x_x100,	// LDY
-		16'b0000_00xx_1010_x000: 	// LDY #imm, T[A..D]Y
+		16'b0000_0000_1010_x000, 	// LDY #imm, T[A..D]Y
+		16'b0000_0001_1010_1000,
+		16'b0000_0010_1010_1000,
+		16'b0000_0011_1010_1000:
 				dst_reg <= SEL_Y;
 				
 		16'b0000_00xx_1000_1011,	// T[A..D]A
@@ -1051,6 +1054,7 @@ always @(posedge clk)
 				src_reg <= SEL_Y;
 		
 		16'b0000_xx00_1000_1011,	// TA[A..D]
+		16'b0000_0000_1010_10x0,	// TAX, TAY
 		16'b0000_xx00_0xxx_0001,	// ADCAop[A..D], SBCAop[A..D], ANDAop[A..D], ORAAop[A..D], EORAop[A..D] store result in [A..D]
 		16'b0000_xx00_0xxx_0101,	//						|
 		16'b0000_xx00_0xxx_1001,	//						|
@@ -1062,6 +1066,7 @@ always @(posedge clk)
 				src_reg <= SEL_A; 
       
 		16'b0000_xx01_1000_1011,	// TB[A..D]
+		16'b0000_0001_1010_10x0,	// TBX, TBY
 		16'b0000_xx01_0xxx_0001,	// ADCBop[A..D], SBCBop[A..D], ANDBop[A..D], ORABop[A..D], EORBop[A..D] store result in [A..D]
 		16'b0000_xx01_0xxx_0101,	//						|
 		16'b0000_xx01_0xxx_1001,	//						|
@@ -1073,6 +1078,7 @@ always @(posedge clk)
             src_reg <= SEL_B; 
              
       16'b0000_xx10_1000_1011,   // TC[A..D]
+		16'b0000_0010_1010_10x0,	// TCX, TCY
 		16'b0000_xx10_0xxx_0001,	// ADCCop[A..D], SBCCop[A..D], ANDCop[A..D], ORACop[A..D], EORCop[A..D] store result in [A..D]
 		16'b0000_xx10_0xxx_0101,	//						|
 		16'b0000_xx10_0xxx_1001,	//						|
@@ -1084,6 +1090,7 @@ always @(posedge clk)
             src_reg <= SEL_C; 
              
       16'b0000_xx11_1000_1011,   // TD[A..D]
+		16'b0000_0011_1010_10x0,	// TDX, TDY
 		16'b0000_xx11_0xxx_0001,	// ADCDop[A..D], SBCDop[A..D], ANDDop[A..D], ORADop[A..D], EORDop[A..D] store result in [A..D]
 		16'b0000_xx11_0xxx_0101,	//						|
 		16'b0000_xx11_0xxx_1001,	//						|
