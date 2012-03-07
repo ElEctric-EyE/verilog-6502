@@ -866,7 +866,7 @@ always @(posedge clk or posedge reset)
 		16'b0000_xxxx_xxx1_1001:	state <= ABSX0; // odd 9 column
 		16'b0000_xxxx_xxx1_11xx:	state <= ABSX0; // odd C, D, E, F columns
 		16'b0000_00xx_xxxx_1010:	state <= REG;   // <shift> A, TXA, ...  NOP
-		16'b0000_xxxx_1000_1011:	state <= REG;	 // TBA,TCA,TDA,TAB,TCB,TDB,TAC,TBC,TDC,TAD,TBD,TCD
+		16'b0000_xxxx_10xx_1011:	state <= REG;	 // TBA,TCA,TDA,TAB,TCB,TDB,TAC,TBC,TDC,TAD,TBD,TCD,TXY,TYX
 	    endcase
 
         ZP0	: state <= write_back ? READ : FETCH;
@@ -957,7 +957,7 @@ always @(posedge clk)
 		16'b0000_00xx_1001_1000,	// TY[A..D]
 		16'b0000_0000_1011_x1x0,	// LDX/LDY
 		16'b0000_00xx_1010_xxx0,	// ASL[A..D], ROL[A..D]...
-		16'b0000_xxxx_1000_1011:	// TA[A..D], TB[A..D], TC[A..D], TD[A..D]
+		16'b0000_xxxx_10xx_1011:	// TA[A..D], TB[A..D], TC[A..D], TD[A..D], TXY, TYX
 					load_reg <= 1;
 
 		default:	load_reg <= 0;
@@ -968,7 +968,8 @@ always @(posedge clk)
      	casex( IR[15:0] )  			// decode all 16 bits
 		16'b0000_0000_1110_1000,	// INX
 		16'b0000_0000_1100_1010,	// DEX
-		16'b0000_00xx_101x_xx10:	// LDX, T[A..D]X, TSX
+		16'b0000_00xx_101x_xx10,	// LDX, T[A..D]X, TSX
+		16'b0000_0000_1010_1011:	// TYX
 				dst_reg <= SEL_X;
 
 		16'b0000_00xx_0x00_1000,	// PHP, PH[A..D]
@@ -977,7 +978,8 @@ always @(posedge clk)
 
 		16'b0000_0000_1x00_1000,	// DEY, DEX
 		16'b0000_0000_101x_x100,	// LDY
-		16'b0000_00xx_1010_x000: 	// LDY #imm, T[A..D]Y
+		16'b0000_00xx_1010_x000, 	// LDY #imm, T[A..D]Y
+		16'b0000_0000_1011_1011:	// TXY
 				dst_reg <= SEL_Y;
 				
 		16'b0000_00xx_1000_1011,	// T[A..D]A
@@ -1041,13 +1043,15 @@ always @(posedge clk)
 		16'b0000_0000_100x_x110,	// STX
 		16'b0000_00xx_100x_1x10,	// TX[A..D], TXS
 		16'b0000_0000_1110_xx00,	// INX, CPX
-		16'b0000_0000_1100_1010:	// DEX
+		16'b0000_0000_1100_1010,	// DEX
+		16'b0000_0000_1011_1011:	// TXY
 				src_reg <= SEL_X; 
 
 		16'b0000_0000_100x_x100,	// STY
 		16'b0000_00xx_1001_1000,   // TY[A..D], TYX
 		16'b0000_0000_1100_xx00,	// CPY
-		16'b0000_0000_1x00_1000:	// DEY, INY
+		16'b0000_0000_1x00_1000,	// DEY, INY
+		16'b0000_0000_1010_1011:	// TYX
 				src_reg <= SEL_Y;
 		
 		16'b0000_xx00_1000_1011,	// TA[A..D]
