@@ -5,7 +5,7 @@
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
- * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com>
+ * (C) 2011 Sam Gaskill, <sammy.gasket@gmail.com>   Added BigEd's barrel shifter logic on port EI
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -26,15 +26,17 @@
  * 1111   AI
  */
 
-module ALU( clk, op, right, AI, BI, CI, CO, OUT, V, N, RDY );
+module ALU( clk, op, right, rotate, AI, BI, CI, EI, CO, OUT, V, N, RDY );
 
 	parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
 
 	input clk;
 	input right;
+	input rotate;
 	input [3:0] op;		// operation
 	input [dw-1:0] AI;
 	input [dw-1:0] BI;
+	input [3:0] EI;		// variable shift in
 	input CI;
 	output [dw-1:0] OUT;
 	output CO;
@@ -67,6 +69,22 @@ always @*  begin
 	    logical = { AI[0], CI, AI[dw-1:1] };
 end
 
+// perform a long-distance shift
+wire [dw:0]tempshifted = right ? ({CI, AI, CI, AI} << (~EI)) >> (dw-1) :
+                                 ({CI, AI, CI, AI} << EI) >> (dw+1);
+											
+// need to mask off incoming bits in the case of a shift rather than a rotate
+wire [dw-1:0]highmask = ~((1 << EI)-1);
+wire [dw-1:0]lowmask = (2 << (~EI))-1;
+
+// rotate is easy, and left is just a masking.  Sign extension is a bit more work.
+wire [dw:0]tempmasked = rotate ? tempshifted
+                               : right ? (tempshifted & lowmask) | ({dw{AI[dw-1]}} & ~lowmask)
+				       : tempshifted & highmask;
+
+// bypass the 6502-style ALU if we're doing OP_ROL or OP_A
+wire shiftrotate = op[3] == 1'b1 & op[1:0] == 2'b11;
+
 // Add logic result to BI input. This only makes sense when logic = AI.
 // This stage can be done in 1 LUT per bit, using carry chain logic.
 always @* begin
@@ -88,8 +106,8 @@ always @(logical or temp_BI or adder_CI)
 // calculate the flags 
 always @(posedge clk)
     if( RDY ) begin
-	OUT <= temp[dw-1:0];
-	CO  <= temp[dw];
+	OUT <= shiftrotate ? tempmasked[dw-1:0] : temp[dw-1:0];
+	CO  <= (shiftrotate ? tempshifted[dw] : temp[dw]);
 	N   <= temp[dw-1];
 	V   <= AI[dw-1] ^ BI[dw-1] ^ temp[dw-1] ^ temp[dw]; 
     end
