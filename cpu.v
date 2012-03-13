@@ -142,7 +142,6 @@ reg [2:0] dst_reg;	// destination register index
 
 reg index_y;		// if set, then Y is index reg rather than X 
 reg load_reg;		// loading a register (A, B, C, D, X, Y, S) in this instruction
-reg load_E_reg;	//
 reg inc;		// increment
 reg write_back;		// set if memory is read/modified/written 
 reg load_only;		// LDA/LDX/LDY instruction
@@ -493,7 +492,6 @@ always @*
  */
 
 reg write_register;		// set when register file is written
-reg write_E_reg;
 	 
 always @*
     case( state )
@@ -509,11 +507,6 @@ always @*
        default: write_register = 0;
     endcase
 
-always @*
-    case( state )
-	DECODE: write_E_reg <= load_E_reg;
-       default: write_E_reg <= 0;
-    endcase
 /*
  * write to a register. Usually this is the (BCD corrected) output of the
  * ALU, but in case of the JSR0 we use the S register to temporarily store
@@ -961,23 +954,13 @@ always @(posedge clk)
          res <= 0;
 
 always @(posedge clk)
-     if( state == DECODE && RDY )
-     	casex( IR[15:0] )  
-		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (abs, absx, zpg, zpgx)
-		16'bxxxx_xxxx_0xxx_1010:	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (acc)
-            load_E_reg <= 1;
-
-		default:	load_E_reg <= 0;
-	endcase
-	
-always @(posedge clk)
 	  if( state == DECODE && RDY )
 	   casex( IR[15:0] )
 		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (abs, absx, zpg, zpgx)
 		16'bxxxx_xxxx_0xxx_1010:	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (acc)
 					E_Reg <= IR[15:12]+1;	
 				
-		default: E_Reg <=0;
+		default: E_Reg <=ADD;
 	endcase
 	
 always @(posedge clk)
