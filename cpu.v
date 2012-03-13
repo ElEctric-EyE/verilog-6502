@@ -3,7 +3,7 @@
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
- * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B,C,D accumulators with all addressing modes. Added full accumulator to accumulator transfer opcodes. Added 'transpositional store' opcodes to all addressing modes of ADC,SBC,AND,ORA,EOR,ASL,LSR,ROL,ROR,BIT. Added TXY, TYX opcodes. Added 2 cycle variable shift opcodes to ASL, ROL, LSR, ROR.
+ * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B,C,D accumulators. Added full accumulator to accumulator transfer opcodes.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -142,7 +142,7 @@ reg [2:0] dst_reg;	// destination register index
 
 reg index_y;		// if set, then Y is index reg rather than X 
 reg load_reg;		// loading a register (A, B, C, D, X, Y, S) in this instruction
-reg load_E_reg;	// loading variable shift,rotate reg
+reg load_E_reg;	//
 reg inc;		// increment
 reg write_back;		// set if memory is read/modified/written 
 reg load_only;		// LDA/LDX/LDY instruction
@@ -487,13 +487,13 @@ always @*
     endcase
 
 /*
- * register file, contains A, B, C, D, X, Y and S (stack pointer) registers. At each
+ * register file, contains A, X, Y and S (stack pointer) registers. At each
  * cycle only 1 of those registers needs to be accessed, so they combined
  * in a small memory, saving resources.
  */
 
 reg write_register;		// set when register file is written
-reg write_E_reg;			//
+reg write_E_reg;
 	 
 always @*
     case( state )
@@ -752,7 +752,7 @@ always @(posedge clk )
     end
 
 /*
- * Update Z, N flags when writing A, B, C, D, X, Y, Memory, or when doing compare
+ * Update Z, N flags when writing A, X, Y, Memory, or when doing compare
  */
 
 always @(posedge clk) 
@@ -877,6 +877,7 @@ always @(posedge clk or posedge reset)
 		16'b0000_xxxx_xxx1_11xx:	state <= ABSX0; // odd C, D, E, F columns
 		16'b0000_xxxx_xxxx_1010:	state <= REG;   // <shift> A, TXA, ...  NOP
 		16'b0000_xxxx_10xx_1011:	state <= REG;	 // TBA,TCA,TDA,TAB,TCB,TDB,TAC,TBC,TDC,TAD,TBD,TCD,TXY,TYX
+		
 	   16'bxxxx_xxxx_0xxx_x110:	state <= REG;	 // ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (abs, absx, zpg, zpgx)
 		16'bxxxx_xxxx_0xxx_1010:	state <= REG;	 // ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (acc)
 		endcase
@@ -983,7 +984,9 @@ always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
 		16'b0000_xxxx_0xxx_xx01,	// ORA[A..D], AND[A..D], EOR[A..D], ADC[A..D]
-	 	16'b0000_xxxx_1x1x_xx01,	// LDA[A..D], SBC[A..D],
+	 	16'b0000_xxxx_111x_xx01,	// SBC[A..D]
+		16'b0000_xxxx_101x_xxx1,	// LDA[A..D]
+		16'b0000_xxxx_100x_xx01,	// STA[A..D]
 		16'bxxxx_xxxx_xxxx_10x0,	// ASL[A..D], ROL[A..D], LSR[A..D], ROR[A..D], T[XS][SX], DEX, NOP,
 		16'b0000_00xx_xxx0_1000,	// PHP, PLP, PH[A..D], PL[A..D], DEY, T[A..D]Y, INY, INX
 		16'b0000_00xx_1001_1000,	// TY[A..D]
@@ -1016,8 +1019,11 @@ always @(posedge clk)
 				
 		16'b0000_00xx_1000_1011,	// T[A..D]A
 		16'b0000_00xx_1010_10x0,	// TXA, TYA
+		16'b0000_0000_101x_xxx1,	// LDA[A]
+		16'b0000_0000_100x_xx01,	// STA[A]
+		16'b0000_0000_110x_xx01,	// CMP[A]
 		16'b0000_00xx_0xxx_xx01,	// ADC[A..D]opA, SBC[A..D]opA, AND[A..D]opA, ORA[A..D]opA, EOR[A..D]opA store result in [A..D]
-		16'b0000_00xx_111x_xx01,	// SBC[A..D]opA
+		16'b0000_00xx_1x1x_xx01,	// SBC[A..D]opA
 		16'bxxxx_00xx_0xxx_x110,	// ASL[A..D]opA, ROL[A..D]opA, LSR[A..D]opA, ROR[A..D]opA (abs, absx, zpg, zpgx)
 		16'bxxxx_00xx_0xxx_1010,	// ASL[A..D]opA, ROL[A..D]opA, LSR[A..D]opA, ROR[A..D]opA (acc)
 		16'b0000_00xx_0010_x100:	// BIT[A..D]opA zp
@@ -1025,8 +1031,11 @@ always @(posedge clk)
              
 		16'b0000_01xx_1000_1011,	// T[A..D]B
 		16'b0000_01xx_1010_10x0,	// TXB, TYB
+		16'b0000_0101_101x_xxx1,	// LDA[B]
+		16'b0000_0101_100x_xx01,	// STA[B]
+		16'b0000_0101_110x_xx01,	// CMP[B]
 		16'b0000_01xx_0xxx_xx01,	// ADC[A..D]opB, SBC[A..D]opB, AND[A..D]opB, ORA[A..D]opB, EOR[A..D]opB store result in [A..D]
-		16'b0000_01xx_111x_xx01,	// SBC[A..D]opB
+		16'b0000_01xx_1x1x_xx01,	// SBC[A..D]opB
 		16'bxxxx_01xx_0xxx_x110,	// ASL[A..D]opB, ROL[A..D]opB, LSR[A..D]opB, ROR[A..D]opB (abs, absx, zpg, zpgx)
 		16'bxxxx_01xx_0xxx_1010,	// ASL[A..D]opB, ROL[A..D]opB, LSR[A..D]opB, ROR[A..D]opB (acc)
 		16'b0000_01xx_0010_x100:	// BIT[A..D]opB zp
@@ -1034,8 +1043,11 @@ always @(posedge clk)
 
 		16'b0000_10xx_1000_1011,	// T[A..D]C
 		16'b0000_10xx_1010_10x0,	// TXC, TYC
+		16'b0000_1010_101x_xxx1,	// LDA[C]
+		16'b0000_1010_100x_xx01,	// STA[C]
+		16'b0000_1010_110x_xx01,	// CMP[C]
 		16'b0000_10xx_0xxx_xx01,	// ADC[A..D]opC, SBC[A..D]opC, AND[A..D]opC, ORA[A..D]opC, EOR[A..D]opC store result in [A..D]
-		16'b0000_10xx_111x_xx01,	// SBC[A..D]opC
+		16'b0000_10xx_1x1x_xx01,	// SBC[A..D]opC
 		16'bxxxx_10xx_0xxx_x110,	// ASL[A..D]opC, ROL[A..D]opC, LSR[A..D]opC, ROR[A..D]opC (abs, absx, zpg, zpgx)
 		16'bxxxx_10xx_0xxx_1010,	// ASL[A..D]opC, ROL[A..D]opC, LSR[A..D]opC, ROR[A..D]opC (acc)
 		16'b0000_10xx_0010_x100:	// BIT[A..D]opC zp
@@ -1043,8 +1055,11 @@ always @(posedge clk)
              
 		16'b0000_11xx_1000_1011,	// T[A..D]D
 		16'b0000_11xx_1010_10x0,	// TXD, TYD
+		16'b0000_1111_101x_xxx1,	// LDA[D]
+		16'b0000_1111_100x_xx01,	// STA[D]
+		16'b0000_1111_110x_xx01,	// CMP[D]
 		16'b0000_11xx_0xxx_xx01,	// ADC[A..D]opD, SBC[A..D]opD, AND[A..D]opD, ORA[A..D]opD, EOR[A..D]opD store result in [A..D]
-		16'b0000_11xx_111x_xx01,	// SBC[A..D]opD
+		16'b0000_11xx_1x1x_xx01,	// SBC[A..D]opD
 		16'bxxxx_11xx_0xxx_x110,	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (abs, absx, zpg, zpgx)
 		16'bxxxx_11xx_0xxx_1010,	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (acc)
 		16'b0000_11xx_0010_x100:	// BIT[A..D]opD zp
@@ -1080,6 +1095,9 @@ always @(posedge clk)
 		
 		16'b0000_xx00_1000_1011,	// TA[A..D]
 		16'b0000_0000_1010_10x0,	// TAX, TAY
+		16'b0000_0000_101x_xxx1,	// LDA[A]
+		16'b0000_0000_100x_xx01,	// STA[A]
+		16'b0000_0000_110x_xx01,	// CMP[A]
 		16'b0000_xx00_0xxx_xx01,	// ADCAop[A..D], SBCAop[A..D], ANDAop[A..D], ORAAop[A..D], EORAop[A..D] store result in [A..D]
 		16'b0000_xx00_111x_xx01,	// SBCAop[A..D]
 		16'bxxxx_xx00_0xxx_x110,	// ASLAop[A..D], ROLAop[A..D], LSRAop[A..D], RORAop[A..D] (abs, absx, zpg, zpgx)
@@ -1089,6 +1107,9 @@ always @(posedge clk)
       
 		16'b0000_xx01_1000_1011,	// TB[A..D]
 		16'b0000_0001_1010_10x0,	// TBX, TBY
+		16'b0000_0101_101x_xxx1,	// LDA[B]
+		16'b0000_0101_100x_xx01,	// STA[B]
+		16'b0000_0101_110x_xx01,	// CMP[B]
 		16'b0000_xx01_0xxx_xx01,	// ADCBop[A..D], SBCBop[A..D], ANDBop[A..D], ORABop[A..D], EORBop[A..D] store result in [A..D]
 		16'b0000_xx01_111x_xx01,	// SBCBop[A..D]
 		16'bxxxx_xx01_0xxx_x110,	// ASLBop[A..D], ROLBop[A..D], LSRBop[A..D], RORBop[A..D] (abs, absx, zpg, zpgx)
@@ -1098,6 +1119,9 @@ always @(posedge clk)
              
 		16'b0000_xx10_1000_1011,	// TC[A..D]
 		16'b0000_0010_1010_10x0,	// TCX, TCY
+		16'b0000_1010_101x_xxx1,	// LDA[C]
+		16'b0000_1010_100x_xx01,	// STA[C]
+		16'b0000_1010_110x_xx01,	// CMP[C]
 		16'b0000_xx10_0xxx_xx01,	// ADCCop[A..D], SBCCop[A..D], ANDCop[A..D], ORACop[A..D], EORCop[A..D] store result in [A..D]
 		16'b0000_xx10_111x_xx01,	// SBCCop[A..D]
 		16'bxxxx_xx10_0xxx_x110,	// ASLCop[A..D], ROLCop[A..D], LSRCop[A..D], RORCop[A..D] (abs, absx, zpg, zpgx)
@@ -1107,6 +1131,9 @@ always @(posedge clk)
              
 		16'b0000_xx11_1000_1011,	// TD[A..D]
 		16'b0000_0011_1010_10x0,	// TDX, TDY
+		16'b0000_1111_101x_xxx1,	// LDA[D]
+		16'b0000_1111_100x_xx01,	// STA[D]
+		16'b0000_1111_110x_xx01,	// CMP[D]
 		16'b0000_xx11_0xxx_xx01,	// ADCDop[A..D], SBCDop[A..D], ANDDop[A..D], ORADop[A..D], EORDop[A..D] store result in [A..D]
 		16'b0000_xx11_111x_xx01,	// SBCDop[A..D]
 		16'bxxxx_xx11_0xxx_x110,	// ASLDop[A..D], ROLDop[A..D], LSRDop[A..D], RORDop[A..D] (abs, absx, zpg, zpgx)
@@ -1138,7 +1165,7 @@ always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
 		16'b0000_0000_100x_x1x0,	// STX, STY
-		16'b0000_00xx_100x_xx01:	// ST[A..D]
+		16'b0000_xxxx_100x_xx01:	// STA[A..D]
 				store <= 1;
 
 		default:	store <= 0;
@@ -1159,7 +1186,7 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			// decode all 16 bits
-		16'b0000_00xx_101x_xxxx:	// LD[A..D], LDX, LDY
+		16'b0000_xxxx_101x_xxxx:	// LDA[A..D], LDX, LDY
 				load_only <= 1;
 		default:	load_only <= 0;
 	endcase
@@ -1238,7 +1265,7 @@ always @(posedge clk )
 		16'b0000_0000_1000_1000,	// DEY
 		16'b0000_0000_1100_1010, 	// DEX 
 		16'b0000_0000_110x_x110,	// DEC
-		16'b0000_00xx_11xx_xx01,	// CMP[A..D], SBC[A..D]
+		16'b0000_xxxx_11xx_xx01,	// CMP[A..D], SBC[A..D]
 		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm, zpg)
 		16'b0000_0000_11x0_1100:	// CPX, CPY abs
 				op <= OP_SUB;
