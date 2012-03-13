@@ -3,7 +3,7 @@
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
- * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B,C,D accumulators. Added full accumulator to accumulator transfer opcodes.
+ * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B,C,D accumulators. Added full accumulator to accumulator transfer opcodes. Added BigEd's 16-bit barrel shifter logic.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -844,7 +844,10 @@ always @(posedge clk or posedge reset)
         state <= BRK0;
     else if( RDY ) case( state )
 	DECODE  : 
-	    casex ( IR[15:0] )  							 // decode all 16 bits
+	    casex ( IR[15:0] )  							 // decode all 16 bits: IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+																 //							IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+																 //							IR[11:10]: src_reg. 
+																 //							IR[9:8]: dst_reg.
 		16'b0000_0000_0000_0000:	state <= BRK0;
 		16'b0000_0000_0010_0000:	state <= JSR0;
 		16'b0000_0000_0010_1100:	state <= ABS0;  // BIT abs
@@ -955,17 +958,23 @@ always @(posedge clk)
 
 always @(posedge clk)
 	  if( state == DECODE && RDY )
-	   casex( IR[15:0] )
-		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (abs, absx, zpg, zpgx)
-		16'bxxxx_xxxx_0xxx_1010:	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (acc)
-					E_Reg <= IR[15:12]+1;	
+	   casex( IR[15:0] )				// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//							 	IR[11:10]: src_reg. 
+											//							 	IR[9:8]: dst_reg.
+		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (abs, absx, zpg, zpgx)
+		16'bxxxx_xxxx_0xxx_1010:	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (acc)
+					E_Reg <= IR[15:12]+1;	//note: no shift will occur when 'illegal' opcodes IR[15:12] = 1111. A +1 ensures compatibility with original NMOS6502 <shift,rotate> opcodes.
 				
-		default: E_Reg <=ADD;
+		default: E_Reg <=ADD;		
 	endcase
 	
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'b0000_xxxx_0xxx_xx01,	// ORA[A..D], AND[A..D], EOR[A..D], ADC[A..D]
 	 	16'b0000_xxxx_111x_xx01,	// SBC[A..D]
 		16'b0000_xxxx_101x_xxx1,	// LDA[A..D]
@@ -983,7 +992,10 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'b0000_0000_1110_1000,	// INX
 		16'b0000_0000_1100_1010,	// DEX
 		16'b0000_00xx_101x_xx10,	// LDX, T[A..D]X, TSX
@@ -1058,7 +1070,10 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] ) 		  	// decode all 16 bits
+     	casex( IR[15:0] ) 		  	// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'b0000_0000_1011_1010:	// TSX 
 				src_reg <= SEL_S; 
 
@@ -1134,7 +1149,10 @@ always @(posedge clk)
 
 always @(posedge clk) 
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'b0000_xxxx_xxx1_0001,	// INDY
 		16'b0000_0000_10x1_x110, 	// LDX/STX zpg/abs, Y
 		16'b0000_xxxx_xxxx_1001:	// abs, Y
@@ -1146,7 +1164,10 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'b0000_0000_100x_x1x0,	// STX, STY
 		16'b0000_xxxx_100x_xx01:	// STA[A..D]
 				store <= 1;
@@ -1157,7 +1178,10 @@ always @(posedge clk)
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D]
 		16'b0000_0000_11xx_x110:	// DEC, INC
 				write_back <= 1;
@@ -1168,7 +1192,10 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'b0000_xxxx_101x_xxxx:	// LDA[A..D], LDX, LDY
 				load_only <= 1;
 		default:	load_only <= 0;
@@ -1176,7 +1203,10 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'b0000_0000_111x_x110,	// INC
 		16'b0000_0000_11x0_1000: 	// INX, INY
 				inc <= 1;
@@ -1186,7 +1216,10 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( (state == DECODE || state == BRK0) && RDY )
-     	casex( IR[15:0] ) 	   // decode all 16 bits
+     	casex( IR[15:0] ) 	   	// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'b0000_xxxx_011x_xx01:	// ADC[A..D]op[A..D]
 				adc_sbc <= 1;
 
@@ -1195,7 +1228,10 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_xxxx_0xxx_1010:	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (acc)
 				shift <= 1;
@@ -1205,10 +1241,13 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm/zp)
 		16'b0000_0000_11x0_1100,	// CPX, CPY (abs)
-		16'b0000_00xx_110x_xx01:	// CMP[A..D]
+		16'b0000_xxxx_110x_xx01:	// CMP[A..D]
 				compare <= 1;
 
 		default:	compare <= 0;
@@ -1216,7 +1255,10 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'bxxxx_xxxx_01xx_xx10:	// ROR[A..D]op[A..D], LSR[A..D]op[A..D]
 				shift_right <= 1;
 
@@ -1225,7 +1267,10 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits
+     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'bxxxx_xxxx_0x1x_1010,	// ROL[A..D], ROR[A..D]
 		16'bxxxx_xxxx_0x1x_x110:	// ROR[A..D], ROL[A..D]
 				rotate <= 1;
@@ -1235,7 +1280,10 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] ) 			// decode all 16 bits
+     	casex( IR[15:0] ) 			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'bxxxx_xxxx_00xx_xx10:	// ROL[A..D], ASL[A..D]
 				op <= OP_ROL;
 
@@ -1262,7 +1310,10 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] ) 			// decode all 16 bits
+     	casex( IR[15:0] ) 			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
+											//								IR[11:10]: src_reg. 
+											//								IR[9:8]: dst_reg.
 		16'b0000_xxxx_0010_x100:   // BIT[A..D] zp/abs
 				bit <= 1;
 
