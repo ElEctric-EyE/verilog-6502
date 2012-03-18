@@ -59,7 +59,7 @@ wire [dw-1:0] DIMUX;	//
 reg  [dw-1:0] IRHOLD;	// Hold for Instruction register 
 reg  IRHOLD_valid;	// Valid instruction in IRHOLD
 
-reg  [dw-1:0] DCBAXYS[6:0]; 	// A, B, C, D, X, Y and S register file
+reg  [dw-1:0] PAXYS[18:0]; 	// A thru P, X, Y and S register file
 
 reg  C = 0;		// carry flag (init at zero to avoid X's in ALU sim)
 reg  Z = 0;		// zero flag
@@ -84,27 +84,51 @@ wire [dw-1:0] PCL = PC[dw-1:0];
 
 reg NMI_edge = 0;	// captured NMI edge
 
-reg [2:0] regsel;			// Select A, B, C, D, X, Y or S register
-wire [dw-1:0] regfile = DCBAXYS[regsel];	// Selected register output
+reg [4:0] regsel;			// Select A thru P, X, Y or S register
+wire [dw-1:0] regfile = PAXYS[regsel];	// Selected register output
 
 parameter 
-	SEL_A    = 3'd0,
-	SEL_X	   = 3'd4,
-	SEL_Y    = 3'd5, 
-	SEL_S    = 3'd6,
-	SEL_B		= 3'd1,
-	SEL_C		= 3'd2,
-	SEL_D		= 3'd3;
+	SEL_A    = 5'd0,
+	SEL_B		= 5'd1,
+	SEL_C		= 5'd2,
+	SEL_D		= 5'd3,
+	SEL_E		= 5'd4,
+	SEL_F		= 5'd5,
+	SEL_G		= 5'd6,
+	SEL_H		= 5'd7,
+	SEL_I		= 5'd8,
+	SEL_J		= 5'd9,
+	SEL_K		= 5'd10,
+	SEL_L		= 5'd11,
+	SEL_M		= 5'd12,
+	SEL_N		= 5'd13,
+	SEL_O		= 5'd14,
+	SEL_P		= 5'd15,
+	SEL_X	   = 5'd16,
+	SEL_Y    = 5'd17,
+	SEL_S    = 5'd18;
 	
 initial
 	begin
-		DCBAXYS[SEL_D] = 0;
-		DCBAXYS[SEL_C] = 0;
-		DCBAXYS[SEL_B] = 0;
-		DCBAXYS[SEL_A] = 0; //init accumulator
-		DCBAXYS[SEL_X] = 0; //init x register
-		DCBAXYS[SEL_Y] = 0; //init y register
-		DCBAXYS[SEL_S] = 16'hffff; //init stack
+		PAXYS[SEL_P] = 0;
+		PAXYS[SEL_O] = 0;
+		PAXYS[SEL_N] = 0;
+		PAXYS[SEL_M] = 0;
+		PAXYS[SEL_L] = 0;
+		PAXYS[SEL_K] = 0;
+		PAXYS[SEL_J] = 0;
+		PAXYS[SEL_I] = 0;
+		PAXYS[SEL_H] = 0;
+		PAXYS[SEL_G] = 0;
+		PAXYS[SEL_F] = 0;
+		PAXYS[SEL_E] = 0;
+		PAXYS[SEL_D] = 0;
+		PAXYS[SEL_C] = 0;
+		PAXYS[SEL_B] = 0;
+		PAXYS[SEL_A] = 0;
+		PAXYS[SEL_X] = 0;
+		PAXYS[SEL_Y] = 0;
+		PAXYS[SEL_S] = 16'hffff; //init stack
 	end
 
 /*
@@ -113,13 +137,25 @@ initial
 
 
 //`ifdef SIM
-wire [dw-1:0]   Dacc = DCBAXYS[SEL_D];	// Accumulator
-wire [dw-1:0]   Cacc = DCBAXYS[SEL_C];	// Accumulator
-wire [dw-1:0]   Bacc = DCBAXYS[SEL_B]; // Accumulator
-wire [dw-1:0]   Aacc = DCBAXYS[SEL_A];	// Accumulator
-wire [dw-1:0]   X = DCBAXYS[SEL_X];	// X register
-wire [dw-1:0]   Y = DCBAXYS[SEL_Y];	// Y register 
-wire [dw-1:0]   S = DCBAXYS[SEL_S];	// Stack pointer 
+wire [dw-1:0]   Pacc = PAXYS[SEL_P];	// Accumulator
+wire [dw-1:0]   Oacc = PAXYS[SEL_O];	// Accumulator
+wire [dw-1:0]   Nacc = PAXYS[SEL_N];	// Accumulator
+wire [dw-1:0]   Macc = PAXYS[SEL_M];	// Accumulator
+wire [dw-1:0]   Lacc = PAXYS[SEL_L];	// Accumulator
+wire [dw-1:0]   Kacc = PAXYS[SEL_K];	// Accumulator
+wire [dw-1:0]   Jacc = PAXYS[SEL_J];	// Accumulator
+wire [dw-1:0]   Iacc = PAXYS[SEL_I];	// Accumulator
+wire [dw-1:0]   Hacc = PAXYS[SEL_H];	// Accumulator
+wire [dw-1:0]   Gacc = PAXYS[SEL_G];	// Accumulator
+wire [dw-1:0]   Facc = PAXYS[SEL_F];	// Accumulator
+wire [dw-1:0]   Eacc = PAXYS[SEL_E];	// Accumulator
+wire [dw-1:0]   Dacc = PAXYS[SEL_D];	// Accumulator
+wire [dw-1:0]   Cacc = PAXYS[SEL_C];	// Accumulator
+wire [dw-1:0]   Bacc = PAXYS[SEL_B];	// Accumulator
+wire [dw-1:0]   Aacc = PAXYS[SEL_A];	// Accumulator
+wire [dw-1:0]   X = PAXYS[SEL_X];	// X register
+wire [dw-1:0]   Y = PAXYS[SEL_Y];	// Y register 
+wire [dw-1:0]   S = PAXYS[SEL_S];	// Stack pointer
 //`endif
 
 wire [dw-1:0] P = { N, V, 2'b0, I, Z, C };
@@ -137,8 +173,8 @@ reg [5:0] state;
 reg PC_inc;		// Increment PC
 reg [aw-1:0] PC_temp; 	// intermediate value of PC 
 
-reg [2:0] src_reg;	// source register index
-reg [2:0] dst_reg;	// destination register index
+reg [4:0] src_reg;	// source register index
+reg [4:0] dst_reg;	// destination register index
 
 reg index_y;		// if set, then Y is index reg rather than X 
 reg load_reg;		// loading a register (A, B, C, D, X, Y, S) in this instruction
@@ -515,7 +551,7 @@ always @*
  */
 always @(posedge clk)
     if( write_register & RDY )
-	DCBAXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
+	PAXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
 
 /*
  * register select logic. This determines which of the A, B, C, D, X, Y or
@@ -563,11 +599,10 @@ ALU #(.dw(dw)) _ALU(
 	 .CO(CO),
 	 .OUT(ADD),
 	 .V(AV),
+	 .Z(AZ),
 	 .N(AN),
 	 .RDY(RDY) );
 	 
-assign AZ = ~|ADD; 	//calculate the Z flag inside the cpu.v module
-
 /*
  * Select current ALU operation
  */
@@ -846,36 +881,36 @@ always @(posedge clk or posedge reset)
 	DECODE  : 
 	    casex ( IR[15:0] )  							 // decode all 16 bits: IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
 																 //							IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-																 //							IR[11:10]: src_reg. 
-																 //							IR[9:8]: dst_reg.
+																 //							IR[15:14,11:10]: src_reg.
+																 //							IR[13:12,9:8]: dst_reg.
 		16'b0000_0000_0000_0000:	state <= BRK0;
 		16'b0000_0000_0010_0000:	state <= JSR0;
-		16'b0000_0000_0010_1100:	state <= ABS0;  // BIT abs
+		16'bxxxx_xxxx_0010_1100:	state <= ABS0;  // BIT abs
 		16'b0000_0000_0100_0000:	state <= RTI0;  // 
 		16'b0000_0000_0100_1100:	state <= JMP0;
 		16'b0000_0000_0110_0000:	state <= RTS0;
 		16'b0000_0000_0110_1100:	state <= JMPI0;
-		16'b0000_00xx_0x00_1000:	state <= PUSH0;
-		16'b0000_00xx_0x10_1000:	state <= PULL0;
-		16'b0000_00xx_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
+		16'b00xx_00xx_0x00_1000:	state <= PUSH0; // PHA[A..P], PHP
+		16'b00xx_00xx_0x10_1000:	state <= PULL0; // PLA[A..P], PLP
+		16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
 		16'b0000_0000_1xx0_00x0:	state <= FETCH; // IMM
 		16'b0000_0000_1xx0_1100:	state <= ABS0;  // X/Y abs
-		16'b0000_00xx_1xxx_1000:	state <= REG;   // DEY, TYA, ...
-		16'b0000_xxxx_xxx0_0001:	state <= INDX0; // even 1 column
-		16'b0000_xxxx_xxx0_01xx:	state <= ZP0;
-		16'b0000_xxxx_xxx0_1001:	state <= FETCH; // IMM, even 9 column
-		16'b0000_xxxx_xxx0_1101:	state <= ABS0;  // even D column
-		16'b0000_xxxx_xxx0_1110:	state <= ABS0;  // even E column
+		16'b00xx_00xx_1xxx_1000:	state <= REG;   // DEY, TYA, TAY, INY, INX
+		16'bxxxx_xxxx_xxx0_0001:	state <= INDX0; // even 1 column (zp,x)
+		16'bxxxx_xxxx_xxx0_01xx:	state <= ZP0;
+		16'bxxxx_xxxx_xxx0_1001:	state <= FETCH; // IMM, even 9 column
+		16'bxxxx_xxxx_xxx0_1101:	state <= ABS0;  // even D column
+		16'bxxxx_xxxx_xxx0_1110:	state <= ABS0;  // even E column
 		16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd 0 column
-		16'b0000_xxxx_xxx1_0001:	state <= INDY0; // odd 1 column
-		16'b0000_xxxx_xxx1_01xx:	state <= ZPX0;  // odd 4,5,6,7 columns
-		16'b0000_xxxx_xxx1_1001:	state <= ABSX0; // odd 9 column
-		16'b0000_xxxx_xxx1_11xx:	state <= ABSX0; // odd C, D, E, F columns
-		16'b0000_xxxx_xxxx_1010:	state <= REG;   // <shift> A, TXA, ...  NOP
-		16'b0000_xxxx_10xx_1011:	state <= REG;	 // TBA,TCA,TDA,TAB,TCB,TDB,TAC,TBC,TDC,TAD,TBD,TCD,TXY,TYX
+		16'bxxxx_xxxx_xxx1_0001:	state <= INDY0; // odd 1 column
+		16'bxxxx_xxxx_xxx1_01xx:	state <= ZPX0;  // odd 4,5,6,7 columns
+		16'bxxxx_xxxx_xxx1_1001:	state <= ABSX0; // odd 9 column
+		16'bxxxx_xxxx_xxx1_11xx:	state <= ABSX0; // odd C, D, E, F columns
+		16'bxxxx_xxxx_xxxx_1010:	state <= REG;   // <shift> A, TXA[A..P], ...  NOP
+		16'bxxxx_xxxx_10xx_1011:	state <= REG;	 // TA[A..P][A..P],TXY,TYX
 		
-	   16'bxxxx_xxxx_0xxx_x110:	state <= REG;	 // ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (abs, absx, zpg, zpgx)
-		16'bxxxx_xxxx_0xxx_1010:	state <= REG;	 // ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (acc)
+	   16'bxxxx_xxxx_0xxx_x110:	state <= REG;	 // ASLA[A..D]opD, ROLA[A..D]opD, LSRA[A..D]opD, RORA[A..D]opD (abs, absx, zpg, zpgx)
+		16'bxxxx_xxxx_0xxx_1010:	state <= REG;	 // ASLA[A..D]opD, ROLA[A..D]opD, LSRA[A..D]opD, RORA[A..D]opD (acc)
 		endcase
 
         ZP0	: state <= write_back ? READ : FETCH;
@@ -958,33 +993,27 @@ always @(posedge clk)
 
 always @(posedge clk)
 	  if( state == DECODE && RDY )
-	   casex( IR[15:0] )				// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//							 	IR[11:10]: src_reg. 
-											//							 	IR[9:8]: dst_reg.
+	   casex( IR[15:0] )				
 		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_xxxx_0xxx_1010:	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (acc)
-					E_Reg <= IR[15:12]+1;	//note: no shift will occur when 'illegal' opcodes IR[15:12] = 1111. A +1 ensures compatibility with original NMOS6502 <shift,rotate> opcodes.
+					E_Reg <= IR[15:12]+1;	//note: no shift will occur when 'illegal' <shift, rotate> opcodes IR[15:12] = 1111. A +1 ensures compatibility with original NMOS6502 <shift,rotate> opcodes.
 				
 		default: E_Reg <=ADD;		
 	endcase
 	
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
-		16'b0000_xxxx_0xxx_xx01,	// ORA[A..D], AND[A..D], EOR[A..D], ADC[A..D]
-	 	16'b0000_xxxx_111x_xx01,	// SBC[A..D]
-		16'b0000_xxxx_101x_xxx1,	// LDA[A..D]
-		16'b0000_xxxx_100x_xx01,	// STA[A..D]
-		16'bxxxx_xxxx_xxxx_10x0,	// ASL[A..D], ROL[A..D], LSR[A..D], ROR[A..D], T[XS][SX], DEX, NOP,
-		16'b0000_00xx_xxx0_1000,	// PHP, PLP, PH[A..D], PL[A..D], DEY, T[A..D]Y, INY, INX
-		16'b0000_00xx_1001_1000,	// TY[A..D]
+     	casex( IR[15:0] )  			
+		16'bxxxx_xxxx_0xxx_xx01,	// ORA[A..D], AND[A..D], EOR[A..D], ADC[A..D]
+	 	16'bxxxx_xxxx_111x_xx01,	// SBC[A..D]
+		16'b00xx_00xx_101x_xxx1,	// LDA[A..D]
+		16'bxx00_xx00_100x_xx01,	// STA[A..D]
+		16'bxxxx_xxxx_xxxx_1010,	// ASL[A..D], ROL[A..D], LSR[A..D], ROR[A..D], TX[A..P], T[XS][SX], DEX, NOP,
+		16'b00xx_00xx_xxx0_1000,	// PHP, PLP, PH[A..D], PL[A..D], DEY, T[A..D]Y, INY, INX
+		16'b00xx_00xx_1001_1000,	// TY[A..D]
 		16'b0000_0000_1011_x1x0,	// LDX/LDY
 		16'bxxxx_xxxx_1010_xxx0,	// ASL[A..D], ROL[A..D]...
-		16'b0000_xxxx_10xx_1011:	// TA[A..D], TB[A..D], TC[A..D], TD[A..D], TXY, TYX
+		16'bxxxx_xxxx_10xx_1011:	// TA[A..D], TB[A..D], TC[A..D], TD[A..D], TXY, TYX
 					load_reg <= 1;
 
 		default:	load_reg <= 0;
@@ -992,170 +1021,339 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
+     	casex( IR[15:0] )  			
 		16'b0000_0000_1110_1000,	// INX
 		16'b0000_0000_1100_1010,	// DEX
-		16'b0000_00xx_101x_xx10,	// LDX, T[A..D]X, TSX
+		16'b00xx_00xx_101x_xx10,	// LDX, T[A..P]X, TSX
 		16'b0000_0000_1010_1011:	// TYX
 				dst_reg <= SEL_X;
 
-		16'b0000_00xx_0x00_1000,	// PHP, PH[A..D]
+		16'b00xx_00xx_0x00_1000,	// PHP, PH[A..P]
 		16'b0000_0000_1001_1010:	// TXS
 				dst_reg <= SEL_S;
 
 		16'b0000_0000_1x00_1000,	// DEY, DEX
 		16'b0000_0000_101x_x100,	// LDY
-		16'b0000_00xx_1010_x000, 	// LDY #imm, T[A..D]Y
+		16'b00xx_00xx_1010_x000, 	// LDY #imm, T[A..P]Y
 		16'b0000_0000_1011_1011:	// TXY
 				dst_reg <= SEL_Y;
-				
-		16'b0000_00xx_1000_1011,	// T[A..D]A
-		16'b0000_00xx_1010_10x0,	// TXA, TYA
+		
+		16'bxx00_xx00_1000_1011,	// TA[A..D]
+		16'bxx00_xx00_1010_10x0,	// TAX, TAY
 		16'b0000_0000_101x_xxx1,	// LDA[A]
-		16'b0000_0000_100x_xx01,	// STA[A]
-		16'b0000_0000_110x_xx01,	// CMP[A]
-		16'b0000_00xx_0xxx_xx01,	// ADC[A..D]opA, SBC[A..D]opA, AND[A..D]opA, ORA[A..D]opA, EOR[A..D]opA store result in [A..D]
-		16'b0000_00xx_1x1x_xx01,	// SBC[A..D]opA
-		16'bxxxx_00xx_0xxx_x110,	// ASL[A..D]opA, ROL[A..D]opA, LSR[A..D]opA, ROR[A..D]opA (abs, absx, zpg, zpgx)
-		16'bxxxx_00xx_0xxx_1010,	// ASL[A..D]opA, ROL[A..D]opA, LSR[A..D]opA, ROR[A..D]opA (acc)
-		16'b0000_00xx_0010_x100:	// BIT[A..D]opA zp
-            dst_reg <= SEL_A; 
-             
-		16'b0000_01xx_1000_1011,	// T[A..D]B
-		16'b0000_01xx_1010_10x0,	// TXB, TYB
-		16'b0000_0101_101x_xxx1,	// LDA[B]
-		16'b0000_0101_100x_xx01,	// STA[B]
-		16'b0000_0101_110x_xx01,	// CMP[B]
-		16'b0000_01xx_0xxx_xx01,	// ADC[A..D]opB, SBC[A..D]opB, AND[A..D]opB, ORA[A..D]opB, EOR[A..D]opB store result in [A..D]
-		16'b0000_01xx_1x1x_xx01,	// SBC[A..D]opB
-		16'bxxxx_01xx_0xxx_x110,	// ASL[A..D]opB, ROL[A..D]opB, LSR[A..D]opB, ROR[A..D]opB (abs, absx, zpg, zpgx)
-		16'bxxxx_01xx_0xxx_1010,	// ASL[A..D]opB, ROL[A..D]opB, LSR[A..D]opB, ROR[A..D]opB (acc)
-		16'b0000_01xx_0010_x100:	// BIT[A..D]opB zp
+		16'bxx00_xx00_0xxx_xx01,	// ADCAop[A..D], SBCAop[A..D], ANDAop[A..D], ORAAop[A..D], EORAop[A..D] store result in [A..D]
+		16'bxx00_xx00_111x_xx01,	// SBCAop[A..D]
+		16'bxxxx_xx00_0xxx_x110,	// ASLAop[A..D], ROLAop[A..D], LSRAop[A..D], RORAop[A..D] (abs, absx, zpg, zpgx)
+		16'bxxxx_xx00_0xxx_1010,	// ASLAop[A..D], ROLAop[A..D], LSRAop[A..D], RORAop[A..D] (acc)
+		16'bxx00_xx00_0010_x100:	// BITAop[A..D]zp
+				dst_reg <= SEL_A; 
+      
+		16'bxx00_xx01_1000_1011,	// TB[A..D]
+		16'bxx00_xx01_1010_10x0,	// TBX, TBY	
+		16'b0000_0001_101x_xxx1,	// LDA[B]
+		16'bxx00_xx01_0xxx_xx01,	// ADCBop[A..D], SBCBop[A..D], ANDBop[A..D], ORABop[A..D], EORBop[A..D] store result in [A..D]
+		16'bxx00_xx01_111x_xx01,	// SBCBop[A..D]
+		16'bxxxx_xx01_0xxx_x110,	// ASLBop[A..D], ROLBop[A..D], LSRBop[A..D], RORBop[A..D] (abs, absx, zpg, zpgx)
+		16'bxxxx_xx01_0xxx_1010,	// ASLBop[A..D], ROLBop[A..D], LSRBop[A..D], RORBop[A..D] (acc)
+		16'bxx00_xx01_0010_x100:	// BITDop[A..D]zp
             dst_reg <= SEL_B; 
-
-		16'b0000_10xx_1000_1011,	// T[A..D]C
-		16'b0000_10xx_1010_10x0,	// TXC, TYC
-		16'b0000_1010_101x_xxx1,	// LDA[C]
-		16'b0000_1010_100x_xx01,	// STA[C]
-		16'b0000_1010_110x_xx01,	// CMP[C]
-		16'b0000_10xx_0xxx_xx01,	// ADC[A..D]opC, SBC[A..D]opC, AND[A..D]opC, ORA[A..D]opC, EOR[A..D]opC store result in [A..D]
-		16'b0000_10xx_1x1x_xx01,	// SBC[A..D]opC
-		16'bxxxx_10xx_0xxx_x110,	// ASL[A..D]opC, ROL[A..D]opC, LSR[A..D]opC, ROR[A..D]opC (abs, absx, zpg, zpgx)
-		16'bxxxx_10xx_0xxx_1010,	// ASL[A..D]opC, ROL[A..D]opC, LSR[A..D]opC, ROR[A..D]opC (acc)
-		16'b0000_10xx_0010_x100:	// BIT[A..D]opC zp
+             
+		16'bxx00_xx10_1000_1011,	// TC[A..D]
+		16'bxx00_xx10_1010_10x0,	// TCX, TCY
+		16'b0000_0010_101x_xxx1,	// LDA[C]
+		16'bxx00_xx10_0xxx_xx01,	// ADCCop[A..D], SBCCop[A..D], ANDCop[A..D], ORACop[A..D], EORCop[A..D] store result in [A..D]
+		16'bxx00_xx10_111x_xx01,	// SBCCop[A..D]
+		16'bxxxx_xx10_0xxx_x110,	// ASLCop[A..D], ROLCop[A..D], LSRCop[A..D], RORCop[A..D] (abs, absx, zpg, zpgx)
+		16'bxxxx_xx10_0xxx_1010,	// ASLCop[A..D], ROLCop[A..D], LSRCop[A..D], RORCop[A..D] (acc)
+		16'bxx00_xx10_0010_x100:	// BITCop[A..D]zp
             dst_reg <= SEL_C; 
              
-		16'b0000_11xx_1000_1011,	// T[A..D]D
-		16'b0000_11xx_1010_10x0,	// TXD, TYD
-		16'b0000_1111_101x_xxx1,	// LDA[D]
-		16'b0000_1111_100x_xx01,	// STA[D]
-		16'b0000_1111_110x_xx01,	// CMP[D]
-		16'b0000_11xx_0xxx_xx01,	// ADC[A..D]opD, SBC[A..D]opD, AND[A..D]opD, ORA[A..D]opD, EOR[A..D]opD store result in [A..D]
-		16'b0000_11xx_1x1x_xx01,	// SBC[A..D]opD
-		16'bxxxx_11xx_0xxx_x110,	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (abs, absx, zpg, zpgx)
-		16'bxxxx_11xx_0xxx_1010,	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (acc)
-		16'b0000_11xx_0010_x100:	// BIT[A..D]opD zp
-            dst_reg <= SEL_D;
-			
-		default: case( IR[9:8] ) 
-						2'b00: dst_reg <= SEL_A; 
-						2'b01: dst_reg <= SEL_B; 
-						2'b10: dst_reg <= SEL_C; 
-						2'b11: dst_reg <= SEL_D;
-					endcase        
+		16'bxx00_xx11_1000_1011,	// TD[A..D]
+		16'bxx00_xx11_1010_10x0,	// TDX, TDY
+		16'b0000_0011_101x_xxx1,	// LDA[D]
+		16'bxx00_xx11_0xxx_xx01,	// ADCDop[A..D], SBCDop[A..D], ANDDop[A..D], ORADop[A..D], EORDop[A..D] store result in [A..D]
+		16'bxx00_xx11_111x_xx01,	// SBCDop[A..D]
+		16'bxxxx_xx11_0xxx_x110,	// ASLDop[A..D], ROLDop[A..D], LSRDop[A..D], RORDop[A..D] (abs, absx, zpg, zpgx)
+		16'bxxxx_xx11_0xxx_1010,	// ASLDop[A..D], ROLDop[A..D], LSRDop[A..D], RORDop[A..D] (acc)
+		16'bxx00_xx11_0010_x100:	// BITDop[A..D]zp
+		      dst_reg <= SEL_D;
+				
+		16'bxx01_xx00_1000_1011,	// TE[A..P]
+		16'bxx01_xx00_1010_10x0,	// TEX, TEY
+		16'b0001_0000_101x_xxx1,	// LDA[E]
+		16'bxx01_xx00_0xxx_xx01,	// ADCEop[A..P], SBCEop[A..P], ANDEop[A..P], ORAEop[A..P], EOREop[A..P] store result in [A..P]
+		16'bxx01_xx00_111x_xx01,	// SBCEop[A..P]
+		16'bxx01_xx00_0010_x100:	// BITEop[A..P]zp
+		      dst_reg <= SEL_E;
+		
+		16'bxx01_xx01_1000_1011,	// TF[A..P]
+		16'bxx01_xx01_1010_10x0,	// TFX, TFY
+		16'b0001_0001_101x_xxx1,	// LDA[F]
+		16'bxx01_xx01_0xxx_xx01,	// ADCFop[A..P], SBCFop[A..P], ANDFop[A..P], ORAFop[A..P], EORFop[A..P] store result in [A..P]
+		16'bxx01_xx01_111x_xx01,	// SBCFop[A..P]
+		16'bxx01_xx01_0010_x100:	// BITFop[A..P]zp
+		      dst_reg <= SEL_F;
+				
+		16'bxx01_xx10_1000_1011,	// TG[A..P]
+		16'bxx01_xx10_1010_10x0,	// TGX, TGY
+		16'b0001_0010_101x_xxx1,	// LDA[G]
+		16'bxx01_xx10_0xxx_xx01,	// ADCGop[A..P], SBCGop[A..P], ANDGop[A..P], ORAGop[A..P], EORGop[A..P] store result in [A..P]
+		16'bxx01_xx10_111x_xx01,	// SBCGop[A..P]
+		16'bxx01_xx10_0010_x100:	// BITGop[A..P]zp
+		      dst_reg <= SEL_G;
+				
+		16'bxx01_xx11_1000_1011,	// TH[A..P]
+		16'bxx01_xx11_1010_10x0,	// THX, THY
+		16'b0001_0011_101x_xxx1,	// LDA[H]
+		16'bxx01_xx11_0xxx_xx01,	// ADCHop[A..P], SBCHop[A..P], ANDHop[A..P], ORAHop[A..P], EORHop[A..P] store result in [A..P]
+		16'bxx01_xx11_111x_xx01,	// SBCHop[A..P]
+		16'bxx01_xx11_0010_x100:	// BITHop[A..P]zp
+		      dst_reg <= SEL_H;
+				
+		16'bxx10_xx00_1000_1011,	// TI[A..P]
+		16'bxx10_xx00_1010_10x0,	// TIX, TIY
+		16'b0010_0000_101x_xxx1,	// LDA[I]
+		16'bxx10_xx00_0xxx_xx01,	// ADCIop[A..P], SBCIop[A..P], ANDIop[A..P], ORAIop[A..P], EORIop[A..P] store result in [A..P]
+		16'bxx10_xx00_111x_xx01,	// SBCIop[A..P]
+		16'bxx10_xx00_0010_x100:	// BITIop[A..P]zp
+		      dst_reg <= SEL_I;
+				
+		16'bxx10_xx01_1000_1011,	// TJ[A..P]
+		16'bxx10_xx01_1010_10x0,	// TJX, TJY
+		16'b0010_0001_101x_xxx1,	// LDA[J]
+		16'bxx10_xx01_0xxx_xx01,	// ADCJop[A..P], SBCJop[A..P], ANDJop[A..P], ORAJop[A..P], EORJop[A..P] store result in [A..P]
+		16'bxx10_xx01_111x_xx01,	// SBCJop[A..P]
+		16'bxx10_xx01_0010_x100:	// BITJop[A..P]zp
+		      dst_reg <= SEL_J;
+				
+		16'bxx10_xx10_1000_1011,	// TK[A..P]
+		16'bxx10_xx10_1010_10x0,	// TKX, TKY
+		16'b0010_0010_101x_xxx1,	// LDA[K]
+		16'bxx10_xx10_0xxx_xx01,	// ADCKop[A..P], SBCKop[A..P], ANDKop[A..P], ORAKop[A..P], EORKop[A..P] store result in [A..P]
+		16'bxx10_xx10_111x_xx01,	// SBCKop[A..P]
+		16'bxx10_xx10_0010_x100:	// BITKop[A..P]zp
+		      dst_reg <= SEL_K;
+				
+		16'bxx10_xx11_1000_1011,	// TL[A..P]
+		16'bxx10_xx11_1010_10x0,	// TLX, TLY
+		16'b0010_0011_101x_xxx1,	// LDA[L]
+		16'bxx10_xx11_0xxx_xx01,	// ADCLop[A..P], SBCLop[A..P], ANDLop[A..P], ORALop[A..P], EORLop[A..P] store result in [A..P]
+		16'bxx10_xx11_111x_xx01,	// SBCLop[A..P]
+		16'bxx10_xx11_0010_x100:	// BITLop[A..P]zp
+		      dst_reg <= SEL_L;
+				
+		16'bxx11_xx00_1000_1011,	// TM[A..P]
+		16'bxx11_xx00_1010_10x0,	// TMX, TMY
+		16'b0011_0000_101x_xxx1,	// LDA[M]
+		16'bxx11_xx00_0xxx_xx01,	// ADCMop[A..P], SBCMop[A..P], ANDMop[A..P], ORAMop[A..P], EORMop[A..P] store result in [A..P]
+		16'bxx11_xx00_111x_xx01,	// SBCMop[A..P]
+		16'bxx11_xx00_0010_x100:	// BITMop[A..P]zp
+		      dst_reg <= SEL_M;
+				
+		16'bxx11_xx01_1000_1011,	// TN[A..P]
+		16'bxx11_xx01_1010_10x0,	// TNX, TNY
+		16'b0011_0001_101x_xxx1,	// LDA[N]
+		16'bxx11_xx01_0xxx_xx01,	// ADCNop[A..P], SBCNop[A..P], ANDNop[A..P], ORANop[A..P], EORNop[A..P] store result in [A..P]
+		16'bxx11_xx01_111x_xx01,	// SBCNop[A..P]
+		16'bxx11_xx01_0010_x100:	// BITNop[A..P]zp
+		      dst_reg <= SEL_N;
+				
+		16'bxx11_xx10_1000_1011,	// T[A..P]O
+		16'b0011_0010_100x_10x0,	// TXO, TYO
+		16'b0011_0010_101x_xxx1,	// LDA[O]
+		16'bxx11_xx10_0xxx_xx01,	// ADC[A..P]opO, SBC[A..P]opO, AND[A..P]opO, ORA[A..P]opO, EOR[A..P]opO store result in [A..P]
+		16'bxx11_xx10_111x_xx01,	// SBC[A..P]opO
+		16'bxx11_xx10_0010_x100:	// BIT[A..P]opO zp
+				dst_reg <= SEL_O;
+				
+		16'bxx11_xx11_1000_1011,	// T[A..P]P
+		16'b0011_0011_100x_10x0,	// TXP, TYP
+		16'b0011_0011_101x_xxx1,	// LDA[P]
+		16'bxx11_xx11_0xxx_xx01,	// ADC[A..P]opP, SBC[A..P]opP, AND[A..P]opP, ORA[A..P]opP, EOR[A..P]opP store result in [A..P]
+		16'bxx11_xx11_111x_xx01,	// SBC[A..P]opP
+		16'bxx11_xx11_0010_x100:	// BIT[A..P]opP zp
+				dst_reg <= SEL_P;        
 	endcase
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] ) 		  	// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
+     	casex( IR[15:0] ) 		  	
 		16'b0000_0000_1011_1010:	// TSX 
 				src_reg <= SEL_S; 
 
 		16'b0000_0000_100x_x110,	// STX
-		16'b0000_00xx_100x_1x10,	// TX[A..D], TXS
+		16'b00xx_00xx_100x_1x10,	// TX[A..P], TXS
 		16'b0000_0000_1110_xx00,	// INX, CPX
 		16'b0000_0000_1100_1010,	// DEX
 		16'b0000_0000_1011_1011:	// TXY
 				src_reg <= SEL_X; 
 
 		16'b0000_0000_100x_x100,	// STY
-		16'b0000_00xx_1001_1000,	// TY[A..D]
+		16'b00xx_00xx_1001_1000,	// TY[A..P]
 		16'b0000_0000_1100_xx00,	// CPY
 		16'b0000_0000_1x00_1000,	// DEY, INY
 		16'b0000_0000_1010_1011:	// TYX
 				src_reg <= SEL_Y;
 		
-		16'b0000_xx00_1000_1011,	// TA[A..D]
-		16'b0000_0000_1010_10x0,	// TAX, TAY
-		16'b0000_0000_101x_xxx1,	// LDA[A]
+		16'bxx00_xx00_1000_1011,	// T[A..D]A
+		16'b0000_0000_100x_10x0,	// TXA, TYA
 		16'b0000_0000_100x_xx01,	// STA[A]
 		16'b0000_0000_110x_xx01,	// CMP[A]
-		16'b0000_xx00_0xxx_xx01,	// ADCAop[A..D], SBCAop[A..D], ANDAop[A..D], ORAAop[A..D], EORAop[A..D] store result in [A..D]
-		16'b0000_xx00_111x_xx01,	// SBCAop[A..D]
-		16'bxxxx_xx00_0xxx_x110,	// ASLAop[A..D], ROLAop[A..D], LSRAop[A..D], RORAop[A..D] (abs, absx, zpg, zpgx)
-		16'bxxxx_xx00_0xxx_1010,	// ASLAop[A..D], ROLAop[A..D], LSRAop[A..D], RORAop[A..D] (acc)
-		16'b0000_xx00_0010_x100:	// BITAop[A..D]zp
-				src_reg <= SEL_A; 
-      
-		16'b0000_xx01_1000_1011,	// TB[A..D]
-		16'b0000_0001_1010_10x0,	// TBX, TBY
-		16'b0000_0101_101x_xxx1,	// LDA[B]
-		16'b0000_0101_100x_xx01,	// STA[B]
-		16'b0000_0101_110x_xx01,	// CMP[B]
-		16'b0000_xx01_0xxx_xx01,	// ADCBop[A..D], SBCBop[A..D], ANDBop[A..D], ORABop[A..D], EORBop[A..D] store result in [A..D]
-		16'b0000_xx01_111x_xx01,	// SBCBop[A..D]
-		16'bxxxx_xx01_0xxx_x110,	// ASLBop[A..D], ROLBop[A..D], LSRBop[A..D], RORBop[A..D] (abs, absx, zpg, zpgx)
-		16'bxxxx_xx01_0xxx_1010,	// ASLBop[A..D], ROLBop[A..D], LSRBop[A..D], RORBop[A..D] (acc)
-		16'b0000_xx01_0010_x100:	// BITDop[A..D]zp
-            src_reg <= SEL_B; 
+		16'bxx00_xx00_0xxx_xx01,	// ADC[A..D]opA, SBC[A..D]opA, AND[A..D]opA, ORA[A..D]opA, EOR[A..D]opA store result in [A..D]
+		16'bxx00_xx00_111x_xx01,	// SBC[A..D]opA
+		16'bxxxx_xx00_0xxx_x110,	// ASL[A..D]opA, ROL[A..D]opA, LSR[A..D]opA, ROR[A..D]opA (abs, absx, zpg, zpgx)
+		16'bxxxx_xx00_0xxx_1010,	// ASL[A..D]opA, ROL[A..D]opA, LSR[A..D]opA, ROR[A..D]opA (acc)
+		16'bxx00_xx00_0010_x100:	// BIT[A..D]opA zp
+            src_reg <= SEL_A; 
              
-		16'b0000_xx10_1000_1011,	// TC[A..D]
-		16'b0000_0010_1010_10x0,	// TCX, TCY
-		16'b0000_1010_101x_xxx1,	// LDA[C]
-		16'b0000_1010_100x_xx01,	// STA[C]
-		16'b0000_1010_110x_xx01,	// CMP[C]
-		16'b0000_xx10_0xxx_xx01,	// ADCCop[A..D], SBCCop[A..D], ANDCop[A..D], ORACop[A..D], EORCop[A..D] store result in [A..D]
-		16'b0000_xx10_111x_xx01,	// SBCCop[A..D]
-		16'bxxxx_xx10_0xxx_x110,	// ASLCop[A..D], ROLCop[A..D], LSRCop[A..D], RORCop[A..D] (abs, absx, zpg, zpgx)
-		16'bxxxx_xx10_0xxx_1010,	// ASLCop[A..D], ROLCop[A..D], LSRCop[A..D], RORCop[A..D] (acc)
-		16'b0000_xx10_0010_x100:	// BITCop[A..D]zp
+		16'b00xx_01xx_1000_1011,	// T[A..D]B
+		16'b0000_0100_100x_10x0,	// TXB, TYB
+		16'b0000_0100_100x_xx01,	// STA[B]
+		16'b0000_0100_110x_xx01,	// CMP[B]
+		16'b00xx_01xx_0xxx_xx01,	// ADC[A..D]opB, SBC[A..D]opB, AND[A..D]opB, ORA[A..D]opB, EOR[A..D]opB store result in [A..D]
+		16'b00xx_01xx_111x_xx01,	// SBC[A..D]opB
+		16'bxxxx_01xx_0xxx_x110,	// ASL[A..D]opB, ROL[A..D]opB, LSR[A..D]opB, ROR[A..D]opB (abs, absx, zpg, zpgx)
+		16'bxxxx_01xx_0xxx_1010,	// ASL[A..D]opB, ROL[A..D]opB, LSR[A..D]opB, ROR[A..D]opB (acc)
+		16'b00xx_01xx_0010_x100:	// BIT[A..D]opB zp
+            src_reg <= SEL_B; 
+
+		16'b00xx_10xx_1000_1011,	// T[A..D]C
+		16'b0000_1000_100x_10x0,	// TXC, TYC
+		16'b0000_1000_100x_xx01,	// STA[C]
+		16'b0000_1000_110x_xx01,	// CMP[C]
+		16'b00xx_10xx_0xxx_xx01,	// ADC[A..D]opC, SBC[A..D]opC, AND[A..D]opC, ORA[A..D]opC, EOR[A..D]opC store result in [A..D]
+		16'b00xx_10xx_111x_xx01,	// SBC[A..D]opC
+		16'bxxxx_10xx_0xxx_x110,	// ASL[A..D]opC, ROL[A..D]opC, LSR[A..D]opC, ROR[A..D]opC (abs, absx, zpg, zpgx)
+		16'bxxxx_10xx_0xxx_1010,	// ASL[A..D]opC, ROL[A..D]opC, LSR[A..D]opC, ROR[A..D]opC (acc)
+		16'b00xx_10xx_0010_x100:	// BIT[A..D]opC zp
             src_reg <= SEL_C; 
              
-		16'b0000_xx11_1000_1011,	// TD[A..D]
-		16'b0000_0011_1010_10x0,	// TDX, TDY
-		16'b0000_1111_101x_xxx1,	// LDA[D]
-		16'b0000_1111_100x_xx01,	// STA[D]
-		16'b0000_1111_110x_xx01,	// CMP[D]
-		16'b0000_xx11_0xxx_xx01,	// ADCDop[A..D], SBCDop[A..D], ANDDop[A..D], ORADop[A..D], EORDop[A..D] store result in [A..D]
-		16'b0000_xx11_111x_xx01,	// SBCDop[A..D]
-		16'bxxxx_xx11_0xxx_x110,	// ASLDop[A..D], ROLDop[A..D], LSRDop[A..D], RORDop[A..D] (abs, absx, zpg, zpgx)
-		16'bxxxx_xx11_0xxx_1010,	// ASLDop[A..D], ROLDop[A..D], LSRDop[A..D], RORDop[A..D] (acc)
-		16'b0000_xx11_0010_x100:	// BITDop[A..D]zp
-		      src_reg <= SEL_D;
+		16'b00xx_11xx_1000_1011,	// T[A..D]D
+		16'b0000_1100_100x_10x0,	// TXD, TYD
+		16'b0000_1100_100x_xx01,	// STA[D]
+		16'b0000_1100_110x_xx01,	// CMP[D]
+		16'b00xx_11xx_0xxx_xx01,	// ADC[A..D]opD, SBC[A..D]opD, AND[A..D]opD, ORA[A..D]opD, EOR[A..D]opD store result in [A..D]
+		16'b00xx_11xx_111x_xx01,	// SBC[A..D]opD
+		16'bxxxx_11xx_0xxx_x110,	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (abs, absx, zpg, zpgx)
+		16'bxxxx_11xx_0xxx_1010,	// ASL[A..D]opD, ROL[A..D]opD, LSR[A..D]opD, ROR[A..D]opD (acc)
+		16'b00xx_11xx_0010_x100:	// BIT[A..D]opD zp
+            src_reg <= SEL_D;
+		
+		16'b01xx_00xx_1000_1011,	// T[A..P]E
+		16'b0100_0000_100x_10x0,	// TXE, TYE
+		16'b0100_0000_100x_xx01,	// STA[E]
+		16'b0100_0000_110x_xx01,	// CMP[E]
+		16'b01xx_00xx_0xxx_xx01,	// ADC[A..P]opE, SBC[A..P]opE, AND[A..P]opE, ORA[A..P]opE, EOR[A..P]opE store result in [A..P]
+		16'b01xx_00xx_111x_xx01,	// SBC[A..P]opE
+		16'b01xx_00xx_0010_x100:	// BIT[A..P]opE zp
+				src_reg <= SEL_E;
+		
+		16'b01xx_01xx_1000_1011,	// T[A..P]F
+		16'b0100_0100_100x_10x0,	// TXF, TYF
+		16'b0100_0100_100x_xx01,	// STA[F]
+		16'b0100_0100_110x_xx01,	// CMP[F]
+		16'b01xx_01xx_0xxx_xx01,	// ADC[A..P]opF, SBC[A..P]opF, AND[A..P]opF, ORA[A..P]opF, EOR[A..P]opF store result in [A..P]
+		16'b01xx_01xx_111x_xx01,	// SBC[A..P]opF
+		16'b01xx_01xx_0010_x100:	// BIT[A..P]opF zp
+				src_reg <= SEL_F;
 				
-		default: case( IR[11:10] ) 
-						2'b00: src_reg <= SEL_A; 
-						2'b01: src_reg <= SEL_B; 
-						2'b10: src_reg <= SEL_C; 
-						2'b11: src_reg <= SEL_D;
-					endcase		
+		16'b01xx_10xx_1000_1011,	// T[A..P]G
+		16'b0100_1000_100x_10x0,	// TXG, TYG
+		16'b0100_1000_100x_xx01,	// STA[G]
+		16'b0100_1000_110x_xx01,	// CMP[G]
+		16'b01xx_10xx_0xxx_xx01,	// ADC[A..P]opG, SBC[A..P]opG, AND[A..P]opG, ORA[A..P]opG, EOR[A..P]opG store result in [A..P]
+		16'b01xx_10xx_111x_xx01,	// SBC[A..P]opG
+		16'b01xx_10xx_0010_x100:	// BIT[A..P]opG zp
+				src_reg <= SEL_G;
+			
+		16'b01xx_11xx_1000_1011,	// T[A..P]H
+		16'b0100_1100_100x_10x0,	// TXH, TYH
+		16'b0100_1100_100x_xx01,	// STA[H]
+		16'b0100_1100_110x_xx01,	// CMP[H]
+		16'b01xx_11xx_0xxx_xx01,	// ADC[A..P]opH, SBC[A..P]opH, AND[A..P]opH, ORA[A..P]opH, EOR[A..P]opH store result in [A..P]
+		16'b01xx_11xx_111x_xx01,	// SBC[A..P]opH
+		16'b01xx_11xx_0010_x100:	// BIT[A..P]opH zp
+				src_reg <= SEL_H;
+				
+		16'b10xx_00xx_1000_1011,	// T[A..P]I
+		16'b1000_0000_100x_10x0,	// TXI, TYI
+		16'b1000_0000_100x_xx01,	// STA[I]
+		16'b1000_0000_110x_xx01,	// CMP[I]
+		16'b10xx_00xx_0xxx_xx01,	// ADC[A..P]opI, SBC[A..P]opI, AND[A..P]opI, ORA[A..P]opI, EOR[A..P]opI store result in [A..P]
+		16'b10xx_00xx_111x_xx01,	// SBC[A..P]opI
+		16'b10xx_00xx_0010_x100:	// BIT[A..P]opI zp
+				src_reg <= SEL_I;
+				
+		16'b10xx_01xx_1000_1011,	// T[A..P]J
+		16'b1000_0100_100x_10x0,	// TXJ, TYJ
+		16'b1000_0100_100x_xx01,	// STA[J]
+		16'b1000_0100_110x_xx01,	// CMP[J]
+		16'b10xx_01xx_0xxx_xx01,	// ADC[A..P]opJ, SBC[A..P]opJ, AND[A..P]opJ, ORA[A..P]opJ, EOR[A..P]opJ store result in [A..P]
+		16'b10xx_01xx_111x_xx01,	// SBC[A..P]opJ
+		16'b10xx_01xx_0010_x100:	// BIT[A..P]opJ zp
+				src_reg <= SEL_J;
+				
+		16'b10xx_10xx_1000_1011,	// T[A..P]K
+		16'b1000_1000_100x_10x0,	// TXK, TYK
+		16'b1000_1000_100x_xx01,	// STA[K]
+		16'b1000_1000_110x_xx01,	// CMP[K]
+		16'b10xx_10xx_0xxx_xx01,	// ADC[A..P]opK, SBC[A..P]opK, AND[A..P]opK, ORA[A..P]opK, EOR[A..P]opK store result in [A..P]
+		16'b10xx_10xx_111x_xx01,	// SBC[A..P]opK
+		16'b10xx_10xx_0010_x100:	// BIT[A..P]opK zp
+				src_reg <= SEL_K;
+				
+		16'b10xx_11xx_1000_1011,	// T[A..P]L
+		16'b1000_1100_100x_10x0,	// TXL, TYL
+		16'b1000_1100_100x_xx01,	// STA[L]
+		16'b1000_1100_110x_xx01,	// CMP[L]
+		16'b10xx_11xx_0xxx_xx01,	// ADC[A..P]opL, SBC[A..P]opL, AND[A..P]opL, ORA[A..P]opL, EOR[A..P]opL store result in [A..P]
+		16'b10xx_11xx_111x_xx01,	// SBC[A..P]opL
+		16'b10xx_11xx_0010_x100:	// BIT[A..P]opL zp
+				src_reg <= SEL_L;
+				
+		16'b11xx_00xx_1000_1011,	// T[A..P]M
+		16'b1100_0000_100x_10x0,	// TXM, TYM
+		16'b1100_0000_100x_xx01,	// STA[M]
+		16'b1100_0000_110x_xx01,	// CMP[M]
+		16'b11xx_00xx_0xxx_xx01,	// ADC[A..P]opM, SBC[A..P]opM, AND[A..P]opM, ORA[A..P]opM, EOR[A..P]opM store result in [A..P]
+		16'b11xx_00xx_111x_xx01,	// SBC[A..P]opM
+		16'b11xx_00xx_0010_x100:	// BIT[A..P]opM zp
+				src_reg <= SEL_M;
+				
+		16'b11xx_01xx_1000_1011,	// T[A..P]N
+		16'b1100_0100_100x_10x0,	// TXN, TYN
+		16'b1100_0100_100x_xx01,	// STA[N]
+		16'b1100_0100_110x_xx01,	// CMP[N]
+		16'b11xx_01xx_0xxx_xx01,	// ADC[A..P]opN, SBC[A..P]opN, AND[A..P]opN, ORA[A..P]opN, EOR[A..P]opN store result in [A..P]
+		16'b11xx_01xx_111x_xx01,	// SBC[A..P]opN
+		16'b11xx_01xx_0010_x100:	// BIT[A..P]opN zp
+				src_reg <= SEL_N;
+				
+		16'b11xx_10xx_1000_1011,	// TO[A..P]
+		16'b11xx_10xx_1010_10x0,	// TOX, TOY
+		16'b1100_1000_100x_xx01,	// STA[O]
+		16'b1100_1000_110x_xx01,	// CMP[O]
+		16'b11xx_10xx_0xxx_xx01,	// ADCOop[A..P], SBCOop[A..P], ANDOop[A..P], ORAOop[A..P], EOROop[A..P] store result in [A..P]
+		16'b11xx_10xx_111x_xx01,	// SBCOop[A..P]
+		16'b11xx_10xx_0010_x100:	// BITOop[A..P]zp
+		      src_reg <= SEL_O;
+				
+		16'b11xx_11xx_1000_1011,	// TP[A..P]
+		16'b11xx_11xx_1010_10x0,	// TPX, TPY
+		16'b1100_1100_100x_xx01,	// STA[P]
+		16'b1100_1100_110x_xx01,	// CMP[P]
+		16'b11xx_11xx_0xxx_xx01,	// ADCPop[A..P], SBCPop[A..P], ANDPop[A..P], ORAPop[A..P], EORPop[A..P] store result in [A..P]
+		16'b11xx_11xx_111x_xx01,	// SBCPop[A..P]
+		16'b11xx_11xx_0010_x100:	// BITPop[A..P]zp
+		      src_reg <= SEL_P;
 	endcase
 
 always @(posedge clk) 
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
-		16'b0000_xxxx_xxx1_0001,	// INDY
+     	casex( IR[15:0] )  			
+		16'b0000_0000_xxx1_0001,	// INDY
 		16'b0000_0000_10x1_x110, 	// LDX/STX zpg/abs, Y
-		16'b0000_xxxx_xxxx_1001:	// abs, Y
+		16'b0000_0000_xxxx_1001:	// abs, Y
 				index_y <= 1;
 
 		default:	index_y <= 0;
@@ -1164,12 +1362,9 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
-		16'b0000_0000_100x_x1x0,	// STX, STY
-		16'b0000_xxxx_100x_xx01:	// STA[A..D]
+     	casex( IR[15:0] )  			
+		16'bxx00_xx00_100x_x1x0,	// STX, STY
+		16'bxx00_xx00_100x_xx01:	// STA[A..P]
 				store <= 1;
 
 		default:	store <= 0;
@@ -1178,10 +1373,7 @@ always @(posedge clk)
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
+     	casex( IR[15:0] )  			
 		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D]
 		16'b0000_0000_11xx_x110:	// DEC, INC
 				write_back <= 1;
@@ -1192,21 +1384,15 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
-		16'b0000_xxxx_101x_xxxx:	// LDA[A..D], LDX, LDY
+     	casex( IR[15:0] )  			
+		16'b00xx_00xx_101x_xxxx:	// LDA[A..D], LDX, LDY
 				load_only <= 1;
 		default:	load_only <= 0;
 	endcase
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
+     	casex( IR[15:0] )  			
 		16'b0000_0000_111x_x110,	// INC
 		16'b0000_0000_11x0_1000: 	// INX, INY
 				inc <= 1;
@@ -1216,11 +1402,8 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( (state == DECODE || state == BRK0) && RDY )
-     	casex( IR[15:0] ) 	   	// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
-		16'b0000_xxxx_011x_xx01:	// ADC[A..D]op[A..D]
+     	casex( IR[15:0] ) 	   	
+		16'bxxxx_xxxx_011x_xx01:	// ADC[A..D]op[A..D]
 				adc_sbc <= 1;
 
 		default:	adc_sbc <= 0;
@@ -1228,10 +1411,7 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
+     	casex( IR[15:0] )  			
 		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_xxxx_0xxx_1010:	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (acc)
 				shift <= 1;
@@ -1241,13 +1421,10 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
+     	casex( IR[15:0] )  			
 		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm/zp)
 		16'b0000_0000_11x0_1100,	// CPX, CPY (abs)
-		16'b0000_xxxx_110x_xx01:	// CMP[A..D]
+		16'bxxxx_xxxx_110x_xx01:	// CMP[A..D]
 				compare <= 1;
 
 		default:	compare <= 0;
@@ -1255,10 +1432,7 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
+     	casex( IR[15:0] )  			
 		16'bxxxx_xxxx_01xx_xx10:	// ROR[A..D]op[A..D], LSR[A..D]op[A..D]
 				shift_right <= 1;
 
@@ -1267,10 +1441,7 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
+     	casex( IR[15:0] )  			
 		16'bxxxx_xxxx_0x1x_1010,	// ROL[A..D], ROR[A..D]
 		16'bxxxx_xxxx_0x1x_x110:	// ROR[A..D], ROL[A..D]
 				rotate <= 1;
@@ -1280,14 +1451,11 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] ) 			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
+     	casex( IR[15:0] ) 			
 		16'bxxxx_xxxx_00xx_xx10:	// ROL[A..D], ASL[A..D]
 				op <= OP_ROL;
 
-		16'b0000_xxxx_0010_x100:   // BIT[A..D] zp/abs
+		16'bxxxx_xxxx_0010_x100:   // BIT[A..D] zp/abs
 				op <= OP_AND;
 
 		16'bxxxx_xxxx_01xx_xx10:	// ROR[A..D], LSR[A..D]
@@ -1296,13 +1464,13 @@ always @(posedge clk )
 		16'b0000_0000_1000_1000,	// DEY
 		16'b0000_0000_1100_1010, 	// DEX 
 		16'b0000_0000_110x_x110,	// DEC
-		16'b0000_xxxx_11xx_xx01,	// CMP[A..D], SBC[A..D]
+		16'bxxxx_xxxx_11xx_xx01,	// CMP[A..D], SBC[A..D]
 		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm, zpg)
 		16'b0000_0000_11x0_1100:	// CPX, CPY abs
 				op <= OP_SUB;
 
-		16'b0000_xxxx_010x_xx01,	// EOR[A..D]
-		16'b0000_xxxx_00xx_xx01:	// ORA[A..D], AND[A..D]
+		16'bxxxx_xxxx_010x_xx01,	// EOR[A..D]
+		16'bxxxx_xxxx_00xx_xx01:	// ORA[A..D], AND[A..D]
 				op <= { 2'b11, IR[6:5] };
 
 		default: 	op <= OP_ADD; 
@@ -1310,11 +1478,8 @@ always @(posedge clk )
 
 always @(posedge clk )
      if( state == DECODE && RDY )
-     	casex( IR[15:0] ) 			// decode all 16 bits:	IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-											//								IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-											//								IR[11:10]: src_reg. 
-											//								IR[9:8]: dst_reg.
-		16'b0000_xxxx_0010_x100:   // BIT[A..D] zp/abs
+     	casex( IR[15:0] ) 			
+		16'bxxxx_xxxx_0010_x100:   // BIT[A..D] zp/abs
 				bit <= 1;
 
 		default:	bit <= 0; 
