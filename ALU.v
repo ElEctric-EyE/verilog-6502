@@ -26,7 +26,7 @@
  * 1111   AI
  */
 
-module ALU( clk, op, right, rotate, AI, BI, CI, EI, CO, OUT, V, N, RDY );
+module ALU( clk, op, right, rotate, AI, BI, CI, EI, CO, OUT, V, Z, N, RDY );
 
 	parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
 
@@ -41,14 +41,18 @@ module ALU( clk, op, right, rotate, AI, BI, CI, EI, CO, OUT, V, N, RDY );
 	output [dw-1:0] OUT;
 	output CO;
 	output V;
+	output Z;
 	output N;
 	input RDY;
 
 reg [dw-1:0] OUT;
 reg CO;
-reg V;
+wire V;
+wire Z;
 reg N;
 
+reg AI7;
+reg BI7;
 reg [dw:0] logical;
 reg [dw-1:0] temp_BI;
 reg [dw:0] temp;
@@ -109,7 +113,9 @@ always @(posedge clk)
 	OUT <= shiftrotate ? tempmasked[dw-1:0] : temp[dw-1:0];
 	CO  <= (shiftrotate ? tempshifted[dw] : temp[dw]);
 	N   <= temp[dw-1];
-	V   <= AI[dw-1] ^ BI[dw-1] ^ temp[dw-1] ^ temp[dw]; 
     end
+
+assign V = AI7 ^ BI7 ^ CO ^ N;
+assign Z = ~|OUT;
 
 endmodule
