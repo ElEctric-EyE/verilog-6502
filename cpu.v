@@ -1007,7 +1007,6 @@ always @(posedge clk)
 		16'bxxxx_xxxx_0xxx_xx01,	// ORA[A..D], AND[A..D], EOR[A..D], ADC[A..D]
 	 	16'bxxxx_xxxx_111x_xx01,	// SBC[A..D]
 		16'b00xx_00xx_101x_xxx1,	// LDA[A..D]
-		16'bxx00_xx00_100x_xx01,	// STA[A..D]
 		16'bxxxx_xxxx_xxxx_1010,	// ASL[A..D], ROL[A..D], LSR[A..D], ROR[A..D], TX[A..P], T[XS][SX], DEX, NOP,
 		16'b00xx_00xx_xxx0_1000,	// PHP, PLP, PH[A..D], PL[A..D], DEY, T[A..D]Y, INY, INX
 		16'b00xx_00xx_1001_1000,	// TY[A..D]
