@@ -891,7 +891,7 @@ always @(posedge clk or posedge reset)
 		16'b0000_0000_0110_0000:	state <= RTS0;
 		16'b0000_0000_0110_1100:	state <= JMPI0;
 		16'b00xx_00xx_0x00_1000:	state <= PUSH0; // PH[A..Q], PHP
-		16'b00xx_00xx_0x10_1000:	state <= PULL0; // PL[A..Q], PLP
+		16'bxx00_xx00_0x10_1000:	state <= PULL0; // PL[A..Q], PLP
 		16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
 		16'b0000_0000_1xx0_00x0:	state <= FETCH; // IMM
 		16'b0000_0000_1xx0_1100:	state <= ABS0;  // X/Y abs
@@ -1038,6 +1038,7 @@ always @(posedge clk)
 				dst_reg <= SEL_Y;
 		
 		16'bxx00_xx00_1000_1011,	// T[A..Q][A]
+		16'b0000_0000_0x10_1000,	// PL[A]
 		16'b0000_0000_100x_10x0,	// TX[A], TY[A]
 		16'b0000_0000_101x_xxx1,	// LD[A]
 		16'bxx00_xx00_0xxx_xx01,	// ADC[A..Q]op[A], SBC[A..Q]op[A], AND[A..Q]op[A], ORA[A..Q]op[A], EOR[A..Q]op[A]
@@ -1048,6 +1049,7 @@ always @(posedge clk)
 				dst_reg <= SEL_A; 
       
 		16'bxx00_xx01_1000_1011,	// T[A..Q][B]
+		16'b0000_0001_0x10_1000,	// PL[B]
 		16'b0000_0001_100x_10x0,	// TX[B], TY[B]
 		16'b0000_0001_101x_xxx1,	// LD[B]
 		16'bxx00_xx01_0xxx_xx01,	// ADC[A..Q]op[B], SBC[A..Q]op[B], AND[A..Q]op[B], ORA[A..Q]op[B], EOR[A..Q]op[B]
@@ -1058,6 +1060,7 @@ always @(posedge clk)
             dst_reg <= SEL_B; 
              
 		16'bxx00_xx10_1000_1011,	// T[A..Q][C]
+		16'b0000_0010_0x10_1000,	// PL[C]
 		16'b0000_0010_100x_10x0,	// TX[C], TY[C]
 		16'b0000_0010_101x_xxx1,	// LD[C]
 		16'bxx00_xx10_0xxx_xx01,	// ADC[A..Q]op[C], SBC[A..Q]op[C], AND[A..Q]op[C], ORA[A..Q]op[C], EOR[A..Q]op[C]
@@ -1068,6 +1071,7 @@ always @(posedge clk)
             dst_reg <= SEL_C; 
              
 		16'bxx00_xx11_1000_1011,	// T[A..Q][D]
+		16'b0000_0011_0x10_1000,	// PL[D]
 		16'b0000_0011_100x_10x0,	// TX[D], TY[D]
 		16'b0000_0011_101x_xxx1,	// LD[D]
 		16'bxx00_xx11_0xxx_xx01,	// ADC[A..Q]op[D], SBC[A..Q]op[D], AND[A..Q]op[D], ORA[A..Q]op[D], EOR[A..Q]op[D]
@@ -1078,6 +1082,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_D;
 				
 		16'bxx01_xx00_1000_1011,	// T[A..Q][E]
+		16'b0001_0000_0x10_1000,	// PL[A]
 		16'b0001_0000_100x_10x0,	// TX[E], TY[E]
 		16'b0001_0000_101x_xxx1,	// LD[E]
 		16'bxx01_xx00_0xxx_xx01,	// ADC[A..Q]op[E], SBC[A..Q]op[E], AND[A..Q]op[E], ORA[A..Q]op[E], EOR[A..Q]op[E]
@@ -1086,6 +1091,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_E;
 		
 		16'bxx01_xx01_1000_1011,	// T[A..Q][F]
+		16'b0001_0001_0x10_1000,	// PL[F]
 		16'b0001_0001_100x_10x0,	// TX[F], TY[F]
 		16'b0001_0001_101x_xxx1,	// LD[F]
 		16'bxx01_xx01_0xxx_xx01,	// ADC[A..Q]op[F], SBC[A..Q]op[F], AND[A..Q]op[F], ORA[A..Q]op[F], EOR[A..Q]op[F]
@@ -1094,6 +1100,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_F;
 				
 		16'bxx01_xx10_1000_1011,	// T[A..Q][G]
+		16'b0001_0010_0x10_1000,	// PL[G]
 		16'b0001_0010_100x_10x0,	// TX[G], TY[G]
 		16'b0001_0010_101x_xxx1,	// LD[G]
 		16'bxx01_xx10_0xxx_xx01,	// ADC[A..Q]op[G], SBC[A..Q]op[G], AND[A..Q]op[G], ORA[A..Q]op[G], EOR[A..Q]op[G]
@@ -1102,6 +1109,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_G;
 				
 		16'bxx01_xx11_1000_1011,	// T[A..Q][H]
+		16'b0001_0011_0x10_1000,	// PL[H]
 		16'b0001_0011_100x_10x0,	// TX[H], TY[H]
 		16'b0001_0011_101x_xxx1,	// LD[H]
 		16'bxx01_xx11_0xxx_xx01,	// ADC[A..Q]op[H], SBC[A..Q]op[H], AND[A..Q]op[H], ORA[A..Q]op[H], EOR[A..Q]op[H]
@@ -1110,6 +1118,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_H;
 				
 		16'bxx10_xx00_1000_1011,	// T[A..Q][I]
+		16'b0010_0000_0x10_1000,	// PL[I]
 		16'b0010_0000_100x_10x0,	// TX[I], TY[I]
 		16'b0010_0000_101x_xxx1,	// LD[I]
 		16'bxx10_xx00_0xxx_xx01,	// ADC[A..Q]op[I], SBC[A..Q]op[I], AND[A..Q]op[I], ORA[A..Q]op[I], EOR[A..Q]op[I]
@@ -1118,6 +1127,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_I;
 				
 		16'bxx10_xx01_1000_1011,	// T[A..Q][J]
+		16'b0010_0001_0x10_1000,	// PL[J]
 		16'b0010_0001_100x_10x0,	// TX[J], TY[J]
 		16'b0010_0001_101x_xxx1,	// LD[J]
 		16'bxx10_xx01_0xxx_xx01,	// ADC[A..Q]op[J], SBC[A..Q]op[J], AND[A..Q]op[J], ORA[A..Q]op[J], EOR[A..Q]op[J]
@@ -1126,6 +1136,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_J;
 				
 		16'bxx10_xx10_1000_1011,	// T[A..Q][K]
+		16'b0010_0010_0x10_1000,	// PL[K]
 		16'b0010_0010_100x_10x0,	// TX[K], TY[K]
 		16'b0010_0010_101x_xxx1,	// LD[K]
 		16'bxx10_xx10_0xxx_xx01,	// ADC[A..Q]op[K], SBC[A..Q]op[K], AND[A..Q]op[K], ORA[A..Q]op[K], EOR[A..Q]op[K]
@@ -1134,6 +1145,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_K;
 				
 		16'bxx10_xx11_1000_1011,	// T[A..Q][L]
+		16'b0010_0011_0x10_1000,	// PL[L]
 		16'b0010_0011_100x_10x0,	// TX[L], TY[L]
 		16'b0010_0011_101x_xxx1,	// LD[L]
 		16'bxx10_xx11_0xxx_xx01,	// ADC[A..Q]op[L], SBC[A..Q]op[L], AND[A..Q]op[L], ORA[A..Q]op[L], EOR[A..Q]op[L]
@@ -1142,6 +1154,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_L;
 				
 		16'bxx11_xx00_1000_1011,	// T[A..Q][M]
+		16'b0011_0000_0x10_1000,	// PL[M]
 		16'b0011_0000_100x_10x0,	// TX[M], TY[M]
 		16'b0011_0000_101x_xxx1,	// LD[M]
 		16'bxx11_xx00_0xxx_xx01,	// ADC[A..Q]op[M], SBC[A..Q]op[M], AND[A..Q]op[M], ORA[A..Q]op[M], EOR[A..Q]op[M]
@@ -1150,6 +1163,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_M;
 				
 		16'bxx11_xx01_1000_1011,	// T[A..Q][N]
+		16'b0011_0001_0x10_1000,	// PL[N]
 		16'b0011_0001_100x_10x0,	// TX[N], TY[N]
 		16'b0011_0001_101x_xxx1,	// LD[N]
 		16'bxx11_xx01_0xxx_xx01,	// ADC[A..Q]op[N], SBC[A..Q]op[N], AND[A..Q]op[N], ORA[A..Q]op[N], EOR[A..Q]op[N]
@@ -1158,6 +1172,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_N;
 				
 		16'bxx11_xx10_1000_1011,	// T[A..Q][O]
+		16'b0011_0010_0x10_1000,	// PL[O]
 		16'b0011_0010_100x_10x0,	// TX[O], TY[O]
 		16'b0011_0010_101x_xxx1,	// LD[O]
 		16'bxx11_xx10_0xxx_xx01,	// ADC[A..Q]op[O], SBC[A..Q]op[O], AND[A..Q]op[O], ORA[A..Q]op[O], EOR[A..Q]op[O]
@@ -1166,6 +1181,7 @@ always @(posedge clk)
 		      dst_reg <= SEL_O;
 				
 		16'bxx11_xx11_1000_1011,	// T[A..Q][Q]
+		16'b0011_0011_0x10_1000,	// PL[Q]
 		16'b0011_0011_100x_10x0,	// TX[Q], TY[Q]
 		16'b0011_0011_101x_xxx1,	// LD[Q]
 		16'bxx11_xx11_0xxx_xx01,	// ADC[A..Q]op[Q], SBC[A..Q]op[Q], AND[A..Q]op[Q], ORA[A..Q]op[Q], EOR[A..Q]op[Q]
@@ -1176,7 +1192,8 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] ) 		  	
+     	casex( IR[15:0] )
+		16'b00xx_00xx_0x10_1000,	// PL[A..Q]
 		16'b0000_0000_1011_1010:	// TSX 
 				src_reg <= SEL_S; 
 
