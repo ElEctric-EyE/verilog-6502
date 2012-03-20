@@ -1195,7 +1195,7 @@ always @(posedge clk)
 				src_reg <= SEL_Y;
 		
 		16'b00xx_00xx_1000_1011,	// T[A][A..Q]
-		16'b00xx_00xx_1010_10x0,	// T[A]X, T[A]Y
+		16'b0000_0000_1010_10x0,	// T[A]X, T[A]Y
 		16'b0000_0000_100x_xx01,	// ST[A]
 		16'b0000_0000_110x_xx01,	// CMP[A]
 		16'b00xx_00xx_0xxx_xx01,	// ADC[A]op[A..Q], SBC[A]op[A..Q], AND[A]op[A..Q], ORA[A]op[A..Q], EOR[A]op[A..Q]
@@ -1206,7 +1206,7 @@ always @(posedge clk)
             src_reg <= SEL_A; 
              
 		16'b00xx_01xx_1000_1011,	// T[B][A..Q]
-		16'b00xx_01xx_1010_10x0,	// T[B]X, T[B]Y
+		16'b0000_0100_1010_10x0,	// T[B]X, T[B]Y
 		16'b0000_0100_100x_xx01,	// ST[B]
 		16'b0000_0100_110x_xx01,	// CMP[B]
 		16'b00xx_01xx_0xxx_xx01,	// ADC[B]op[A..Q], SBC[B]op[A..Q], AND[B]op[A..Q], ORA[B]op[A..Q], EOR[B]op[A..Q]
@@ -1217,7 +1217,7 @@ always @(posedge clk)
             src_reg <= SEL_B; 
 
 		16'b00xx_10xx_1000_1011,	// T[C][A..Q]
-		16'b00xx_10xx_1010_10x0,	// T[C]X, T[C]Y
+		16'b0000_1000_1010_10x0,	// T[C]X, T[C]Y
 		16'b0000_1000_100x_xx01,	// ST[C]
 		16'b0000_1000_110x_xx01,	// CMP[C]
 		16'b00xx_10xx_0xxx_xx01,	// ADC[C]op[A..Q], SBC[C]op[A..Q], AND[C]op[A..Q], ORA[C]op[A..Q], EOR[C]op[A..Q]
@@ -1228,7 +1228,7 @@ always @(posedge clk)
             src_reg <= SEL_C; 
              
 		16'b00xx_11xx_1000_1011,	// T[D][A..Q]
-		16'b00xx_11xx_1010_10x0,	// T[D]X, T[D]Y
+		16'b0000_1100_1010_10x0,	// T[D]X, T[D]Y
 		16'b0000_1100_100x_xx01,	// ST[D]
 		16'b0000_1100_110x_xx01,	// CMP[D]
 		16'b00xx_11xx_0xxx_xx01,	// ADC[D]op[A..Q], SBC[D]op[A..Q], AND[D]op[A..Q], ORA[D]op[A..Q], EOR[D]op[A..Q]
