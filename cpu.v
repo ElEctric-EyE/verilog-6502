@@ -1004,11 +1004,11 @@ always @(posedge clk)
 always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
-		16'bxxxx_xxxx_0xxx_xx01,	// ORA[A..Q], AND[A..Q], EOR[A..D], ADC[A..D]
+		16'bxxxx_xxxx_0xxx_xx01,	// ORA[A..Q], AND[A..Q], EOR[A..Q], ADC[A..Q]
 	 	16'bxxxx_xxxx_111x_xx01,	// SBC[A..Q]
 		16'b00xx_00xx_101x_xxx1,	// LDA[A..Q]
-		16'bxxxx_xxxx_xxxx_1010,	// ASL[A..Q], ROL[A..Q], LSR[A..D], ROR[A..D], TX[A..P], T[XS][SX], DEX, NOP,
-		16'b00xx_00xx_xxx0_1000,	// PHP, PLP, PH[A..Q], PL[A..D], DEY, T[A..D]Y, INY, INX
+		16'bxxxx_xxxx_xxxx_1010,	// ASL[A..D], ROL[A..D], LSR[A..D], ROR[A..D], TX[A..Q], T[XS][SX], DEX, NOP,
+		16'b00xx_00xx_xxx0_1000,	// PHP, PLP, PH[A..Q], PL[A..Q], DEY, T[A..Q]Y, INY, INX
 		16'b00xx_00xx_1001_1000,	// TY[A..Q]
 		16'b0000_0000_1011_x1x0,	// LDX/LDY
 		16'bxxxx_xxxx_1010_xxx0,	// ASL[A..Q], ROL[A..D]...
