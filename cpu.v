@@ -3,7 +3,7 @@
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
- * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B,C,D accumulators. Added full accumulator to accumulator transfer opcodes. Added BigEd's 16-bit barrel shifter logic.
+ * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B thru Q accumulators. Added full accumulator to accumulator transfer opcodes. Added BigEd's 16-bit barrel shifter logic to A thru D Acc's.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -1187,7 +1187,9 @@ always @(posedge clk)
 		16'bxx11_xx11_0xxx_xx01,	// ADC[A..Q]op[Q], SBC[A..Q]op[Q], AND[A..Q]op[Q], ORA[A..Q]op[Q], EOR[A..Q]op[Q]
 		16'bxx11_xx11_111x_xx01,	// SBC[A..Q]op[Q]
 		16'bxx11_xx11_0010_x100:	// BIT[A..Q]op[Q] zp
-		      dst_reg <= SEL_Q;       
+		      dst_reg <= SEL_Q;
+				
+		default: dst_reg <= SEL_A;	// undefined opcodes go through A Aacc
 	endcase
 
 always @(posedge clk)
@@ -1362,6 +1364,8 @@ always @(posedge clk)
 		16'b11xx_11xx_111x_xx01,	// SBC[Q]op[A..Q]
 		16'b11xx_11xx_0010_x100:	// BIT[Q]op[A..Q] zp
 				src_reg <= SEL_Q;
+				
+		default: src_reg <= SEL_A;	// undefined opcodes go through A Acc
 	endcase
 
 always @(posedge clk) 
