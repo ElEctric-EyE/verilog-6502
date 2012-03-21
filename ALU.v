@@ -110,6 +110,8 @@ always @(logical or temp_BI or adder_CI)
 // calculate the flags 
 always @(posedge clk)
     if( RDY ) begin
+	AI7 <= AI[7];
+	BI7 <= BI[7];
 	OUT <= shiftrotate ? tempmasked[dw-1:0] : temp[dw-1:0];
 	CO  <= (shiftrotate ? tempshifted[dw] : temp[dw]);
 	N   <= temp[dw-1];
