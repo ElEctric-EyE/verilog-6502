@@ -1016,6 +1016,7 @@ always @(posedge clk)
 		//16'b00xx_00xx_1001_1000,	// TY[A..Q]
 		16'b0000_0000_1011_x1x0,	// LDX/LDY
 		16'bxxxx_xxxx_1010_xxx0,	// ASL[A..Q], ROL[A..D]...
+		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..Q], ROL[A..D]...
 		16'bxxxx_xxxx_10xx_1011:	// T[A..Q][A..Q], TXY, TYX
 					load_reg <= 1;
 
