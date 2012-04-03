@@ -1960,7 +1960,7 @@ ADCQopQi          .MACRO
                   
 ;-------------------------------------------------------------------------------
 
-;ADC #$                 $0069
+;SBC #$                 $00E9
 SBCAopBi          .MACRO          
                   .BYTE $04E9
                   .ENDM
@@ -2787,7 +2787,7 @@ INCN              .MACRO
 INCO              .MACRO
                   .BYTE $FA0B
                   .ENDM
-INCP              .MACRO
+INCQ              .MACRO
                   .BYTE $FF0B
                   .ENDM
                   
@@ -2836,6 +2836,6 @@ DECN              .MACRO
 DECO              .MACRO
                   .BYTE $FA1B
                   .ENDM
-DECP              .MACRO
+DECQ              .MACRO
                   .BYTE $FF1B
                   .ENDM
