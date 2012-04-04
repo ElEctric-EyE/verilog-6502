@@ -1008,7 +1008,9 @@ always @(posedge clk)
 		16'bxxxx_xxxx_0xxx_xx01,	// ORA[A..Q], AND[A..Q], EOR[A..Q], ADC[A..Q]
 	 	16'bxxxx_xxxx_111x_xx01,	// SBC[A..Q]
 		16'b00xx_00xx_101x_xxx1,	// LDA[A..Q]
-		16'bxxxx_xxxx_xxxx_10x0,	// ASL[A..D], ROL[A..D], LSR[A..D], ROR[A..D], TX[A..Q], T[XS][SX], DEX, NOP,
+		16'bxxxx_xxxx_xxxx_1010,	// ASL[A..D], ROL[A..D], LSR[A..D], ROR[A..D], TX[A..Q], T[XS][SX], DEX, NOP,
+		16'bxxxx_xxxx_xxx0_1000,	// even cloumn 8
+		16'b0000_0000_1001_1000,	// TYA
 		16'b0000_0000_1011_x1x0,	// LDX/LDY
 		16'bxxxx_xxxx_1010_xxx0,	// ASL[A..Q], ROL[A..D]...
 		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..Q], ROL[A..D]...
