@@ -1,9 +1,8 @@
-/*
- * verilog-6502 project: verilog model of 6502 and 65Org16 CPU core
+/* verilog-6502 project: verilog model of 6502 and 65Org16 CPU core
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
- * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B thru Q accumulators. Added full accumulator to accumulator transfer opcodes. Added BigEd's 16-bit barrel shifter logic to A thru D Acc's. Added WDC65C02 PHX,PHY,PLX,PLY opcodes. Added INC[A..Q], DEC[A..Q]
+ * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B thru Q accumulators. Added full accumulator to accumulator transfer opcodes. Added BigEd's 16-bit barrel shifter logic to A thru D Acc's. Added WDC65C02 PHX,PHY,PLX,PLY opcodes. Added INC[A..Q], DEC[A..Q]. Added W index register with same addressing modes as Y.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -59,7 +58,7 @@ wire [dw-1:0] DIMUX;	//
 reg  [dw-1:0] IRHOLD;	// Hold for Instruction register 
 reg  IRHOLD_valid;	// Valid instruction in IRHOLD
 
-reg  [dw-1:0] QAXYS[18:0]; 	// A thru Q, X, Y and S register file
+reg  [dw-1:0] QAWXYS[19:0]; 	// A thru Q, W, X, Y, Z and S register file
 
 reg  C = 0;		// carry flag (init at zero to avoid X's in ALU sim)
 reg  Z = 0;		// zero flag
@@ -84,8 +83,8 @@ wire [dw-1:0] PCL = PC[dw-1:0];
 
 reg NMI_edge = 0;	// captured NMI edge
 
-reg [4:0] regsel;			// Select A thru Q, X, Y or S register
-wire [dw-1:0] regfile = QAXYS[regsel];	// Selected register output
+reg [4:0] regsel;			// Select A thru Q, W, X, Y or S register
+wire [dw-1:0] regfile = QAWXYS[regsel];	// Selected register output
 
 parameter 
 	SEL_A    = 5'd0,
@@ -106,29 +105,31 @@ parameter
 	SEL_Q		= 5'd15,		//P = processor status
 	SEL_X	   = 5'd16,
 	SEL_Y    = 5'd17,
-	SEL_S    = 5'd18;
+	SEL_W		= 5'd18,
+	SEL_S    = 5'd19;
 
 initial
 	begin
-		QAXYS[SEL_Q] = 0;
-		QAXYS[SEL_O] = 0;
-		QAXYS[SEL_N] = 0;
-		QAXYS[SEL_M] = 0;
-		QAXYS[SEL_L] = 0;
-		QAXYS[SEL_K] = 0;
-		QAXYS[SEL_J] = 0;
-		QAXYS[SEL_I] = 0;
-		QAXYS[SEL_H] = 0;
-		QAXYS[SEL_G] = 0;
-		QAXYS[SEL_F] = 0;
-		QAXYS[SEL_E] = 0;
-		QAXYS[SEL_D] = 0;
-		QAXYS[SEL_C] = 0;
-		QAXYS[SEL_B] = 0;
-		QAXYS[SEL_A] = 0;
-		QAXYS[SEL_X] = 0;
-		QAXYS[SEL_Y] = 0;
-		QAXYS[SEL_S] = 16'hffff; //init stack
+		QAWXYS[SEL_Q] = 0;
+		QAWXYS[SEL_O] = 0;
+		QAWXYS[SEL_N] = 0;
+		QAWXYS[SEL_M] = 0;
+		QAWXYS[SEL_L] = 0;
+		QAWXYS[SEL_K] = 0;
+		QAWXYS[SEL_J] = 0;
+		QAWXYS[SEL_I] = 0;
+		QAWXYS[SEL_H] = 0;
+		QAWXYS[SEL_G] = 0;
+		QAWXYS[SEL_F] = 0;
+		QAWXYS[SEL_E] = 0;
+		QAWXYS[SEL_D] = 0;
+		QAWXYS[SEL_C] = 0;
+		QAWXYS[SEL_B] = 0;
+		QAWXYS[SEL_A] = 0;
+		QAWXYS[SEL_X] = 0;
+		QAWXYS[SEL_Y] = 0;
+		QAWXYS[SEL_W] = 0;
+		QAWXYS[SEL_S] = 16'hffff; //init stack
 	end
 
 /*
@@ -137,25 +138,26 @@ initial
 
 
 //`ifdef SIM
-wire [dw-1:0]   Qacc = QAXYS[SEL_Q];	// Accumulator
-wire [dw-1:0]   Oacc = QAXYS[SEL_O];	// Accumulator
-wire [dw-1:0]   Nacc = QAXYS[SEL_N];	// Accumulator
-wire [dw-1:0]   Macc = QAXYS[SEL_M];	// Accumulator
-wire [dw-1:0]   Lacc = QAXYS[SEL_L];	// Accumulator
-wire [dw-1:0]   Kacc = QAXYS[SEL_K];	// Accumulator
-wire [dw-1:0]   Jacc = QAXYS[SEL_J];	// Accumulator
-wire [dw-1:0]   Iacc = QAXYS[SEL_I];	// Accumulator
-wire [dw-1:0]   Hacc = QAXYS[SEL_H];	// Accumulator
-wire [dw-1:0]   Gacc = QAXYS[SEL_G];	// Accumulator
-wire [dw-1:0]   Facc = QAXYS[SEL_F];	// Accumulator
-wire [dw-1:0]   Eacc = QAXYS[SEL_E];	// Accumulator
-wire [dw-1:0]   Dacc = QAXYS[SEL_D];	// Accumulator
-wire [dw-1:0]   Cacc = QAXYS[SEL_C];	// Accumulator
-wire [dw-1:0]   Bacc = QAXYS[SEL_B];	// Accumulator
-wire [dw-1:0]   Aacc = QAXYS[SEL_A];	// Accumulator
-wire [dw-1:0]   X = QAXYS[SEL_X];	// X register
-wire [dw-1:0]   Y = QAXYS[SEL_Y];	// Y register 
-wire [dw-1:0]   S = QAXYS[SEL_S];	// Stack pointer
+wire [dw-1:0]   Qacc = QAWXYS[SEL_Q];	// Accumulator
+wire [dw-1:0]   Oacc = QAWXYS[SEL_O];	// Accumulator
+wire [dw-1:0]   Nacc = QAWXYS[SEL_N];	// Accumulator
+wire [dw-1:0]   Macc = QAWXYS[SEL_M];	// Accumulator
+wire [dw-1:0]   Lacc = QAWXYS[SEL_L];	// Accumulator
+wire [dw-1:0]   Kacc = QAWXYS[SEL_K];	// Accumulator
+wire [dw-1:0]   Jacc = QAWXYS[SEL_J];	// Accumulator
+wire [dw-1:0]   Iacc = QAWXYS[SEL_I];	// Accumulator
+wire [dw-1:0]   Hacc = QAWXYS[SEL_H];	// Accumulator
+wire [dw-1:0]   Gacc = QAWXYS[SEL_G];	// Accumulator
+wire [dw-1:0]   Facc = QAWXYS[SEL_F];	// Accumulator
+wire [dw-1:0]   Eacc = QAWXYS[SEL_E];	// Accumulator
+wire [dw-1:0]   Dacc = QAWXYS[SEL_D];	// Accumulator
+wire [dw-1:0]   Cacc = QAWXYS[SEL_C];	// Accumulator
+wire [dw-1:0]   Bacc = QAWXYS[SEL_B];	// Accumulator
+wire [dw-1:0]   Aacc = QAWXYS[SEL_A];	// Accumulator
+wire [dw-1:0]   X = QAWXYS[SEL_X];	// X register
+wire [dw-1:0]   Y = QAWXYS[SEL_Y];	// Y register
+wire [dw-1:0]   W = QAWXYS[SEL_W];	// W register 
+wire [dw-1:0]   S = QAWXYS[SEL_S];	// Stack pointer
 //`endif
 
 wire [dw-1:0] P = { N, V, 2'b0, I, Z, C };
@@ -176,14 +178,15 @@ reg [aw-1:0] PC_temp; 	// intermediate value of PC
 reg [4:0] src_reg;	// source register index
 reg [4:0] dst_reg;	// destination register index
 
-reg index_y;		// if set, then Y is index reg rather than X 
-reg load_reg;		// loading a register (A thru Q, X, Y, S) in this instruction
+reg index_y;		// if set, then Y is index reg
+reg index_w;		// if set, then W is index reg, otherwise X is index reg
+reg load_reg;		// loading a register (A thru Q, W, X, Y, S) in this instruction
 reg inc;		// increment
 reg write_back;		// set if memory is read/modified/written 
-reg load_only;		// LDA/LDX/LDY instruction
-reg store;		// doing store (STA/STX/STY)
+reg load_only;		// LD[A..Q]/LDW/LDX/LDY instruction
+reg store;		// doing store (ST[A..Q]/STW/STX/STY)
 reg adc_sbc;		// doing ADC/SBC
-reg compare;		// doing CMP/CPY/CPX
+reg compare;		// doing CMP/CPY/CPX/CPW
 reg shift;		// doing shift/rotate instruction
 reg rotate;		// doing rotate (no shift)
 reg backwards;		// backwards branch
@@ -522,7 +525,7 @@ always @*
     endcase
 
 /*
- * register file, contains A thru Q, X, Y and S (stack pointer) registers. At each
+ * register file, contains A thru Q, W, X, Y and S (stack pointer) registers. At each
  * cycle only 1 of those registers needs to be accessed, so they combined
  * in a small memory, saving resources.
  */
@@ -544,17 +547,17 @@ always @*
     endcase
 
 /*
- * write to a register. Usually this is the (BCD corrected) output of the
+ * write to a register. Usually this is the output of the
  * ALU, but in case of the JSR0 we use the S register to temporarily store
  * the PCL. This is possible, because the S register itself is stored in
  * the ALU during those cycles.
  */
 always @(posedge clk)
     if( write_register & RDY )
-	QAXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
+	QAWXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
 
 /*
- * register select logic. This determines which of the A thru Q, X, Y or
+ * register select logic. This determines which of the A thru Q, W, X, Y or
  * S registers will be accessed. 
  */
 
@@ -563,8 +566,7 @@ always @*
 	INDY1,
 	INDX0,
 	ZPX0,
-    	ABSX0  : regsel = index_y ? SEL_Y : SEL_X;
-
+    	ABSX0  : regsel = index_w ? SEL_W : index_y ? SEL_Y : SEL_X;
 
 	DECODE : regsel = dst_reg; 
 
@@ -780,7 +782,7 @@ always @(posedge clk )
     end
 
 /*
- * Update Z, N flags when writing A thru Q, X, Y, Memory, or when doing compare
+ * Update Z, N flags when writing A thru Q, W, X, Y, Memory, or when doing compare
  */
 
 always @(posedge clk) 
@@ -885,34 +887,51 @@ always @(posedge clk or posedge reset)
 																 //							IR[13:12,9:8]: dst_reg.
 		16'b0000_0000_0000_0000:	state <= BRK0;
 		16'b0000_0000_0010_0000:	state <= JSR0;
-		16'bxxxx_xxxx_0010_1100:	state <= ABS0;  // BIT abs
 		16'b0000_0000_0100_0000:	state <= RTI0;  // 
 		16'b0000_0000_0100_1100:	state <= JMP0;
 		16'b0000_0000_0110_0000:	state <= RTS0;
 		16'b0000_0000_0110_1100:	state <= JMPI0;
+		16'bxxxx_xxxx_xxx0_01xx:	state <= ZP0;	 // even rows, columns 4,5,6,7
+		16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd rows, column 0
+		
+		16'bxxxx_xxxx_xxx0_0001:	state <= INDX0; // even rows, column 1 --(zp,x)
+		
+		16'bxxxx_xxxx_xxx1_0001:	state <= INDY0; // odd rows, column 1 --(zp),y
+		16'bxxxx_xxxx_xxx1_0010:	state <= INDY0; // odd rows, column 2 --(zp),w
+		
+		16'bxxxx_xxxx_0xx1_0101:	state <= ZPX0;  // row 1,3,5,7, column 5
+		16'bxxxx_xxxx_0xx1_0110:	state <= ZPX0;	 // row 1,3,5,7, column 6
+		16'bxx00_xx00_10x1_010x:	state <= ZPX0;  // row 9,B, column 4,5
+		16'b0000_0000_0111_0100:	state <= ZPX0;  // STW zpx
+		16'bxxxx_xxxx_11x1_01xx:	state <= ZPX0;  // row D,F, column 4,5,6,7
+		
+		16'bxxxx_xxxx_0010_1100:	state <= ABS0;  // BIT abs
+		16'bxxxx_xxxx_0xx0_1101:	state <= ABS0;  // row 0,2,4,6 even D column
+		16'bxxxx_xxxx_0xx0_1110:	state <= ABS0;  // row 0,2,4,6 even E column
+		16'b0000_0000_1xx0_11xx:	state <= ABS0;  // row 8,A,C,E, column C,D,E,F --X/Y/W abs
+		
+		16'bxxxx_xxxx_xxx1_1xx1:	state <= ABSX0; // odd rows, column 9,B,D,F
+		16'bxxxx_xxxx_xxx1_1110:	state <= ABSX0; // odds rows, column E
+				
 		16'bxx00_xx00_0x00_1000:	state <= PUSH0; // PH[A..Q], PHP
 		16'b0000_0000_x101_1010:	state <= PUSH0; // PHX, PHY
+		16'b0000_0000_0100_1011:	state <= PUSH0; // PHW
+		
 		16'b00xx_00xx_0x10_1000:	state <= PULL0; // PL[A..Q], PLP
-		16'b0000_0000_x111_1010:	state <= PULL0; // PLX, PLY
+		16'b0000_0000_x111_1010:	state <= PULL0; // PLY, PLX
+		16'b0000_0000_0110_1011:	state <= PULL0; // PLW
+		
+		16'b0000_0000_1xx0_00x0:	state <= FETCH; // IMM, row 8,A,C,E, column 0,2
+		16'bxxxx_xxxx_xxx0_1001:	state <= FETCH; // IMM, even rows, column 9
+		
 		16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
-		16'b0000_0000_1xx0_00x0:	state <= FETCH; // IMM
-		16'b0000_0000_1xx0_1100:	state <= ABS0;  // X/Y abs
-		16'b00xx_00xx_1xxx_1000:	state <= REG;   // DEY, TY[A..Q], T[A..Q]Y, INY, INX
-		16'bxxxx_xxxx_xxx0_0001:	state <= INDX0; // even 1 column (zp,x)
-		16'bxxxx_xxxx_xxx0_01xx:	state <= ZP0;
-		16'bxxxx_xxxx_xxx0_1001:	state <= FETCH; // IMM, even 9 column
-		16'bxxxx_xxxx_xxx0_1101:	state <= ABS0;  // even D column
-		16'bxxxx_xxxx_xxx0_1110:	state <= ABS0;  // even E column
-		16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd 0 column
-		16'bxxxx_xxxx_xxx1_0001:	state <= INDY0; // odd 1 column
-		16'bxxxx_xxxx_xxx1_01xx:	state <= ZPX0;  // odd 4,5,6,7 columns
-		16'bxxxx_xxxx_xxx1_1001:	state <= ABSX0; // odd 9 column
-		16'bxxxx_xxxx_xxx1_11xx:	state <= ABSX0; // odd C, D, E, F columns
-		16'bxxxx_xxxx_xxxx_1010:	state <= REG;   // <shift> A, TX[A..Q], ...  NOP
-		16'bxxxx_xxxx_10xx_1011:	state <= REG;	 // T[A..Q][A..Q],TXY,TYX
-		16'bxxxx_xxxx_000x_1011:	state <= REG;	 // INC[A..Q], DEC[A..Q]
-	   16'bxxxx_xxxx_0xxx_x110:	state <= REG;	 // ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (abs, absx, zpg, zpgx)op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (acc)
-		endcase
+		16'bxxxx_xxxx_1xxx_1000:	state <= REG;   // DEY, TY[A..Q], T[A..Q]Y, INY, INX, INW, DEW
+		16'bxxxx_xxxx_xxx0_1010:	state <= REG;   // <shift/rotate> [A..Q], TX[A..Q], NOP
+		16'bxxxx_xxxx_00x1_1010:	state <= REG;   // INC/DEC [A..Q]
+		16'bxxxx_xxxx_10x1_1010:	state <= REG;   // TSX, TXS
+		16'bxxxx_xxxx_1xx0_1011:	state <= REG;	 // T[A..Q][A..Q],TYX,TXY
+		16'bxxxx_xxxx_1111_00x0:	state <= REG;	 // TW[A..Q], T[A..Q]W
+	  endcase
 
         ZP0	: state <= write_back ? READ : FETCH;
 
@@ -1004,18 +1023,43 @@ always @(posedge clk)
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			
-		16'bxxxx_xxxx_0xxx_xx01,	// ORA[A..Q], AND[A..Q], EOR[A..Q], ADC[A..Q]
-	 	16'bxxxx_xxxx_111x_xx01,	// SBC[A..Q]
-		16'b00xx_00xx_101x_xxx1,	// LDA[A..Q]
-		16'bxxxx_xxxx_xxxx_1010,	// ASL[A..D], ROL[A..D], LSR[A..D], ROR[A..D], TX[A..Q], T[XS][SX], DEX, NOP,
-		16'bxxxx_xxxx_xxx0_1000,	// even cloumn 8
-		16'b00xx_00xx_1001_1000,	// TY[A..Q]
-		16'b0000_0000_1011_x1x0,	// LDX/LDY
-		16'bxxxx_xxxx_1010_xxx0,	// ASL[A..Q], ROL[A..D]...
-		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..Q], ROL[A..D]...
-		16'bxxxx_xxxx_10xx_1011,	// T[A..Q][A..Q], TXY, TYX
-		16'bxxxx_xxxx_000x_1011:	// INC[A..Q], DEC[A..Q]
+     	casex( IR[15:0] )
+		16'b0000_0000_1010_0000,	// LDY
+		16'bxxxx_xxxx_0xxx_0001,
+		16'bxxxx_xxxx_1x1x_0001,	
+		16'bxxxx_xxxx_0xx1_0010,
+		16'bxxxx_xxxx_101x_0010,
+		16'bxxxx_xxxx_1100_0010,	// LDW i
+		16'bxxxx_xxxx_1111_0010,	// T[A..Q]W
+		16'bxxxx_xxxx_0010_0100,	// BIT zp
+		16'bxxxx_xxxx_101x_0100,
+		16'bxxxx_xxxx_11x1_0100,	
+		16'bxxxx_xxxx_0xxx_0101,
+		16'bxxxx_xxxx_1x1x_0101,
+		16'bxxxx_xxxx_0xxx_0110,
+		16'bxxxx_xxxx_1x1x_0110,
+		16'bxxxx_xxxx_110x_0110,
+		16'bxxxx_xxxx_101x_0111,	
+				
+		16'b0000_0000_xxx0_1000,   
+		16'bxxxx_xxxx_1001_1000,	// TYA
+		16'bxxxx_xxxx_11x1_1000,
+		16'bxxxx_xxxx_0xxx_1001,	
+		16'bxxxx_xxxx_1x1x_1001,
+		16'bxxxx_xxxx_xxxx_1010,
+		16'bxxxx_xxxx_0xxx_1011,	 
+		16'bxxxx_xxxx_1000_1011,	// T[A..Q][A..Q]
+		16'bxxxx_xxxx_1x1x_1011,
+		16'b0000_0000_1100_1011,	// TXY
+		16'bxxxx_xxxx_0010_1100,	// BIT a
+		16'bxxxx_xxxx_101x_1100,
+		16'bxxxx_xxxx_0xxx_1101,
+		16'bxxxx_xxxx_1x1x_1101,
+		16'bxxxx_xxxx_0xxx_1110,
+		16'bxxxx_xxxx_1x1x_1110,
+		16'bxxxx_xxxx_110x_1110,
+		16'bxxxx_xxxx_00x0_1111,
+		16'bxxxx_xxxx_101x_1111:
 					load_reg <= 1;
 
 		default:	load_reg <= 0;
@@ -1026,29 +1070,44 @@ always @(posedge clk)
      	casex( IR[15:0] )  			
 		16'b0000_0000_1110_1000,	// INX
 		16'b0000_0000_1100_1010,	// DEX
-		16'b00xx_00xx_101x_xx10,	// LDX, T[A..Q]X, TSX
+		16'bxx00_xx00_1010_xx10,	// LDX, T[A..Q]X
+		16'b0000_0000_1011_x11x,	// LDX zpy/zpw, LDX ay,aw
 		16'b0000_0000_1111_1010,	// PLX
+		16'b0000_0000_1010_1010,	// TAX
 		16'b0000_0000_1010_1011:	// TYX
 				dst_reg <= SEL_X;
 
 		16'bxx00_xx00_0100_1000,	// PH[A..Q]
 		16'b0000_0000_0000_1000,	// PHP
 		16'b0000_0000_x101_1010,	// PHX, PHY
-		16'b0000_0000_1001_1010:	// TXS
+		16'b0000_0000_0100_1011,	// PHW
+		16'b0000_0000_1011_1010:	// TXS
 				dst_reg <= SEL_S;
 
-		16'b0000_0000_1x00_1000,	// DEY, DEX
-		16'b0000_0000_101x_x100,	// LDY
-		16'b00xx_00xx_1010_x000, 	// LDY #imm, T[A..Q]Y
+		16'b0000_0000_1x00_1000,	// DEY, INY
+		16'b0000_0000_101x_x100,	// LDY a,ax, zp,zpx
+		16'bxx00_xx00_1010_x000, 	// LDY #imm, T[A..Q]Y
 		16'b0000_0000_0111_1010,	// PLY
-		16'b0000_0000_1011_1011:	// TXY
+		16'b0000_0000_1100_1011:	// TXY
 				dst_reg <= SEL_Y;
+				
+		16'b0000_0000_11x1_1000,	// INW, DEW
+		16'b0000_0000_1100_0010,	// LDW #
+		16'b0000_0000_11x1_0100,	// LDW ax,zpx
+		16'b0000_0000_1010_x111,	// LDW a,zp
+		16'b0000_0000_0110_1011,	// PLW
+		16'bxx00_xx00_0010_1111:	// T[A..Q]W
+				dst_reg <= SEL_W;
 
 		16'bxx00_xx00_1000_1011,	// T[A..Q][A]
-		16'b0000_0000_000x_1011,	// INC[A], DEC[A]
+		16'b0000_0000_00x1_1010,	// INC[A], DEC[A]
 		16'b0000_0000_0110_1000,	// PL[A]
-		16'b0000_0000_100x_10x0,	// TX[A], TY[A]
-		16'b0000_0000_101x_xxx1,	// LD[A]
+		16'b0000_0000_1000_1010,	// TX[A]
+		16'b0000_0000_1001_1000,	// TY[A]
+		16'b0000_0000_0000_1111,	// TW[A]
+		16'b0000_0000_101x_xx01,	// LD[A]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0000_0000_1011_1011,	// LD[A]w
+		16'b0000_0000_1011_0010,	// LD[A](zp)w
 		16'bxx00_xx00_0xxx_xx01,	// ADC[A..Q]op[A], SBC[A..Q]op[A], AND[A..Q]op[A], ORA[A..Q]op[A], EOR[A..Q]op[A]
 		16'bxx00_xx00_111x_xx01,	// SBC[A..Q]op[A]
 		16'bxxxx_xx00_0xxx_x110,	// ASL[A..D]op[A], ROL[A..D]op[A], LSR[A..D]op[A], ROR[A..D]op[A] (abs, absx, zpg, zpgx)
@@ -1057,10 +1116,14 @@ always @(posedge clk)
 				dst_reg <= SEL_A; 
       
 		16'bxx00_xx01_1000_1011,	// T[A..Q][B]
-		16'b0000_0101_000x_1011,	// INC[B], DEC[B]
+		16'b0000_0101_00x1_1010,	// INC[B], DEC[B]
 		16'b0000_0001_0110_1000,	// PL[B]
-		16'b0000_0001_100x_10x0,	// TX[B], TY[B]
-		16'b0000_0001_101x_xxx1,	// LD[B]
+		16'b0000_0001_1000_1010,	// TX[B]
+		16'b0000_0001_1001_1000, 	// TY[B]
+		16'b0000_0001_0000_1111,	// TW[B]
+		16'b0000_0001_101x_xx01,	// LD[B]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0000_0001_1011_1011,	// LD[B]w
+		16'b0000_0001_1011_0010,	// LD[B](zp)w
 		16'bxx00_xx01_0xxx_xx01,	// ADC[A..Q]op[B], SBC[A..Q]op[B], AND[A..Q]op[B], ORA[A..Q]op[B], EOR[A..Q]op[B]
 		16'bxx00_xx01_111x_xx01,	// SBC[A..Q]op[B]
 		16'bxxxx_xx01_0xxx_x110,	// ASL[A..D]op[B], ROL[A..D]op[B], LSR[A..D]op[B], ROR[A..D]op[B] (abs, absx, zpg, zpgx)
@@ -1069,10 +1132,14 @@ always @(posedge clk)
             dst_reg <= SEL_B; 
              
 		16'bxx00_xx10_1000_1011,	// T[A..Q][C]
-		16'b0000_1010_000x_1011,	// INC[C], DEC[C]
+		16'b0000_1010_00x1_1010,	// INC[C], DEC[C]
 		16'b0000_0010_0110_1000,	// PL[C]
-		16'b0000_0010_100x_10x0,	// TX[C], TY[C]
-		16'b0000_0010_101x_xxx1,	// LD[C]
+		16'b0000_0010_1000_1010,	// TX[C]
+		16'b0000_0010_1001_1000, 	// TY[C]
+		16'b0000_0010_0000_1111,	// TW[C]
+		16'b0000_0010_101x_xx01,	// LD[C]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0000_0010_1011_1011,	// LD[C]w
+		16'b0000_0010_1011_0010,	// LD[C](zp)w
 		16'bxx00_xx10_0xxx_xx01,	// ADC[A..Q]op[C], SBC[A..Q]op[C], AND[A..Q]op[C], ORA[A..Q]op[C], EOR[A..Q]op[C]
 		16'bxx00_xx10_111x_xx01,	// SBC[A..Q]op[C]
 		16'bxxxx_xx10_0xxx_x110,	// ASL[A..D]op[C], ROL[A..D]op[C], LSR[A..D]op[C], ROR[A..D]op[C] (abs, absx, zpg, zpgx)
@@ -1081,10 +1148,14 @@ always @(posedge clk)
             dst_reg <= SEL_C; 
              
 		16'bxx00_xx11_1000_1011,	// T[A..Q][D]
-		16'b0000_1111_000x_1011,	// INC[D], DEC[D]
+		16'b0000_1111_00x1_1010,	// INC[D], DEC[D]
 		16'b0000_0011_0110_1000,	// PL[D]
-		16'b0000_0011_100x_10x0,	// TX[D], TY[D]
-		16'b0000_0011_101x_xxx1,	// LD[D]
+		16'b0000_0011_1000_1010,	// TX[D]
+		16'b0000_0011_1001_1000, 	// TY[D]
+		16'b0000_0011_0000_1111,	// TW[D]
+		16'b0000_0011_101x_xx01,	// LD[D]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0000_0011_1011_1011,	// LD[D]w
+		16'b0000_0011_1011_0010,	// LD[D](zp)w
 		16'bxx00_xx11_0xxx_xx01,	// ADC[A..Q]op[D], SBC[A..Q]op[D], AND[A..Q]op[D], ORA[A..Q]op[D], EOR[A..Q]op[D]
 		16'bxx00_xx11_111x_xx01,	// SBC[A..Q]op[D]
 		16'bxxxx_xx11_0xxx_x110,	// ASL[A..D]op[D], ROL[A..D]op[D], LSR[A..D]op[D], ROR[A..D]op[D] (abs, absx, zpg, zpgx)
@@ -1093,126 +1164,174 @@ always @(posedge clk)
 		      dst_reg <= SEL_D;
 
 		16'bxx01_xx00_1000_1011,	// T[A..Q][E]
-		16'b0101_0000_000x_1011,	// INC[E], DEC[E]
+		16'b0101_0000_00x1_1010,	// INC[E], DEC[E]
 		16'b0001_0000_0110_1000,	// PL[E]
-		16'b0001_0000_100x_10x0,	// TX[E], TY[E]
-		16'b0001_0000_101x_xxx1,	// LD[E]
+		16'b0001_0000_1000_1010,	// TX[E]
+		16'b0001_0000_1001_1000,	// TY[E]
+		16'b0001_0000_0000_1111,	// TW[E]
+		16'b0001_0000_101x_xx01,	// LD[E]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0001_0000_1011_1011,	// LD[E]w
+		16'b0001_0000_1011_0010,	// LD[E](zp)w
 		16'bxx01_xx00_0xxx_xx01,	// ADC[A..Q]op[E], SBC[A..Q]op[E], AND[A..Q]op[E], ORA[A..Q]op[E], EOR[A..Q]op[E]
 		16'bxx01_xx00_111x_xx01,	// SBC[A..Q]op[E]
 		16'bxx01_xx00_0010_x100:	// BIT[A..Q]op[E] zp
 		      dst_reg <= SEL_E;
 
 		16'bxx01_xx01_1000_1011,	// T[A..Q][F]
-		16'b0101_0101_000x_1011,	// INC[F], DEC[F]
+		16'b0101_0101_00x1_1010,	// INC[F], DEC[F]
 		16'b0001_0001_0110_1000,	// PL[F]
-		16'b0001_0001_100x_10x0,	// TX[F], TY[F]
-		16'b0001_0001_101x_xxx1,	// LD[F]
+		16'b0001_0001_1000_1010,	// TX[F]
+		16'b0001_0001_1001_1000, 	// TY[F]
+		16'b0001_0001_0000_1111,	// TW[F]
+		16'b0001_0001_101x_xx01,	// LD[F]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0001_0001_1011_1011,	// LD[F]w
+		16'b0001_0001_1011_0010,	// LD[F](zp)w
 		16'bxx01_xx01_0xxx_xx01,	// ADC[A..Q]op[F], SBC[A..Q]op[F], AND[A..Q]op[F], ORA[A..Q]op[F], EOR[A..Q]op[F]
 		16'bxx01_xx01_111x_xx01,	// SBC[A..Q]op[F]
 		16'bxx01_xx01_0010_x100:	// BIT[A..Q]op[F] zp
 		      dst_reg <= SEL_F;
 
 		16'bxx01_xx10_1000_1011,	// T[A..Q][G]
-		16'b0101_1010_000x_1011,	// INC[G], DEC[G]
+		16'b0101_1010_00x1_1010,	// INC[G], DEC[G]
 		16'b0001_0010_0110_1000,	// PL[G]
-		16'b0001_0010_100x_10x0,	// TX[G], TY[G]
-		16'b0001_0010_101x_xxx1,	// LD[G]
+		16'b0001_0010_1000_1010,	// TX[G]
+		16'b0001_0010_1001_1000, 	// TY[G]
+		16'b0001_0010_0000_1111,	// TW[G]
+		16'b0001_0010_101x_xx01,	// LD[G]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0001_0010_1011_1011,	// LD[G]w
+		16'b0001_0010_1011_0010,	// LD[G](zp)w
 		16'bxx01_xx10_0xxx_xx01,	// ADC[A..Q]op[G], SBC[A..Q]op[G], AND[A..Q]op[G], ORA[A..Q]op[G], EOR[A..Q]op[G]
 		16'bxx01_xx10_111x_xx01,	// SBC[A..Q]op[G]
 		16'bxx01_xx10_0010_x100:	// BIT[A..Q]op[G] zp
 		      dst_reg <= SEL_G;
 
 		16'bxx01_xx11_1000_1011,	// T[A..Q][H]
-		16'b0101_1111_000x_1011,	// INC[H], DEC[H]
+		16'b0101_1111_00x1_1010,	// INC[H], DEC[H]
 		16'b0001_0011_0110_1000,	// PL[H]
-		16'b0001_0011_100x_10x0,	// TX[H], TY[H]
-		16'b0001_0011_101x_xxx1,	// LD[H]
+		16'b0001_0011_1000_1010,	// TX[H]
+		16'b0001_0011_1001_1000, 	// TY[H]
+		16'b0001_0011_0000_1111,	// TW[H]
+		16'b0001_0011_101x_xx01,	// LD[H]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0001_0011_1011_1011,	// LD[H]w
+		16'b0001_0011_1011_0010,	// LD[H](zp)w
 		16'bxx01_xx11_0xxx_xx01,	// ADC[A..Q]op[H], SBC[A..Q]op[H], AND[A..Q]op[H], ORA[A..Q]op[H], EOR[A..Q]op[H]
 		16'bxx01_xx11_111x_xx01,	// SBC[A..Q]op[H]
 		16'bxx01_xx11_0010_x100:	// BIT[A..Q]op[H] zp
 		      dst_reg <= SEL_H;
 
 		16'bxx10_xx00_1000_1011,	// T[A..Q][I]
-		16'b1010_0000_000x_1011,	// INC[I], DEC[I]
+		16'b1010_0000_00x1_1010,	// INC[I], DEC[I]
 		16'b0010_0000_0110_1000,	// PL[I]
-		16'b0010_0000_100x_10x0,	// TX[I], TY[I]
-		16'b0010_0000_101x_xxx1,	// LD[I]
+		16'b0010_0000_1000_1010,	// TX[I]
+		16'b0010_0000_1001_1000, 	// TY[I]
+		16'b0010_0000_0000_1111,	// TW[I]
+		16'b0010_0000_101x_xx01,	// LD[I]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0010_0000_1011_1011,	// LD[I]w
+		16'b0010_0000_1011_0010,	// LD[I](zp)w
 		16'bxx10_xx00_0xxx_xx01,	// ADC[A..Q]op[I], SBC[A..Q]op[I], AND[A..Q]op[I], ORA[A..Q]op[I], EOR[A..Q]op[I]
 		16'bxx10_xx00_111x_xx01,	// SBC[A..Q]op[I]
 		16'bxx10_xx00_0010_x100:	// BIT[A..Q]op[I] zp
 		      dst_reg <= SEL_I;
 
 		16'bxx10_xx01_1000_1011,	// T[A..Q][J]
-		16'b1010_0101_000x_1011,	// INC[J], DEC[J]
+		16'b1010_0101_00x1_1010,	// INC[J], DEC[J]
 		16'b0010_0001_0110_1000,	// PL[J]
-		16'b0010_0001_100x_10x0,	// TX[J], TY[J]
-		16'b0010_0001_101x_xxx1,	// LD[J]
+		16'b0010_0001_1000_1010,	// TX[J]
+		16'b0010_0001_1001_1000, 	// TY[J]
+		16'b0010_0001_0000_1111,	// TW[J]
+		16'b0010_0001_101x_xx01,	// LD[J]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0010_0001_1011_1011,	// LD[J]w
+		16'b0010_0001_1011_0010,	// LD[J](zp)w
 		16'bxx10_xx01_0xxx_xx01,	// ADC[A..Q]op[J], SBC[A..Q]op[J], AND[A..Q]op[J], ORA[A..Q]op[J], EOR[A..Q]op[J]
 		16'bxx10_xx01_111x_xx01,	// SBC[A..Q]op[J]
 		16'bxx10_xx01_0010_x100:	// BIT[A..Q]op[J] zp
 		      dst_reg <= SEL_J;
 
 		16'bxx10_xx10_1000_1011,	// T[A..Q][K]
-		16'b1010_1010_000x_1011,	// INC[K], DEC[K]
+		16'b1010_1010_00x1_1010,	// INC[K], DEC[K]
 		16'b0010_0010_0110_1000,	// PL[K]
-		16'b0010_0010_100x_10x0,	// TX[K], TY[K]
-		16'b0010_0010_101x_xxx1,	// LD[K]
+		16'b0010_0010_1000_1010,	// TX[K]
+		16'b0010_0010_1001_1000, 	// TY[K]
+		16'b0010_0010_0000_1111,	// TW[K]
+		16'b0010_0010_101x_xx01,	// LD[K]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0010_0010_1011_1011,	// LD[K]w
+		16'b0010_0010_1011_0010,	// LD[K](zp)w
 		16'bxx10_xx10_0xxx_xx01,	// ADC[A..Q]op[K], SBC[A..Q]op[K], AND[A..Q]op[K], ORA[A..Q]op[K], EOR[A..Q]op[K]
 		16'bxx10_xx10_111x_xx01,	// SBC[A..Q]op[K]
 		16'bxx10_xx10_0010_x100:	// BIT[A..Q]op[K] zp
 		      dst_reg <= SEL_K;
 
 		16'bxx10_xx11_1000_1011,	// T[A..Q][L]
-		16'b1010_1111_000x_1011,	// INC[L], DEC[L]
+		16'b1010_1111_00x1_1010,	// INC[L], DEC[L]
 		16'b0010_0011_0110_1000,	// PL[L]
-		16'b0010_0011_100x_10x0,	// TX[L], TY[L]
-		16'b0010_0011_101x_xxx1,	// LD[L]
+		16'b0010_0011_1000_1010,	// TX[L]
+		16'b0010_0011_1001_1000, 	// TY[L]
+		16'b0010_0011_0000_1111,	// TW[L]
+		16'b0010_0011_101x_xx01,	// LD[L]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0010_0011_1011_1011,	// LD[L]w
+		16'b0010_0011_1011_0010,	// LD[L](zp)w
 		16'bxx10_xx11_0xxx_xx01,	// ADC[A..Q]op[L], SBC[A..Q]op[L], AND[A..Q]op[L], ORA[A..Q]op[L], EOR[A..Q]op[L]
 		16'bxx10_xx11_111x_xx01,	// SBC[A..Q]op[L]
 		16'bxx10_xx11_0010_x100:	// BIT[A..Q]op[L] zp
 		      dst_reg <= SEL_L;
 
 		16'bxx11_xx00_1000_1011,	// T[A..Q][M]
-		16'b1111_0000_000x_1011,	// INC[M], DEC[M]
+		16'b1111_0000_00x1_1010,	// INC[M], DEC[M]
 		16'b0011_0000_0110_1000,	// PL[M]
-		16'b0011_0000_100x_10x0,	// TX[M], TY[M]
-		16'b0011_0000_101x_xxx1,	// LD[M]
+		16'b0011_0000_1000_1010,	// TX[M]
+		16'b0011_0000_1001_1000, 	// TY[M]
+		16'b0011_0000_0000_1111,	// TW[M]
+		16'b0011_0000_101x_xx01,	// LD[M]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0011_0000_1011_1011,	// LD[M]w
+		16'b0011_0000_1011_0010,	// LD[M](zp)w
 		16'bxx11_xx00_0xxx_xx01,	// ADC[A..Q]op[M], SBC[A..Q]op[M], AND[A..Q]op[M], ORA[A..Q]op[M], EOR[A..Q]op[M]
 		16'bxx11_xx00_111x_xx01,	// SBC[A..Q]op[M]
 		16'bxx11_xx00_0010_x100:	// BIT[A..Q]op[M] zp
 		      dst_reg <= SEL_M;
 
 		16'bxx11_xx01_1000_1011,	// T[A..Q][N]
-		16'b1111_0101_000x_1011,	// INC[N], DEC[N]
+		16'b1111_0101_00x1_1010,	// INC[N], DEC[N]
 		16'b0011_0001_0110_1000,	// PL[N]
-		16'b0011_0001_100x_10x0,	// TX[N], TY[N]
-		16'b0011_0001_101x_xxx1,	// LD[N]
+		16'b0011_0001_1000_1010,	// TX[N]
+		16'b0011_0001_1001_1000, 	// TY[N]
+		16'b0011_0001_0000_1111,	// TW[N]
+		16'b0011_0001_101x_xx01,	// LD[N]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0011_0001_1011_1011,	// LD[N]w
+		16'b0011_0001_1011_0010,	// LD[N](zp)w
 		16'bxx11_xx01_0xxx_xx01,	// ADC[A..Q]op[N], SBC[A..Q]op[N], AND[A..Q]op[N], ORA[A..Q]op[N], EOR[A..Q]op[N]
 		16'bxx11_xx01_111x_xx01,	// SBC[A..Q]op[N]
 		16'bxx11_xx01_0010_x100:	// BIT[A..Q]op[N] zp
 		      dst_reg <= SEL_N;
 
 		16'bxx11_xx10_1000_1011,	// T[A..Q][O]
-		16'b1111_1010_000x_1011,	// INC[O], DEC[O]
+		16'b1111_1010_00x1_1010,	// INC[O], DEC[O]
 		16'b0011_0010_0110_1000,	// PL[O]
-		16'b0011_0010_100x_10x0,	// TX[O], TY[O]
-		16'b0011_0010_101x_xxx1,	// LD[O]
+		16'b0011_0010_1000_1010,	// TX[O]
+		16'b0011_0010_1001_1000, 	// TY[O]
+		16'b0011_0010_0000_1111,	// TW[O]
+		16'b0011_0010_101x_xx01,	// LD[O]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0011_0010_1011_1011,	// LD[O]w
+		16'b0011_0010_1011_0010,	// LD[O](zp)w
 		16'bxx11_xx10_0xxx_xx01,	// ADC[A..Q]op[O], SBC[A..Q]op[O], AND[A..Q]op[O], ORA[A..Q]op[O], EOR[A..Q]op[O]
 		16'bxx11_xx10_111x_xx01,	// SBC[A..Q]op[O]
 		16'bxx11_xx10_0010_x100:	// BIT[A..Q]op[O] zp
 		      dst_reg <= SEL_O;
 
 		16'bxx11_xx11_1000_1011,	// T[A..Q][Q]
-		16'b1111_1111_000x_1011,	// INC[Q], DEC[Q]
+		16'b1111_1111_00x1_1010,	// INC[Q], DEC[Q]
 		16'b0011_0011_0110_1000,	// PL[Q]
-		16'b0011_0011_100x_10x0,	// TX[Q], TY[Q]
-		16'b0011_0011_101x_xxx1,	// LD[Q]
+		16'b0011_0011_1000_1010,	// TX[Q]
+		16'b0011_0011_1001_1000, 	// TY[Q]
+		16'b0011_0011_0000_1111,	// TW[Q]
+		16'b0011_0011_101x_xx01,	// LD[Q]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0011_0011_1011_1011,	// LD[Q]w
+		16'b0011_0011_1011_0010,	// LD[Q](zp)w
 		16'bxx11_xx11_0xxx_xx01,	// ADC[A..Q]op[Q], SBC[A..Q]op[Q], AND[A..Q]op[Q], ORA[A..Q]op[Q], EOR[A..Q]op[Q]
 		16'bxx11_xx11_111x_xx01,	// SBC[A..Q]op[Q]
 		16'bxx11_xx11_0010_x100:	// BIT[A..Q]op[Q] zp
 		      dst_reg <= SEL_Q;
 
-		default: dst_reg <= SEL_A;
+		//default: dst_reg <= SEL_A;
 	endcase
 
 always @(posedge clk)
@@ -1220,32 +1339,49 @@ always @(posedge clk)
      	casex( IR[15:0] )
 		16'b00xx_00xx_0110_1000,	// PL[A..Q]
 		16'b0000_0000_x111_1010,	// PLX, PLY
+		16'b0000_0000_0110_1011,	// PLW
 		16'b0000_0000_0010_1000,	// PLP
 		16'b0000_0000_1011_1010:	// TSX 
 				src_reg <= SEL_S; 
 
-		16'b0000_0000_100x_x110,	// STX
-		16'b00xx_00xx_100x_1x10,	// TX[A..Q], TXS
+		16'b0000_0000_100x_x110,	// STX zp,zpy,a,ay
+		16'b0000_0000_1001_x111,	// STX zpw,aw
+		16'b00xx_00xx_100x_1010,	// TX[A..Q], TXS
 		16'b0000_0000_1110_xx00,	// INX, CPX
 		16'b0000_0000_1100_1010,	// DEX
-		16'b0000_0000_1011_1011,	// TXY
+		16'b0000_0000_1100_1011,	// TXY
 		16'b0000_0000_1101_1010:	// PHX
 				src_reg <= SEL_X; 
 
-		16'b0000_0000_100x_x100,	// STY
+		16'b0000_0000_100x_x100,	// STY zp,zpx,a
 		16'b00xx_00xx_1001_1000,	// TY[A..Q]
-		16'b0000_0000_1100_xx00,	// CPY
+		16'b0000_0000_1100_0x00,	// CPY imm,zp
+		16'b0000_0000_1100_1100,	// CPY a
 		16'b0000_0000_1x00_1000,	// DEY, INY
 		16'b0000_0000_1010_1011,	// TYX
 		16'b0000_0000_0101_1010:	// PHY
 				src_reg <= SEL_Y;
+		
+		16'b0000_0000_11x1_1000,	// INW, DEW
+		16'b0000_0000_1110_0010,	// CPW imm
+		16'b0000_0000_1100_x111,	// CPW zp,a
+		16'b0000_0000_1000_x111,	//	STW zp,a
+		16'b0000_0000_0111_0100,	// STW zpx
+		16'b0000_0000_0100_1011,	// PHW
+		16'b00xx_00xx_0000_1111:	// TW[A..Q]
+				src_reg <= SEL_W;
 
 		16'b00xx_00xx_1000_1011,	// T[A][A..Q]
-		16'b0000_0000_000x_1011,	// INC[A], DEC[A]
+		16'b0000_0000_00x1_1010,	// INC[A], DEC[A]
 		16'b0000_0000_0100_1000,	// PH[A]
 		16'b0000_0000_1010_10x0,	// T[A]X, T[A]Y
-		16'b0000_0000_100x_xx01,	// ST[A]
-		16'b0000_0000_110x_xx01,	// CMP[A]
+		16'b0000_0000_0010_1111,	// T[A]W
+		16'b0000_0000_100x_xx01,	// ST[A]i, (zpx), (zp)y, zp, zpx, zpy, ay, a, ax
+		16'b0000_0000_1001_0010,	// ST[A] (zp)w
+		16'b0000_0000_1001_1011,	// ST[A] aw
+		16'b0000_0000_110x_xx01,	// CMP[A] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b0000_0000_1101_0010,	// CMP[A] (zp)w
+		16'b0000_0000_1101_1011,	// CMP[A] aw
 		16'b00xx_00xx_0xxx_xx01,	// ADC[A]op[A..Q], SBC[A]op[A..Q], AND[A]op[A..Q], ORA[A]op[A..Q], EOR[A]op[A..Q]
 		16'b00xx_00xx_111x_xx01,	// SBC[A]op[A..Q]
 		16'bxxxx_00xx_0xxx_x110,	// ASL[A]op[A..D], ROL[A]op[A..D], LSR[A]op[A..D], ROR[A]op[A..D] (abs, absx, zpg, zpgx)
@@ -1254,11 +1390,16 @@ always @(posedge clk)
             src_reg <= SEL_A; 
              
 		16'b00xx_01xx_1000_1011,	// T[B][A..Q]
-		16'b0000_0101_000x_1011,	// INC[B], DEC[B]
+		16'b0000_0101_00x1_1010,	// INC[B], DEC[B]
 		16'b0000_0100_0100_1000,	// PH[B]
 		16'b0000_0100_1010_10x0,	// T[B]X, T[B]Y
-		16'b0000_0100_100x_xx01,	// ST[B]
-		16'b0000_0100_110x_xx01,	// CMP[B]
+		16'b0000_0100_0010_1111,	// T[B]W
+		16'b0000_0100_100x_xx01,	// ST[B] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b0000_0100_1001_0010,	// ST[B] (zp)w
+		16'b0000_0100_1001_1011,	// ST[B] aw
+		16'b0000_0100_110x_xx01,	// CMP[B] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b0000_0100_1101_0010,	// CMP[B] (zp)w
+		16'b0000_0100_1101_1011,	// CMP[B] aw
 		16'b00xx_01xx_0xxx_xx01,	// ADC[B]op[A..Q], SBC[B]op[A..Q], AND[B]op[A..Q], ORA[B]op[A..Q], EOR[B]op[A..Q]
 		16'b00xx_01xx_111x_xx01,	// SBC[B]op[A..Q]
 		16'bxxxx_01xx_0xxx_x110,	// ASL[B]op[A..D], ROL[B]op[A..D], LSR[B]op[A..D], ROR[B]op[A..D] (abs, absx, zpg, zpgx)
@@ -1267,11 +1408,16 @@ always @(posedge clk)
             src_reg <= SEL_B; 
 
 		16'b00xx_10xx_1000_1011,	// T[C][A..Q]
-		16'b0000_1010_000x_1011,	// INC[C], DEC[C]
+		16'b0000_1010_00x1_1010,	// INC[C], DEC[C]
 		16'b0000_1000_0100_1000,	// PH[C]
 		16'b0000_1000_1010_10x0,	// T[C]X, T[C]Y
-		16'b0000_1000_100x_xx01,	// ST[C]
-		16'b0000_1000_110x_xx01,	// CMP[C]
+		16'b0000_1000_0010_1111,	// T[C]W
+		16'b0000_1000_100x_xx01,	// ST[C] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b0000_1000_1001_0010,	// ST[C] (zp)w
+		16'b0000_1000_1001_1011,	// ST[C] aw
+		16'b0000_1000_110x_xx01,	// CMP[C] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b0000_1000_1101_0010,	// CMP[C] (zp)w
+		16'b0000_1000_1101_1011,	// CMP[C] aw
 		16'b00xx_10xx_0xxx_xx01,	// ADC[C]op[A..Q], SBC[C]op[A..Q], AND[C]op[A..Q], ORA[C]op[A..Q], EOR[C]op[A..Q]
 		16'b00xx_10xx_111x_xx01,	// SBC[C]op[A..Q]
 		16'bxxxx_10xx_0xxx_x110,	// ASL[C]op[A..D], ROL[C]op[A..D], LSR[C]op[A..D], ROR[C]op[A..D] (abs, absx, zpg, zpgx)
@@ -1280,11 +1426,16 @@ always @(posedge clk)
             src_reg <= SEL_C; 
              
 		16'b00xx_11xx_1000_1011,	// T[D][A..Q]
-		16'b0000_1111_000x_1011,	// INC[D], DEC[D]
+		16'b0000_1111_00x1_1010,	// INC[D], DEC[D]
 		16'b0000_1100_0100_1000,	// PH[D]
 		16'b0000_1100_1010_10x0,	// T[D]X, T[D]Y
-		16'b0000_1100_100x_xx01,	// ST[D]
-		16'b0000_1100_110x_xx01,	// CMP[D]
+		16'b0000_1100_0010_1111,	// T[D]W
+		16'b0000_1100_100x_xx01,	// ST[D] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b0000_1100_1001_0010,	// ST[D] (zp)w
+		16'b0000_1100_1001_1011,	// ST[D] aw
+		16'b0000_1100_110x_xx01,	// CMP[D] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b0000_1100_1101_0010,	// CMP[D] (zp)w
+		16'b0000_1100_1101_1011,	// CMP[D] aw
 		16'b00xx_11xx_0xxx_xx01,	// ADC[D]op[A..Q], SBC[D]op[A..Q], AND[D]op[A..Q], ORA[D]op[A..Q], EOR[D]op[A..Q]
 		16'b00xx_11xx_111x_xx01,	// SBC[D]op[A..Q]
 		16'bxxxx_11xx_0xxx_x110,	// ASL[D]op[A..D], ROL[D]op[A..D], LSR[D]op[A..D], ROR[D]op[A..D] (abs, absx, zpg, zpgx)
@@ -1293,157 +1444,232 @@ always @(posedge clk)
             src_reg <= SEL_D;
 
 		16'b01xx_00xx_1000_1011,	// T[E][A..Q]
-		16'b0101_0000_000x_1011,	// INC[E], DEC[E]
+		16'b0101_0000_00x1_1010,	// INC[E], DEC[E]
 		16'b0100_0000_0100_1000,	// PH[E]
 		16'b0100_0000_1010_10x0,	// T[E]X, T[E]Y
-		16'b0100_0000_100x_xx01,	// STA[E]
-		16'b0100_0000_110x_xx01,	// CMP[E]
+		16'b0100_0000_0010_1111,	// T[E]W
+		16'b0100_0000_100x_xx01,	// ST[E] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b0100_0000_1001_0010,	// ST[E] (zp)w
+		16'b0100_0000_1001_1011,	// ST[E] aw
+		16'b0100_0000_110x_xx01,	// CMP[E] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b0100_0000_1101_0010,	// CMP[E] (zp)w
+		16'b0100_0000_1101_1011,	// CMP[E] aw
 		16'b01xx_00xx_0xxx_xx01,	// ADC[E]op[A..Q], SBC[E]op[A..Q], AND[E]op[A..Q], ORA[E]op[A..Q], EOR[E]op[A..Q]
 		16'b01xx_00xx_111x_xx01,	// SBC[E]op[A..Q]
 		16'b01xx_00xx_0010_x100:	// BIT[E]op[A..Q] zp
 				src_reg <= SEL_E;
 
 		16'b01xx_01xx_1000_1011,	// T[F][A..Q]
-		16'b0101_0101_000x_1011,	// INC[F], DEC[F]
+		16'b0101_0101_00x1_1010,	// INC[F], DEC[F]
 		16'b0100_0100_0100_1000,	// PH[F]
 		16'b0100_0100_1010_10x0,	// T[F]X, T[F]Y
-		16'b0100_0100_100x_xx01,	// STA[F]
-		16'b0100_0100_110x_xx01,	// CMP[F]
+		16'b0100_0100_0010_1111,	// T[F]W
+		16'b0100_0100_100x_xx01,	// ST[F] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b0100_0100_1001_0010,	// ST[F] (zp)w
+		16'b0100_0100_1001_1011,	// ST[F] aw
+		16'b0100_0100_110x_xx01,	// CMP[F] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b0100_0100_1101_0010,	// CMP[F] (zp)w
+		16'b0100_0100_1101_1011,	// CMP[F] aw
 		16'b01xx_01xx_0xxx_xx01,	// ADC[F]op[A..Q], SBC[F]op[A..Q], AND[F]op[A..Q], ORA[F]op[A..Q], EOR[F]op[A..Q]
 		16'b01xx_01xx_111x_xx01,	// SBC[F]op[A..Q]
 		16'b01xx_01xx_0010_x100:	// BIT[F]op[A..Q] zp
 				src_reg <= SEL_F;
 
 		16'b01xx_10xx_1000_1011,	// T[G][A..Q]
-		16'b0101_1010_000x_1011,	// INC[G], DEC[G]
+		16'b0101_1010_00x1_1010,	// INC[G], DEC[G]
 		16'b0100_1000_0100_1000,	// PH[G]
 		16'b0100_1000_1010_10x0,	// T[G]X, T[G]Y
-		16'b0100_1000_100x_xx01,	// STA[G]
-		16'b0100_1000_110x_xx01,	// CMP[G]
+		16'b0100_1000_0010_1111,	// T[G]W
+		16'b0100_1000_100x_xx01,	// ST[G] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b0100_1000_1001_0010,	// ST[G] (zp)w
+		16'b0100_1000_1001_1011,	// ST[G] aw
+		16'b0100_1000_110x_xx01,	// CMP[G] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b0100_1000_1101_0010,	// CMP[G] (zp)w
+		16'b0100_1000_1101_1011,	// CMP[G] aw
 		16'b01xx_10xx_0xxx_xx01,	// ADC[G]op[A..Q], SBC[G]op[A..Q], AND[G]op[A..Q], ORA[G]op[A..Q], EOR[G]op[A..Q]
 		16'b01xx_10xx_111x_xx01,	// SBC[G]op[A..Q]
 		16'b01xx_10xx_0010_x100:	// BIT[G]op[A..Q] zp
 				src_reg <= SEL_G;
 
 		16'b01xx_11xx_1000_1011,	// T[H][A..Q]
-		16'b0101_1111_000x_1011,	// INC[H], DEC[H]
+		16'b0101_1111_00x1_1010,	// INC[H], DEC[H]
 		16'b0100_1100_0100_1000,	// PH[H]
 		16'b0100_1100_1010_10x0,	// T[H]X, T[H]Y
-		16'b0100_1100_100x_xx01,	// STA[H]
-		16'b0100_1100_110x_xx01,	// CMP[H]
+		16'b0100_1100_0010_1111,	// T[H]W
+		16'b0100_1100_100x_xx01,	// ST[H] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b0100_1100_1001_0010,	// ST[H] (zp)w
+		16'b0100_1100_1001_1011,	// ST[H] aw
+		16'b0100_1100_110x_xx01,	// CMP[H] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b0100_1100_1101_0010,	// CMP[H] (zp)w
+		16'b0100_1100_1101_1011,	// CMP[H] aw
 		16'b01xx_11xx_0xxx_xx01,	// ADC[H]op[A..Q], SBC[H]op[A..Q], AND[H]op[A..Q], ORA[H]op[A..Q], EOR[H]op[A..Q]
 		16'b01xx_11xx_111x_xx01,	// SBC[H]op[A..Q]
 		16'b01xx_11xx_0010_x100:	// BIT[H]op[A..Q] zp
 				src_reg <= SEL_H;
 
 		16'b10xx_00xx_1000_1011,	// T[I][A..Q]
-		16'b1010_0000_000x_1011,	// INC[I], DEC[I]
+		16'b1010_0000_00x1_1010,	// INC[I], DEC[I]
 		16'b1000_0000_0100_1000,	// PH[I]
 		16'b1000_0000_1010_10x0,	// T[I]X, T[I]Y
-		16'b1000_0000_100x_xx01,	// STA[I]
-		16'b1000_0000_110x_xx01,	// CMP[I]
+		16'b1000_0000_0010_1111,	// T[I]W
+		16'b1000_0000_100x_xx01,	// ST[I] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b1000_0000_1001_0010,	// ST[I] (zp)w
+		16'b1000_0000_1001_1011,	// ST[I] aw
+		16'b1000_0000_110x_xx01,	// CMP[I] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b1000_0000_1101_0010,	// CMP[I] (zp)w
+		16'b1000_0000_1101_1011,	// CMP[I] aw
 		16'b10xx_00xx_0xxx_xx01,	// ADC[I]op[A..Q], SBC[I]op[A..Q], AND[I]op[A..Q], ORA[I]op[A..Q], EOR[I]op[A..Q]
 		16'b10xx_00xx_111x_xx01,	// SBC[I]op[A..Q]
 		16'b10xx_00xx_0010_x100:	// BIT[I]op[A..Q] zp
 				src_reg <= SEL_I;
 
 		16'b10xx_01xx_1000_1011,	// T[J][A..Q]
-		16'b1010_0101_000x_1011,	// INC[J], DEC[J]
+		16'b1010_0101_00x1_1010,	// INC[J], DEC[J]
 		16'b1000_0100_0100_1000,	// PH[J]
 		16'b1000_0100_1010_10x0,	// T[J]X, T[J]Y
-		16'b1000_0100_100x_xx01,	// STA[J]
-		16'b1000_0100_110x_xx01,	// CMP[J]
+		16'b1000_0100_0010_1111,	// T[J]W
+		16'b1000_0100_100x_xx01,	// ST[J] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b1000_0100_1001_0010,	// ST[J] (zp)w
+		16'b1000_0100_1001_1011,	// ST[J] aw
+		16'b1000_0100_110x_xx01,	// CMP[J] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b1000_0100_1101_0010,	// CMP[J] (zp)w
+		16'b1000_0100_1101_1011,	// CMP[J] aw
 		16'b10xx_01xx_0xxx_xx01,	// ADC[J]op[A..Q], SBC[J]op[A..Q], AND[J]op[A..Q], ORA[J]op[A..Q], EOR[J]op[A..Q]
 		16'b10xx_01xx_111x_xx01,	// SBC[J]op[A..Q]
 		16'b10xx_01xx_0010_x100:	// BIT[J]op[A..Q] zp
 				src_reg <= SEL_J;
 
 		16'b10xx_10xx_1000_1011,	// T[K][A..Q]
-		16'b1010_1010_000x_1011,	// INC[K], DEC[K]
+		16'b1010_1010_00x1_1010,	// INC[K], DEC[K]
 		16'b1000_1000_0100_1000,	// PH[K]
 		16'b1000_1000_1010_10x0,	// T[K]X, T[K]Y
-		16'b1000_1000_100x_xx01,	// STA[K]
-		16'b1000_1000_110x_xx01,	// CMP[K]
+		16'b1000_1000_0010_1111,	// T[K]W
+		16'b1000_1000_100x_xx01,	// ST[K] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b1000_1000_1001_0010,	// ST[K] (zp)w
+		16'b1000_1000_1001_1011,	// ST[K] aw
+		16'b1000_1000_110x_xx01,	// CMP[K] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b1000_1000_1101_0010,	// CMP[K] (zp)w
+		16'b1000_1000_1101_1011,	// CMP[K] aw
 		16'b10xx_10xx_0xxx_xx01,	// ADC[K]op[A..Q], SBC[K]op[A..Q], AND[K]op[A..Q], ORA[K]op[A..Q], EOR[K]op[A..Q]
 		16'b10xx_10xx_111x_xx01,	// SBC[K]op[A..Q]
 		16'b10xx_10xx_0010_x100:	// BIT[K]op[A..Q] zp
 				src_reg <= SEL_K;
 
 		16'b10xx_11xx_1000_1011,	// T[L][A..Q]
-		16'b1010_1111_000x_1011,	// INC[L], DEC[L]
+		16'b1010_1111_00x1_1010,	// INC[L], DEC[L]
 		16'b1000_1100_0100_1000,	// PH[L]
 		16'b1000_1100_1010_10x0,	// T[L]X, T[L]Y
-		16'b1000_1100_100x_xx01,	// STA[L]
-		16'b1000_1100_110x_xx01,	// CMP[L]
+		16'b1000_1100_0010_1111,	// T[L]W
+		16'b1000_1100_100x_xx01,	// ST[L] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b1000_1100_1001_0010,	// ST[L] (zp)w
+		16'b1000_1100_1001_1011,	// ST[L] aw
+		16'b1000_1100_110x_xx01,	// CMP[L] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b1000_1100_1101_0010,	// CMP[L] (zp)w
+		16'b1000_1100_1101_1011,	// CMP[L] aw
 		16'b10xx_11xx_0xxx_xx01,	// ADC[L]op[A..Q], SBC[L]op[A..Q], AND[L]op[A..Q], ORA[L]op[A..Q], EOR[L]op[A..Q]
 		16'b10xx_11xx_111x_xx01,	// SBC[L]op[A..Q]
 		16'b10xx_11xx_0010_x100:	// BIT[L]op[A..Q] zp
 				src_reg <= SEL_L;
 
 		16'b11xx_00xx_1000_1011,	// T[M][A..Q]
-		16'b1111_0000_000x_1011,	// INC[M], DEC[M]
+		16'b1111_0000_00x1_1010,	// INC[M], DEC[M]
 		16'b1100_0000_0100_1000,	// PH[M]
 		16'b1100_0000_1010_10x0,	// T[M]X, T[M]Y
-		16'b1100_0000_100x_xx01,	// STA[M]
-		16'b1100_0000_110x_xx01,	// CMP[M]
+		16'b1100_0000_0010_1111,	// T[M]W
+		16'b1100_0000_100x_xx01,	// ST[M] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b1100_0000_1001_0010,	// ST[M] (zp)w
+		16'b1100_0000_1001_1011,	// ST[M] aw
+		16'b1100_0000_110x_xx01,	// CMP[M] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b1100_0000_1101_0010,	// CMP[M] (zp)w
+		16'b1100_0000_1101_1011,	// CMP[M] aw
 		16'b11xx_00xx_0xxx_xx01,	// ADC[M]op[A..Q], SBC[M]op[A..Q], AND[M]op[A..Q], ORA[M]op[A..Q], EOR[M]op[A..Q]
 		16'b11xx_00xx_111x_xx01,	// SBC[M]op[A..Q]
 		16'b11xx_00xx_0010_x100:	// BIT[M]op[A..Q] zp
 				src_reg <= SEL_M;
 
 		16'b11xx_01xx_1000_1011,	// T[N][A..Q]
-		16'b1111_0101_000x_1011,	// INC[N], DEC[N]
+		16'b1111_0101_00x1_1010,	// INC[N], DEC[N]
 		16'b1100_0100_0100_1000,	// PH[N]
 		16'b1100_0100_1010_10x0,	// T[N]X, T[N]Y
-		16'b1100_0100_100x_xx01,	// STA[N]
-		16'b1100_0100_110x_xx01,	// CMP[N]
+		16'b1100_0100_0010_1111,	// T[N]W
+		16'b1100_0100_100x_xx01,	// ST[N] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b1100_0100_1001_0010,	// ST[N] (zp)w
+		16'b1100_0100_1001_1011,	// ST[N] aw
+		16'b1100_0100_110x_xx01,	// CMP[N] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b1100_0100_1101_0010,	// CMP[N] (zp)w
+		16'b1100_0100_1101_1011,	// CMP[N] aw
 		16'b11xx_01xx_0xxx_xx01,	// ADC[N]op[A..Q], SBC[N]op[A..Q], AND[N]op[A..Q], ORA[N]op[A..Q], EOR[N]op[A..Q]
 		16'b11xx_01xx_111x_xx01,	// SBC[N]op[A..Q]
 		16'b11xx_01xx_0010_x100:	// BIT[N]op[A..Q] zp
 				src_reg <= SEL_N;
 
 		16'b11xx_10xx_1000_1011,	// T[O][A..Q]
-		16'b1111_1010_000x_1011,	// INC[O], DEC[O]
+		16'b1111_1010_00x1_1010,	// INC[O], DEC[O]
 		16'b1100_1000_0100_1000,	// PH[O]
 		16'b1100_1000_1010_10x0,	// T[O]X, T[O]Y
-		16'b1100_1000_100x_xx01,	// STA[O]
-		16'b1100_1000_110x_xx01,	// CMP[O]
+		16'b1100_1000_0010_1111,	// T[O]W
+		16'b1100_1000_100x_xx01,	// ST[O] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b1100_1000_1001_0010,	// ST[O] (zp)w
+		16'b1100_1000_1001_1011,	// ST[O] aw
+		16'b1100_1000_110x_xx01,	// CMP[O] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b1100_1000_1101_0010,	// CMP[O] (zp)w
+		16'b1100_1000_1101_1011,	// CMP[O] aw
 		16'b11xx_10xx_0xxx_xx01,	// ADC[O]op[A..Q], SBC[O]op[A..Q], AND[O]op[A..Q], ORA[O]op[A..Q], EOR[O]op[A..Q]
 		16'b11xx_10xx_111x_xx01,	// SBC[O]op[A..Q]
 		16'b11xx_10xx_0010_x100:	// BIT[O]op[A..Q] zp
 				src_reg <= SEL_O;
 
 		16'b11xx_11xx_1000_1011,	// T[Q][A..Q]
-		16'b1111_1111_000x_1011,	// INC[Q], DEC[Q]
+		16'b1111_1111_00x1_1010,	// INC[Q], DEC[Q]
 		16'b1100_1100_0100_1000,	// PH[Q]
 		16'b1100_1100_1010_10x0,	// T[Q]X, T[Q]Y
-		16'b1100_1100_100x_xx01,	// STA[Q]
-		16'b1100_1100_110x_xx01,	// CMP[Q]
+		16'b1100_1100_0010_1111,	// T[Q]W
+		16'b1100_1100_100x_xx01,	// ST[Q] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'b1100_1100_1001_0010,	// ST[Q] (zp)w
+		16'b1100_1100_1001_1011,	// ST[Q] aw
+		16'b1100_1100_110x_xx01,	// CMP[Q] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'b1100_1100_1101_0010,	// CMP[Q] (zp)w
+		16'b1100_1100_1101_1011,	// CMP[Q] aw
 		16'b11xx_11xx_0xxx_xx01,	// ADC[Q]op[A..Q], SBC[Q]op[A..Q], AND[Q]op[A..Q], ORA[Q]op[A..Q], EOR[Q]op[A..Q]
 		16'b11xx_11xx_111x_xx01,	// SBC[Q]op[A..Q]
 		16'b11xx_11xx_0010_x100:	// BIT[Q]op[A..Q] zp
 				src_reg <= SEL_Q;
 
-		default: src_reg <= SEL_A;
+		//default: src_reg <= SEL_A;
 	endcase
 
 always @(posedge clk) 
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
-		16'b0000_0000_xxx1_0001,	// INDY
-		16'b0000_0000_10x1_x110, 	// LDX/STX zpg/abs, Y
-		16'b0000_0000_xxxx_1001:	// abs, Y
+		16'bxxxx_xxxx_xxx1_0001,	// INDY
+		16'b0000_0000_10x1_x110, 	// LDX/STX zpy, ay
+		16'bxxxx_xxxx_xxx1_1001:	// abs, Y
 				index_y <= 1;
 
 		default:	index_y <= 0;
 	endcase
 
+always @(posedge clk) 
+     if( state == DECODE && RDY )
+     	casex( IR[15:0] )  			
+		16'bxxxx_xxxx_xxx1_0010,	// INDW
+		16'b0000_0000_10x1_x111, 	// LDX/STX zpw, aw
+		16'bxxxx_xxxx_xxx1_1011:	// abs, W
+				index_w <= 1;
+
+		default:	index_w <= 0;
+	endcase
 
 always @(posedge clk)
      if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			
-		16'bxx00_xx00_100x_x1x0,	// STX, STY
-		16'bxx00_xx00_100x_xx01:	// STA[A..Q]
+     	casex( IR[15:0] )
+		16'b0000_0000_0111_0100,	// STW zpx
+		16'b0000_0000_100x_01x0,	// STX zp,zpy, STY zp,zpx
+		16'b0000_0000_100x_1110,	// STX a,ay
+		16'b0000_0000_100x_x111,	// STW a,zp, STX zpw,aw
+		16'bxx00_xx00_100x_xx01,	// ST[A..Q] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'bxx00_xx00_1001_0010,	// ST[A..Q] (zp)w
+		16'bxx00_xx00_1001_1011:	// ST[A..Q] aw
 				store <= 1;
 
 		default:	store <= 0;
@@ -1454,7 +1680,7 @@ always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
 		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D]
-		16'b0000_0000_11xx_x110:	// DEC, INC
+		16'b0000_0000_11xx_x110:	// DEC zp, zpx, a, ax, INC zp, zpx, a, ax
 				write_back <= 1;
 
 		default:	write_back <= 0;
@@ -1464,7 +1690,14 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
-		16'b00xx_00xx_101x_xxxx:	// LDA[A..Q], LDX, LDY
+		16'b00xx_00xx_1010_0xxx,	// LDA[A..Q], LDX, LDY
+		16'b00xx_00xx_1010_1001,
+		16'b00xx_00xx_1010_11xx,
+		16'b00xx_00xx_1011_xxx1,
+		16'b00xx_00xx_1011_01x0,
+		16'b00xx_00xx_1011_11x0,
+		16'b00xx_00xx_1011_0010,
+		16'b0000_0000_1100_0010:
 				load_only <= 1;
 		default:	load_only <= 0;
 	endcase
@@ -1474,7 +1707,8 @@ always @(posedge clk )
      	casex( IR[15:0] )  			
 		16'b0000_0000_111x_x110,	// INC
 		16'b0000_0000_11x0_1000, 	// INX, INY
-		16'bxxxx_xxxx_0000_1011:	// INC[A..Q]
+		16'b0000_0000_1101_1000,	// INW
+		16'bxxxx_xxxx_0001_1010:	// INC[A..Q]
 				inc <= 1;
 
 		default:	inc <= 0;
@@ -1483,8 +1717,9 @@ always @(posedge clk )
 always @(posedge clk )
      if( (state == DECODE || state == BRK0) && RDY )
      	casex( IR[15:0] ) 	   	
-		16'bxxxx_xxxx_011x_xx01:	// ADC[A..Q]op[A..Q]
-				adc_sbc <= 1;
+		16'bxxxx_xxxx_011x_xx01,	// ADC[A..Q]i, (zpx), (zp)y, zp, zpx, ay, ax, a op[A..Q]
+		16'bxxxx_xxxx_0111_0010:	// ADC[A..Q](zp)w
+					adc_sbc <= 1;
 
 		default:	adc_sbc <= 0;
 	endcase
@@ -1504,7 +1739,11 @@ always @(posedge clk )
      	casex( IR[15:0] )  			
 		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm/zp)
 		16'b0000_0000_11x0_1100,	// CPX, CPY (abs)
-		16'bxxxx_xxxx_110x_xx01:	// CMP[A..Q]
+		16'b0000_0000_1110_0010,	// CPW #
+		16'b0000_0000_1100_x111,	// CPW zp,a
+		16'bxx00_xx00_110x_xx01,	// CMP[A..Q] i, (zpx), (zp)y, zp, zpx, ay, ax, a
+		16'bxx00_xx00_1101_0010,	// CMP[A..Q] (zp)w
+		16'bxx00_xx00_1101_1011:	// CMP[A..Q] aw	
 				compare <= 1;
 
 		default:	compare <= 0;
@@ -1543,18 +1782,26 @@ always @(posedge clk )
 		16'bxxxx_xxxx_01x0_1010:	//
 				op <= OP_A;
 
+		16'b0000_0000_1111_1000,	// DEW
 		16'b0000_0000_1000_1000,	// DEY
 		16'b0000_0000_1100_1010, 	// DEX
-		16'bxxxx_xxxx_0001_1011,	// DEC[A..Q]
+		16'bxxxx_xxxx_0011_1010,	// DEC[A..Q]
 		16'b0000_0000_110x_x110,	// DEC
-		16'bxxxx_xxxx_11xx_xx01,	// CMP[A..Q], SBC[A..Q]
+		16'bxxxx_xxxx_11xx_xx01,	// CMP[A..Q]i, (zpx), (zp)y, zp, zpx, ay, a, ax, SBC[A..Q]i, (zpx), (zp)y, zp, zpx, ay, a, ax op[A..Q]
+		16'bxxxx_xxxx_11x1_0010,	// CMP[A..Q](zp)w, SBC[A..Q](zp)w op[A..Q]
+		16'bxx00_xx00_1101_0010,	// CMP[A..Q](zp)w
+		16'bxx00_xx00_1101_1011,	// CMP[A..Q]aw
 		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm, zpg)
-		16'b0000_0000_11x0_1100:	// CPX, CPY abs
+		16'b0000_0000_11x0_1100,	// CPX, CPY abs
+		16'b0000_0000_1110_0010,	// CPW i
+		16'b0000_0000_1100_x111:	// CPW zp,a
 				op <= OP_SUB;
 
-		16'bxxxx_xxxx_010x_xx01,	// EOR[A..Q]
-		16'bxxxx_xxxx_00xx_xx01:	// ORA[A..Q], AND[A..Q]
-				op <= { 2'b11, IR[6:5] };
+		16'bxxxx_xxxx_010x_xx01,	// EOR[A..Q]op[A..Q]
+		16'bxxxx_xxxx_0101_0010,	// EOR[A..Q](zp)w op[A..Q]
+		16'bxxxx_xxxx_00xx_xx01,	// ORA[A..Q]i, (zpx), (zp)y, zp, zpx, ay, ax,a op[A..Q], AND[A..Q]i, (zpx), (zp)y, zp, zpx, ay, ax,a op[A..Q]
+		16'bxxxx_xxxx_00x1_0010:	// ORA[A..Q](zp)w op[A..Q], AND[A..Q](zp)w op[A..Q]
+		op <= { 2'b11, IR[6:5] };
 
 		default: 	op <= OP_ADD; 
 	endcase
@@ -1562,7 +1809,7 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] ) 			
-		16'bxxxx_xxxx_0010_x100:   // BIT[A..Q] zp/abs
+		16'bxxxx_xxxx_0010_x100:   // BIT[A..Q] zp, a op[A..Q]
 				bit <= 1;
 
 		default:	bit <= 0; 
