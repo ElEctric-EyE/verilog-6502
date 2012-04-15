@@ -160,7 +160,7 @@ wire [dw-1:0]   W = QAWXYS[SEL_W];	// W register
 wire [dw-1:0]   S = QAWXYS[SEL_S];	// Stack pointer
 //`endif
 
-wire [dw-1:0] P = { N, V, 2'b0, I, Z, C };
+wire [dw-1:0] P = { N, V, 3'b0, I, Z, C };
 
 /*
  * instruction decoder/sequencer
