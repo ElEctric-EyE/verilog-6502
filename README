@@ -198,7 +198,13 @@ CMPQi             .MACRO          ;CMPQ #$xxxx
 ;PLX               .MACRO
 ;                  .BYTE $00FA
 ;                  .ENDM
-;                                    
+PHW               .MACRO
+                  .BYTE $004B
+                  .ENDM
+PLW               .MACRO
+                  .BYTE $006B
+                  .ENDM
+                                                       
 TYX               .MACRO
                   .BYTE $00AB
                   .ENDM
@@ -391,6 +397,105 @@ TXO               .MACRO
 TXQ               .MACRO
                   .BYTE $338A
                   .ENDM
+                  
+TAW               .MACRO
+                  .BYTE $002F
+                  .ENDM
+TBW               .MACRO
+                  .BYTE $042F
+                  .ENDM
+TCW               .MACRO
+                  .BYTE $082F
+                  .ENDM
+TDW               .MACRO
+                  .BYTE $0C2F
+                  .ENDM
+TEW               .MACRO
+                  .BYTE $402F
+                  .ENDM
+TFW               .MACRO
+                  .BYTE $442F
+                  .ENDM
+TGW               .MACRO
+                  .BYTE $482F
+                  .ENDM
+THW               .MACRO
+                  .BYTE $4C2F
+                  .ENDM
+TIW               .MACRO
+                  .BYTE $802F
+                  .ENDM
+TJW               .MACRO
+                  .BYTE $842F
+                  .ENDM
+TKW               .MACRO
+                  .BYTE $882F
+                  .ENDM
+TLW               .MACRO
+                  .BYTE $8C2F
+                  .ENDM
+TMW               .MACRO
+                  .BYTE $C02F
+                  .ENDM
+TNW               .MACRO
+                  .BYTE $C42F
+                  .ENDM
+TOW               .MACRO
+                  .BYTE $C82F
+                  .ENDM
+TQW               .MACRO
+                  .BYTE $CC2F
+                  .ENDM
+                  
+TWA               .MACRO
+                  .BYTE $000F
+                  .ENDM
+TWB               .MACRO
+                  .BYTE $010F
+                  .ENDM
+TWC               .MACRO
+                  .BYTE $020F
+                  .ENDM
+TWD               .MACRO
+                  .BYTE $030F
+                  .ENDM
+TWE               .MACRO
+                  .BYTE $100F
+                  .ENDM
+TWF               .MACRO
+                  .BYTE $110F
+                  .ENDM
+TWG               .MACRO
+                  .BYTE $120F
+                  .ENDM
+TWH               .MACRO
+                  .BYTE $130F
+                  .ENDM
+TWI               .MACRO
+                  .BYTE $200F
+                  .ENDM
+TWJ               .MACRO
+                  .BYTE $210F
+                  .ENDM
+TWK               .MACRO
+                  .BYTE $220F
+                  .ENDM
+TWL               .MACRO
+                  .BYTE $230F
+                  .ENDM
+TWM               .MACRO
+                  .BYTE $300F
+                  .ENDM
+TWN               .MACRO
+                  .BYTE $310F
+                  .ENDM
+TWO               .MACRO
+                  .BYTE $320F
+                  .ENDM
+TWQ               .MACRO
+                  .BYTE $330F
+                  .ENDM                  
+                  
                   
 TAA               .MACRO
                   .BYTE $008B
@@ -2847,7 +2952,4 @@ LDWi              .MACRO            ;LDW #$xxxx
                   .ENDM
 CPWi              .MACRO            ;CPW #$xxxx
                   .BYTE $00E2
-                  .ENDM
-STazpw            .MACRO            ;STA ($xxxx),W
-                  .BYTE $0092
                   .ENDM
