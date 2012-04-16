@@ -1960,7 +1960,7 @@ ADCQopQi          .MACRO
                   
 ;-------------------------------------------------------------------------------
 
-;SBC #$                 $00E9
+;ADC #$                 $0069
 SBCAopBi          .MACRO          
                   .BYTE $04E9
                   .ENDM
@@ -2742,100 +2742,112 @@ SBCQopQi          .MACRO
                   .BYTE $FFE9
                   .ENDM
                   
-INCA              .MACRO
-                  .BYTE $000B
-                  .ENDM
+;INCA             .BYTE $001A
 INCB              .MACRO
-                  .BYTE $050B
+                  .BYTE $051A
                   .ENDM
 INCC              .MACRO
-                  .BYTE $0A0B
+                  .BYTE $0A1A
                   .ENDM
 INCD              .MACRO
-                  .BYTE $0F0B
+                  .BYTE $0F1A
                   .ENDM
 INCE              .MACRO
-                  .BYTE $500B
+                  .BYTE $501A
                   .ENDM
 INCF              .MACRO
-                  .BYTE $550B
+                  .BYTE $551A
                   .ENDM
 INCG              .MACRO
-                  .BYTE $5A0B
+                  .BYTE $5A1A
                   .ENDM
 INCH              .MACRO
-                  .BYTE $5F0B
+                  .BYTE $5F1A
                   .ENDM
 INCI              .MACRO
-                  .BYTE $A00B
+                  .BYTE $A01A
                   .ENDM
 INCJ              .MACRO
-                  .BYTE $A50B
+                  .BYTE $A51A
                   .ENDM
 INCK              .MACRO
-                  .BYTE $AA0B
+                  .BYTE $AA1A
                   .ENDM
 INCL              .MACRO
-                  .BYTE $AF0B
+                  .BYTE $AF1A
                   .ENDM
 INCM              .MACRO
-                  .BYTE $F00B
+                  .BYTE $F01A
                   .ENDM
 INCN              .MACRO
-                  .BYTE $F50B
+                  .BYTE $F51A
                   .ENDM
 INCO              .MACRO
-                  .BYTE $FA0B
+                  .BYTE $FA1A
                   .ENDM
 INCQ              .MACRO
-                  .BYTE $FF0B
+                  .BYTE $FF1A
                   .ENDM
                   
-DECA              .MACRO
-                  .BYTE $001B
-                  .ENDM
+;DECA             .BYTE $003A
 DECB              .MACRO
-                  .BYTE $051B
+                  .BYTE $053A
                   .ENDM
 DECC              .MACRO
-                  .BYTE $0A1B
+                  .BYTE $0A3A
                   .ENDM
 DECD              .MACRO
-                  .BYTE $0F1B
+                  .BYTE $0F3A
                   .ENDM
 DECE              .MACRO
-                  .BYTE $501B
+                  .BYTE $503A
                   .ENDM
 DECF              .MACRO
-                  .BYTE $551B
+                  .BYTE $553A
                   .ENDM
 DECG              .MACRO
-                  .BYTE $5A1B
+                  .BYTE $5A3A
                   .ENDM
 DECH              .MACRO
-                  .BYTE $5F1B
+                  .BYTE $5F3A
                   .ENDM
 DECI              .MACRO
-                  .BYTE $A01B
+                  .BYTE $A03A
                   .ENDM
 DECJ              .MACRO
-                  .BYTE $A51B
+                  .BYTE $A53A
                   .ENDM
 DECK              .MACRO
-                  .BYTE $AA1B
+                  .BYTE $AA3A
                   .ENDM
 DECL              .MACRO
-                  .BYTE $AF1B
+                  .BYTE $AF3A
                   .ENDM
 DECM              .MACRO
-                  .BYTE $F01B
+                  .BYTE $F03A
                   .ENDM
 DECN              .MACRO
-                  .BYTE $F51B
+                  .BYTE $F53A
                   .ENDM
 DECO              .MACRO
-                  .BYTE $FA1B
+                  .BYTE $FA3A
                   .ENDM
 DECQ              .MACRO
-                  .BYTE $FF1B
+                  .BYTE $FF3A
+                  .ENDM
+                  
+INW               .MACRO
+                  .BYTE $00D8
+                  .ENDM
+DEW               .MACRO
+                  .BYTE $00F8
+                  .ENDM
+LDWi              .MACRO            ;LDW #$xxxx
+                  .BYTE $00C2
+                  .ENDM
+CPWi              .MACRO            ;CPW #$xxxx
+                  .BYTE $00E2
+                  .ENDM
+STazpw            .MACRO            ;STA ($xxxx),W
+                  .BYTE $0092
                   .ENDM
