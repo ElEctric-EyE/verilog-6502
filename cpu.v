@@ -930,7 +930,7 @@ always @(posedge clk or posedge reset)
 		16'bxxxx_xxxx_00x1_1010:	state <= REG;   // INC/DEC [A..Q]
 		16'bxxxx_xxxx_10x1_1010:	state <= REG;   // TSX, TXS
 		16'bxxxx_xxxx_1xx0_1011:	state <= REG;	 // T[A..Q][A..Q],TYX,TXY
-		16'bxxxx_xxxx_1111_00x0:	state <= REG;	 // TW[A..Q], T[A..Q]W
+		16'bxxxx_xxxx_00x0_1111:	state <= REG;	 // TW[A..Q], T[A..Q]W
 	  endcase
 
         ZP0	: state <= write_back ? READ : FETCH;
