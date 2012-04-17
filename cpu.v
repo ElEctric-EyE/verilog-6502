@@ -1,8 +1,9 @@
-/* verilog-6502 project: verilog model of 6502 and 65Org16 CPU core
+/*FILE: /NewIndex.b/cpu.v DATE:04/17/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
+ * verilog-6502 project: verilog model of 6502 and 65Org16.x CPU core
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
- * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B thru Q accumulators. Added full accumulator to accumulator transfer opcodes. Added BigEd's 16-bit barrel shifter logic to A thru D Acc's. Added WDC65C02 PHX,PHY,PLX,PLY opcodes. Added INC[A..Q], DEC[A..Q]. Added W index register with same addressing modes as Y.
+ * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B thru Q accumulators. Added full accumulator to accumulator transfer opcodes. Added BigEd's 16-bit barrel shifter logic to A thru D Acc's. Added WDC65C02 PHX,PHY,PLX,PLY opcodes. Added WDC65C02 INC[A], DEC[A] opcodes, also INC[B..Q], DEC[B..Q]. Added W index register with same addressing modes as Y. That's it for .b CORE!
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -1030,8 +1031,8 @@ always @(posedge clk)
 		16'bxxxx_xxxx_0xx1_0010,
 		16'bxxxx_xxxx_101x_0010,
 		16'bxxxx_xxxx_1100_0010,	// LDW i
-		16'bxxxx_xxxx_1111_0010,	// T[A..Q]W
-		16'bxxxx_xxxx_0010_0100,	// BIT zp
+		16'bxxxx_xxxx_1111_0010,	// SBC[A..Q]op[A..Q] (zp)w
+		16'bxxxx_xxxx_0010_0100,	// BIT[A..Q]op[A..Q] zp
 		16'bxxxx_xxxx_101x_0100,
 		16'bxxxx_xxxx_11x1_0100,	
 		16'bxxxx_xxxx_0xxx_0101,
@@ -1042,7 +1043,7 @@ always @(posedge clk)
 		16'bxxxx_xxxx_101x_0111,	
 				
 		16'b0000_0000_xxx0_1000,   
-		16'bxxxx_xxxx_1001_1000,	// TYA
+		16'bxxxx_xxxx_1001_1000,	// TY[A..Q]
 		16'bxxxx_xxxx_11x1_1000,
 		16'bxxxx_xxxx_0xxx_1001,	
 		16'bxxxx_xxxx_1x1x_1001,
@@ -1051,7 +1052,7 @@ always @(posedge clk)
 		16'bxxxx_xxxx_1000_1011,	// T[A..Q][A..Q]
 		16'bxxxx_xxxx_1x1x_1011,
 		16'b0000_0000_1100_1011,	// TXY
-		16'bxxxx_xxxx_0010_1100,	// BIT a
+		16'bxxxx_xxxx_0010_1100,	// BIT [A..Q]op[A..Q] a
 		16'bxxxx_xxxx_101x_1100,
 		16'bxxxx_xxxx_0xxx_1101,
 		16'bxxxx_xxxx_1x1x_1101,
@@ -1073,7 +1074,6 @@ always @(posedge clk)
 		16'bxx00_xx00_1010_xx10,	// LDX, T[A..Q]X
 		16'b0000_0000_1011_x11x,	// LDX zpy/zpw, LDX ay,aw
 		16'b0000_0000_1111_1010,	// PLX
-		16'b0000_0000_1010_1010,	// TAX
 		16'b0000_0000_1010_1011:	// TYX
 				dst_reg <= SEL_X;
 
@@ -1110,6 +1110,10 @@ always @(posedge clk)
 		16'b0000_0000_1011_0010,	// LD[A](zp)w
 		16'bxx00_xx00_0xxx_xx01,	// ADC[A..Q]op[A], SBC[A..Q]op[A], AND[A..Q]op[A], ORA[A..Q]op[A], EOR[A..Q]op[A]
 		16'bxx00_xx00_111x_xx01,	// SBC[A..Q]op[A]
+		16'bxx00_xx00_0xx0_0010,	// ORA[A..Q]op[A] (zp)w, AND[A..Q]op[A] (zp)w, ADC[A..Q]op[A] (zp)w
+		16'bxx00_xx00_0xx0_1011,	// ORA[A..Q]op[A] aw, AND[A..Q]op[A] aw, ADC[A..Q]op[A] aw
+		16'bxx00_xx00_1111_0010,	// SBC[A..Q]op[A] (zp)y
+		16'bxx00_xx00_1111_1011,	// SBC[A..Q]op[A] aw
 		16'bxxxx_xx00_0xxx_x110,	// ASL[A..D]op[A], ROL[A..D]op[A], LSR[A..D]op[A], ROR[A..D]op[A] (abs, absx, zpg, zpgx)
 		16'bxxxx_xx00_0xx0_1010,	// ASL[A..D]op[A], ROL[A..D]op[A], LSR[A..D]op[A], ROR[A..D]op[A] (acc)
 		16'bxx00_xx00_0010_x100:	// BIT[A..Q]op[A] zp
@@ -1126,6 +1130,10 @@ always @(posedge clk)
 		16'b0000_0001_1011_0010,	// LD[B](zp)w
 		16'bxx00_xx01_0xxx_xx01,	// ADC[A..Q]op[B], SBC[A..Q]op[B], AND[A..Q]op[B], ORA[A..Q]op[B], EOR[A..Q]op[B]
 		16'bxx00_xx01_111x_xx01,	// SBC[A..Q]op[B]
+		16'bxx00_xx01_0xx0_0010,	// ORA[A..Q]op[B] (zp)w, AND[A..Q]op[B] (zp)w, ADC[A..Q]op[B] (zp)w
+		16'bxx00_xx01_0xx0_1011,	// ORA[A..Q]op[B] aw, AND[A..Q]op[B] aw, ADC[A..Q]op[B] aw
+		16'bxx00_xx01_1111_0010,	// SBC[A..Q]op[B] (zp)y
+		16'bxx00_xx01_1111_1011,	// SBC[A..Q]op[B] aw
 		16'bxxxx_xx01_0xxx_x110,	// ASL[A..D]op[B], ROL[A..D]op[B], LSR[A..D]op[B], ROR[A..D]op[B] (abs, absx, zpg, zpgx)
 		16'bxxxx_xx01_0xx0_1010,	// ASL[A..D]op[B], ROL[A..D]op[B], LSR[A..D]op[B], ROR[A..D]op[B] (acc)
 		16'bxx00_xx01_0010_x100:	// BIT[A..Q]op[B] zp
@@ -1142,6 +1150,10 @@ always @(posedge clk)
 		16'b0000_0010_1011_0010,	// LD[C](zp)w
 		16'bxx00_xx10_0xxx_xx01,	// ADC[A..Q]op[C], SBC[A..Q]op[C], AND[A..Q]op[C], ORA[A..Q]op[C], EOR[A..Q]op[C]
 		16'bxx00_xx10_111x_xx01,	// SBC[A..Q]op[C]
+		16'bxx00_xx10_0xx0_0010,	// ORA[A..Q]op[C] (zp)w, AND[A..Q]op[C] (zp)w, ADC[A..Q]op[C] (zp)w
+		16'bxx00_xx10_0xx0_1011,	// ORA[A..Q]op[C] aw, AND[A..Q]op[C] aw, ADC[A..Q]op[C] aw
+		16'bxx00_xx10_1111_0010,	// SBC[A..Q]op[C] (zp)y
+		16'bxx00_xx10_1111_1011,	// SBC[A..Q]op[C] aw
 		16'bxxxx_xx10_0xxx_x110,	// ASL[A..D]op[C], ROL[A..D]op[C], LSR[A..D]op[C], ROR[A..D]op[C] (abs, absx, zpg, zpgx)
 		16'bxxxx_xx10_0xx0_1010,	// ASL[A..D]op[C], ROL[A..D]op[C], LSR[A..D]op[C], ROR[A..D]op[C] (acc)
 		16'bxx00_xx10_0010_x100:	// BIT[A..Q]op[C] zp
@@ -1158,6 +1170,10 @@ always @(posedge clk)
 		16'b0000_0011_1011_0010,	// LD[D](zp)w
 		16'bxx00_xx11_0xxx_xx01,	// ADC[A..Q]op[D], SBC[A..Q]op[D], AND[A..Q]op[D], ORA[A..Q]op[D], EOR[A..Q]op[D]
 		16'bxx00_xx11_111x_xx01,	// SBC[A..Q]op[D]
+		16'bxx00_xx11_0xx0_0010,	// ORA[A..Q]op[D] (zp)w, AND[A..Q]op[D] (zp)w, ADC[A..Q]op[D] (zp)w
+		16'bxx00_xx11_0xx0_1011,	// ORA[A..Q]op[D] aw, AND[A..Q]op[D] aw, ADC[A..Q]op[D] aw
+		16'bxx00_xx11_1111_0010,	// SBC[A..Q]op[D] (zp)y
+		16'bxx00_xx11_1111_1011,	// SBC[A..Q]op[D] aw
 		16'bxxxx_xx11_0xxx_x110,	// ASL[A..D]op[D], ROL[A..D]op[D], LSR[A..D]op[D], ROR[A..D]op[D] (abs, absx, zpg, zpgx)
 		16'bxxxx_xx11_0xx0_1010,	// ASL[A..D]op[D], ROL[A..D]op[D], LSR[A..D]op[D], ROR[A..D]op[D] (acc)
 		16'bxx00_xx11_0010_x100:	// BIT[A..Q]op[D] zp
@@ -1174,6 +1190,10 @@ always @(posedge clk)
 		16'b0001_0000_1011_0010,	// LD[E](zp)w
 		16'bxx01_xx00_0xxx_xx01,	// ADC[A..Q]op[E], SBC[A..Q]op[E], AND[A..Q]op[E], ORA[A..Q]op[E], EOR[A..Q]op[E]
 		16'bxx01_xx00_111x_xx01,	// SBC[A..Q]op[E]
+		16'bxx01_xx00_0xx0_0010,	// ORA[A..Q]op[E] (zp)w, AND[A..Q]op[E] (zp)w, ADC[A..Q]op[E] (zp)w
+		16'bxx01_xx00_0xx0_1011,	// ORA[A..Q]op[E] aw, AND[A..Q]op[E] aw, ADC[A..Q]op[E] aw
+		16'bxx01_xx00_1111_0010,	// SBC[A..Q]op[E] (zp)y
+		16'bxx01_xx00_1111_1011,	// SBC[A..Q]op[E] aw
 		16'bxx01_xx00_0010_x100:	// BIT[A..Q]op[E] zp
 		      dst_reg <= SEL_E;
 
@@ -1188,6 +1208,10 @@ always @(posedge clk)
 		16'b0001_0001_1011_0010,	// LD[F](zp)w
 		16'bxx01_xx01_0xxx_xx01,	// ADC[A..Q]op[F], SBC[A..Q]op[F], AND[A..Q]op[F], ORA[A..Q]op[F], EOR[A..Q]op[F]
 		16'bxx01_xx01_111x_xx01,	// SBC[A..Q]op[F]
+		16'bxx01_xx01_0xx0_0010,	// ORA[A..Q]op[F] (zp)w, AND[A..Q]op[F] (zp)w, ADC[A..Q]op[F] (zp)w
+		16'bxx01_xx01_0xx0_1011,	// ORA[A..Q]op[F] aw, AND[A..Q]op[F] aw, ADC[A..Q]op[F] aw
+		16'bxx01_xx01_1111_0010,	// SBC[A..Q]op[F] (zp)y
+		16'bxx01_xx01_1111_1011,	// SBC[A..Q]op[F] aw
 		16'bxx01_xx01_0010_x100:	// BIT[A..Q]op[F] zp
 		      dst_reg <= SEL_F;
 
@@ -1202,6 +1226,10 @@ always @(posedge clk)
 		16'b0001_0010_1011_0010,	// LD[G](zp)w
 		16'bxx01_xx10_0xxx_xx01,	// ADC[A..Q]op[G], SBC[A..Q]op[G], AND[A..Q]op[G], ORA[A..Q]op[G], EOR[A..Q]op[G]
 		16'bxx01_xx10_111x_xx01,	// SBC[A..Q]op[G]
+		16'bxx01_xx10_0xx0_0010,	// ORA[A..Q]op[G] (zp)w, AND[A..Q]op[G] (zp)w, ADC[A..Q]op[G] (zp)w
+		16'bxx01_xx10_0xx0_1011,	// ORA[A..Q]op[G] aw, AND[A..Q]op[G] aw, ADC[A..Q]op[G] aw
+		16'bxx01_xx10_1111_0010,	// SBC[A..Q]op[G] (zp)y
+		16'bxx01_xx10_1111_1011,	// SBC[A..Q]op[G] aw
 		16'bxx01_xx10_0010_x100:	// BIT[A..Q]op[G] zp
 		      dst_reg <= SEL_G;
 
@@ -1216,6 +1244,10 @@ always @(posedge clk)
 		16'b0001_0011_1011_0010,	// LD[H](zp)w
 		16'bxx01_xx11_0xxx_xx01,	// ADC[A..Q]op[H], SBC[A..Q]op[H], AND[A..Q]op[H], ORA[A..Q]op[H], EOR[A..Q]op[H]
 		16'bxx01_xx11_111x_xx01,	// SBC[A..Q]op[H]
+		16'bxx01_xx11_0xx0_0010,	// ORA[A..Q]op[H] (zp)w, AND[A..Q]op[H] (zp)w, ADC[A..Q]op[H] (zp)w
+		16'bxx01_xx11_0xx0_1011,	// ORA[A..Q]op[H] aw, AND[A..Q]op[H] aw, ADC[A..Q]op[H] aw
+		16'bxx01_xx11_1111_0010,	// SBC[A..Q]op[H] (zp)y
+		16'bxx01_xx11_1111_1011,	// SBC[A..Q]op[H] aw
 		16'bxx01_xx11_0010_x100:	// BIT[A..Q]op[H] zp
 		      dst_reg <= SEL_H;
 
@@ -1230,6 +1262,10 @@ always @(posedge clk)
 		16'b0010_0000_1011_0010,	// LD[I](zp)w
 		16'bxx10_xx00_0xxx_xx01,	// ADC[A..Q]op[I], SBC[A..Q]op[I], AND[A..Q]op[I], ORA[A..Q]op[I], EOR[A..Q]op[I]
 		16'bxx10_xx00_111x_xx01,	// SBC[A..Q]op[I]
+		16'bxx10_xx00_0xx0_0010,	// ORA[A..Q]op[I] (zp)w, AND[A..Q]op[I] (zp)w, ADC[A..Q]op[I] (zp)w
+		16'bxx10_xx00_0xx0_1011,	// ORA[A..Q]op[I] aw, AND[A..Q]op[I] aw, ADC[A..Q]op[I] aw
+		16'bxx10_xx00_1111_0010,	// SBC[A..Q]op[I] (zp)y
+		16'bxx10_xx00_1111_1011,	// SBC[A..Q]op[I] aw
 		16'bxx10_xx00_0010_x100:	// BIT[A..Q]op[I] zp
 		      dst_reg <= SEL_I;
 
@@ -1244,6 +1280,10 @@ always @(posedge clk)
 		16'b0010_0001_1011_0010,	// LD[J](zp)w
 		16'bxx10_xx01_0xxx_xx01,	// ADC[A..Q]op[J], SBC[A..Q]op[J], AND[A..Q]op[J], ORA[A..Q]op[J], EOR[A..Q]op[J]
 		16'bxx10_xx01_111x_xx01,	// SBC[A..Q]op[J]
+		16'bxx10_xx01_0xx0_0010,	// ORA[A..Q]op[J] (zp)w, AND[A..Q]op[J] (zp)w, ADC[A..Q]op[J] (zp)w
+		16'bxx10_xx01_0xx0_1011,	// ORA[A..Q]op[J] aw, AND[A..Q]op[J] aw, ADC[A..Q]op[J] aw
+		16'bxx10_xx01_1111_0010,	// SBC[A..Q]op[J] (zp)y
+		16'bxx10_xx01_1111_1011,	// SBC[A..Q]op[J] aw
 		16'bxx10_xx01_0010_x100:	// BIT[A..Q]op[J] zp
 		      dst_reg <= SEL_J;
 
@@ -1258,6 +1298,10 @@ always @(posedge clk)
 		16'b0010_0010_1011_0010,	// LD[K](zp)w
 		16'bxx10_xx10_0xxx_xx01,	// ADC[A..Q]op[K], SBC[A..Q]op[K], AND[A..Q]op[K], ORA[A..Q]op[K], EOR[A..Q]op[K]
 		16'bxx10_xx10_111x_xx01,	// SBC[A..Q]op[K]
+		16'bxx10_xx10_0xx0_0010,	// ORA[A..Q]op[K] (zp)w, AND[A..Q]op[K] (zp)w, ADC[A..Q]op[K] (zp)w
+		16'bxx10_xx10_0xx0_1011,	// ORA[A..Q]op[K] aw, AND[A..Q]op[K] aw, ADC[A..Q]op[K] aw
+		16'bxx10_xx10_1111_0010,	// SBC[A..Q]op[K] (zp)y
+		16'bxx10_xx10_1111_1011,	// SBC[A..Q]op[K] aw
 		16'bxx10_xx10_0010_x100:	// BIT[A..Q]op[K] zp
 		      dst_reg <= SEL_K;
 
@@ -1272,6 +1316,10 @@ always @(posedge clk)
 		16'b0010_0011_1011_0010,	// LD[L](zp)w
 		16'bxx10_xx11_0xxx_xx01,	// ADC[A..Q]op[L], SBC[A..Q]op[L], AND[A..Q]op[L], ORA[A..Q]op[L], EOR[A..Q]op[L]
 		16'bxx10_xx11_111x_xx01,	// SBC[A..Q]op[L]
+		16'bxx10_xx11_0xx0_0010,	// ORA[A..Q]op[L] (zp)w, AND[A..Q]op[L] (zp)w, ADC[A..Q]op[L] (zp)w
+		16'bxx10_xx11_0xx0_1011,	// ORA[A..Q]op[L] aw, AND[A..Q]op[L] aw, ADC[A..Q]op[L] aw
+		16'bxx10_xx11_1111_0010,	// SBC[A..Q]op[L] (zp)y
+		16'bxx10_xx11_1111_1011,	// SBC[A..Q]op[L] aw
 		16'bxx10_xx11_0010_x100:	// BIT[A..Q]op[L] zp
 		      dst_reg <= SEL_L;
 
@@ -1286,6 +1334,10 @@ always @(posedge clk)
 		16'b0011_0000_1011_0010,	// LD[M](zp)w
 		16'bxx11_xx00_0xxx_xx01,	// ADC[A..Q]op[M], SBC[A..Q]op[M], AND[A..Q]op[M], ORA[A..Q]op[M], EOR[A..Q]op[M]
 		16'bxx11_xx00_111x_xx01,	// SBC[A..Q]op[M]
+		16'bxx11_xx00_0xx0_0010,	// ORA[A..Q]op[M] (zp)w, AND[A..Q]op[M] (zp)w, ADC[A..Q]op[M] (zp)w
+		16'bxx11_xx00_0xx0_1011,	// ORA[A..Q]op[M] aw, AND[A..Q]op[M] aw, ADC[A..Q]op[M] aw
+		16'bxx11_xx00_1111_0010,	// SBC[A..Q]op[M] (zp)y
+		16'bxx11_xx00_1111_1011,	// SBC[A..Q]op[M] aw
 		16'bxx11_xx00_0010_x100:	// BIT[A..Q]op[M] zp
 		      dst_reg <= SEL_M;
 
@@ -1300,6 +1352,10 @@ always @(posedge clk)
 		16'b0011_0001_1011_0010,	// LD[N](zp)w
 		16'bxx11_xx01_0xxx_xx01,	// ADC[A..Q]op[N], SBC[A..Q]op[N], AND[A..Q]op[N], ORA[A..Q]op[N], EOR[A..Q]op[N]
 		16'bxx11_xx01_111x_xx01,	// SBC[A..Q]op[N]
+		16'bxx11_xx01_0xx0_0010,	// ORA[A..Q]op[N] (zp)w, AND[A..Q]op[N] (zp)w, ADC[A..Q]op[N] (zp)w
+		16'bxx11_xx01_0xx0_1011,	// ORA[A..Q]op[N] aw, AND[A..Q]op[N] aw, ADC[A..Q]op[N] aw
+		16'bxx11_xx01_1111_0010,	// SBC[A..Q]op[N] (zp)y
+		16'bxx11_xx01_1111_1011,	// SBC[A..Q]op[N] aw
 		16'bxx11_xx01_0010_x100:	// BIT[A..Q]op[N] zp
 		      dst_reg <= SEL_N;
 
@@ -1314,6 +1370,10 @@ always @(posedge clk)
 		16'b0011_0010_1011_0010,	// LD[O](zp)w
 		16'bxx11_xx10_0xxx_xx01,	// ADC[A..Q]op[O], SBC[A..Q]op[O], AND[A..Q]op[O], ORA[A..Q]op[O], EOR[A..Q]op[O]
 		16'bxx11_xx10_111x_xx01,	// SBC[A..Q]op[O]
+		16'bxx11_xx10_0xx0_0010,	// ORA[A..Q]op[O] (zp)w, AND[A..Q]op[O] (zp)w, ADC[A..Q]op[O] (zp)w
+		16'bxx11_xx10_0xx0_1011,	// ORA[A..Q]op[O] aw, AND[A..Q]op[O] aw, ADC[A..Q]op[O] aw
+		16'bxx11_xx10_1111_0010,	// SBC[A..Q]op[O] (zp)y
+		16'bxx11_xx10_1111_1011,	// SBC[A..Q]op[O] aw
 		16'bxx11_xx10_0010_x100:	// BIT[A..Q]op[O] zp
 		      dst_reg <= SEL_O;
 
@@ -1328,10 +1388,13 @@ always @(posedge clk)
 		16'b0011_0011_1011_0010,	// LD[Q](zp)w
 		16'bxx11_xx11_0xxx_xx01,	// ADC[A..Q]op[Q], SBC[A..Q]op[Q], AND[A..Q]op[Q], ORA[A..Q]op[Q], EOR[A..Q]op[Q]
 		16'bxx11_xx11_111x_xx01,	// SBC[A..Q]op[Q]
+		16'bxx11_xx11_0xx0_0010,	// ORA[A..Q]op[Q] (zp)w, AND[A..Q]op[Q] (zp)w, ADC[A..Q]op[Q] (zp)w
+		16'bxx11_xx11_0xx0_1011,	// ORA[A..Q]op[Q] aw, AND[A..Q]op[Q] aw, ADC[A..Q]op[Q] aw
+		16'bxx11_xx11_1111_0010,	// SBC[A..Q]op[Q] (zp)y
+		16'bxx11_xx11_1111_1011,	// SBC[A..Q]op[Q] aw
 		16'bxx11_xx11_0010_x100:	// BIT[A..Q]op[Q] zp
 		      dst_reg <= SEL_Q;
 
-		//default: dst_reg <= SEL_A;
 	endcase
 
 always @(posedge clk)
@@ -1384,6 +1447,10 @@ always @(posedge clk)
 		16'b0000_0000_1101_1011,	// CMP[A] aw
 		16'b00xx_00xx_0xxx_xx01,	// ADC[A]op[A..Q], SBC[A]op[A..Q], AND[A]op[A..Q], ORA[A]op[A..Q], EOR[A]op[A..Q]
 		16'b00xx_00xx_111x_xx01,	// SBC[A]op[A..Q]
+		16'b00xx_00xx_0xx0_0010,	// ORA[A]op[A..Q] (zp)w, AND[A]op[A..Q] (zp)w, ADC[A]op[A..Q] (zp)w
+		16'b00xx_00xx_0xx0_1011,	// ORA[A]op[A..Q] aw, AND[A]op[A..Q] aw, ADC[A]op[A..Q] aw
+		16'b00xx_00xx_1111_0010,	// SBC[A]op[A..Q] (zp)y
+		16'b00xx_00xx_1111_1011,	// SBC[A]op[A..Q] aw
 		16'bxxxx_00xx_0xxx_x110,	// ASL[A]op[A..D], ROL[A]op[A..D], LSR[A]op[A..D], ROR[A]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_00xx_0xx0_1010,	// ASL[A]op[A..D], ROL[A]op[A..D], LSR[A]op[A..D], ROR[A]op[A..D] (acc)
 		16'b00xx_00xx_0010_x100:	// BIT[A]op[A..Q] zp
@@ -1402,6 +1469,10 @@ always @(posedge clk)
 		16'b0000_0100_1101_1011,	// CMP[B] aw
 		16'b00xx_01xx_0xxx_xx01,	// ADC[B]op[A..Q], SBC[B]op[A..Q], AND[B]op[A..Q], ORA[B]op[A..Q], EOR[B]op[A..Q]
 		16'b00xx_01xx_111x_xx01,	// SBC[B]op[A..Q]
+		16'b00xx_01xx_0xx0_0010,	// ORA[B]op[A..Q] (zp)w, AND[B]op[A..Q] (zp)w, ADC[B]op[A..Q] (zp)w
+		16'b00xx_01xx_0xx0_1011,	// ORA[B]op[A..Q] aw, AND[B]op[A..Q] aw, ADC[B]op[A..Q] aw
+		16'b00xx_01xx_1111_0010,	// SBC[B]op[A..Q] (zp)y
+		16'b00xx_01xx_1111_1011,	// SBC[B]op[A..Q] aw
 		16'bxxxx_01xx_0xxx_x110,	// ASL[B]op[A..D], ROL[B]op[A..D], LSR[B]op[A..D], ROR[B]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_01xx_0xx0_1010,	// ASL[B]op[A..D], ROL[B]op[A..D], LSR[B]op[A..D], ROR[B]op[A..D] (acc)
 		16'b00xx_01xx_0010_x100:	// BIT[B]op[A..Q] zp
@@ -1420,6 +1491,10 @@ always @(posedge clk)
 		16'b0000_1000_1101_1011,	// CMP[C] aw
 		16'b00xx_10xx_0xxx_xx01,	// ADC[C]op[A..Q], SBC[C]op[A..Q], AND[C]op[A..Q], ORA[C]op[A..Q], EOR[C]op[A..Q]
 		16'b00xx_10xx_111x_xx01,	// SBC[C]op[A..Q]
+		16'b00xx_10xx_0xx0_0010,	// ORA[C]op[A..Q] (zp)w, AND[C]op[A..Q] (zp)w, ADC[C]op[A..Q] (zp)w
+		16'b00xx_10xx_0xx0_1011,	// ORA[C]op[A..Q] aw, AND[C]op[A..Q] aw, ADC[C]op[A..Q] aw
+		16'b00xx_10xx_1111_0010,	// SBC[C]op[A..Q] (zp)y
+		16'b00xx_10xx_1111_1011,	// SBC[C]op[A..Q] aw
 		16'bxxxx_10xx_0xxx_x110,	// ASL[C]op[A..D], ROL[C]op[A..D], LSR[C]op[A..D], ROR[C]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_10xx_0xx0_1010,	// ASL[C]op[A..D], ROL[C]op[A..D], LSR[C]op[A..D], ROR[C]op[A..D] (acc)
 		16'b00xx_10xx_0010_x100:	// BIT[C]op[A..Q] zp
@@ -1438,6 +1513,10 @@ always @(posedge clk)
 		16'b0000_1100_1101_1011,	// CMP[D] aw
 		16'b00xx_11xx_0xxx_xx01,	// ADC[D]op[A..Q], SBC[D]op[A..Q], AND[D]op[A..Q], ORA[D]op[A..Q], EOR[D]op[A..Q]
 		16'b00xx_11xx_111x_xx01,	// SBC[D]op[A..Q]
+		16'b00xx_11xx_0xx0_0010,	// ORA[D]op[A..Q] (zp)w, AND[A]op[A..Q] (zp)w, ADC[D]op[A..Q] (zp)w
+		16'b00xx_11xx_0xx0_1011,	// ORA[D]op[A..Q] aw, AND[A]op[A..Q] aw, ADC[D]op[A..Q] aw
+		16'b00xx_11xx_1111_0010,	// SBC[D]op[A..Q] (zp)y
+		16'b00xx_11xx_1111_1011,	// SBC[D]op[A..Q] aw
 		16'bxxxx_11xx_0xxx_x110,	// ASL[D]op[A..D], ROL[D]op[A..D], LSR[D]op[A..D], ROR[D]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_11xx_0xx0_1010,	// ASL[D]op[A..D], ROL[D]op[A..D], LSR[D]op[A..D], ROR[D]op[A..D] (acc)
 		16'b00xx_11xx_0010_x100:	// BIT[D]op[A..Q] zp
@@ -1456,6 +1535,10 @@ always @(posedge clk)
 		16'b0100_0000_1101_1011,	// CMP[E] aw
 		16'b01xx_00xx_0xxx_xx01,	// ADC[E]op[A..Q], SBC[E]op[A..Q], AND[E]op[A..Q], ORA[E]op[A..Q], EOR[E]op[A..Q]
 		16'b01xx_00xx_111x_xx01,	// SBC[E]op[A..Q]
+		16'b01xx_00xx_0xx0_0010,	// ORA[E]op[A..Q] (zp)w, AND[E]op[A..Q] (zp)w, ADC[E]op[A..Q] (zp)w
+		16'b01xx_00xx_0xx0_1011,	// ORA[E]op[A..Q] aw, AND[E]op[A..Q] aw, ADC[E]op[A..Q] aw
+		16'b01xx_00xx_1111_0010,	// SBC[E]op[A..Q] (zp)y
+		16'b01xx_00xx_1111_1011,	// SBC[E]op[A..Q] aw
 		16'b01xx_00xx_0010_x100:	// BIT[E]op[A..Q] zp
 				src_reg <= SEL_E;
 
@@ -1472,6 +1555,10 @@ always @(posedge clk)
 		16'b0100_0100_1101_1011,	// CMP[F] aw
 		16'b01xx_01xx_0xxx_xx01,	// ADC[F]op[A..Q], SBC[F]op[A..Q], AND[F]op[A..Q], ORA[F]op[A..Q], EOR[F]op[A..Q]
 		16'b01xx_01xx_111x_xx01,	// SBC[F]op[A..Q]
+		16'b01xx_01xx_0xx0_0010,	// ORA[F]op[A..Q] (zp)w, AND[F]op[A..Q] (zp)w, ADC[F]op[A..Q] (zp)w
+		16'b01xx_01xx_0xx0_1011,	// ORA[F]op[A..Q] aw, AND[F]op[A..Q] aw, ADC[F]op[A..Q] aw
+		16'b01xx_01xx_1111_0010,	// SBC[F]op[A..Q] (zp)y
+		16'b01xx_01xx_1111_1011,	// SBC[F]op[A..Q] aw
 		16'b01xx_01xx_0010_x100:	// BIT[F]op[A..Q] zp
 				src_reg <= SEL_F;
 
@@ -1488,6 +1575,10 @@ always @(posedge clk)
 		16'b0100_1000_1101_1011,	// CMP[G] aw
 		16'b01xx_10xx_0xxx_xx01,	// ADC[G]op[A..Q], SBC[G]op[A..Q], AND[G]op[A..Q], ORA[G]op[A..Q], EOR[G]op[A..Q]
 		16'b01xx_10xx_111x_xx01,	// SBC[G]op[A..Q]
+		16'b01xx_10xx_0xx0_0010,	// ORA[G]op[A..Q] (zp)w, AND[G]op[A..Q] (zp)w, ADC[G]op[A..Q] (zp)w
+		16'b01xx_10xx_0xx0_1011,	// ORA[G]op[A..Q] aw, AND[G]op[A..Q] aw, ADC[G]op[A..Q] aw
+		16'b01xx_10xx_1111_0010,	// SBC[G]op[A..Q] (zp)y
+		16'b01xx_10xx_1111_1011,	// SBC[G]op[A..Q] aw
 		16'b01xx_10xx_0010_x100:	// BIT[G]op[A..Q] zp
 				src_reg <= SEL_G;
 
@@ -1504,6 +1595,10 @@ always @(posedge clk)
 		16'b0100_1100_1101_1011,	// CMP[H] aw
 		16'b01xx_11xx_0xxx_xx01,	// ADC[H]op[A..Q], SBC[H]op[A..Q], AND[H]op[A..Q], ORA[H]op[A..Q], EOR[H]op[A..Q]
 		16'b01xx_11xx_111x_xx01,	// SBC[H]op[A..Q]
+		16'b01xx_11xx_0xx0_0010,	// ORA[H]op[A..Q] (zp)w, AND[H]op[A..Q] (zp)w, ADC[H]op[A..Q] (zp)w
+		16'b01xx_11xx_0xx0_1011,	// ORA[H]op[A..Q] aw, AND[H]op[A..Q] aw, ADC[H]op[A..Q] aw
+		16'b01xx_11xx_1111_0010,	// SBC[H]op[A..Q] (zp)y
+		16'b01xx_11xx_1111_1011,	// SBC[H]op[A..Q] aw
 		16'b01xx_11xx_0010_x100:	// BIT[H]op[A..Q] zp
 				src_reg <= SEL_H;
 
@@ -1520,6 +1615,10 @@ always @(posedge clk)
 		16'b1000_0000_1101_1011,	// CMP[I] aw
 		16'b10xx_00xx_0xxx_xx01,	// ADC[I]op[A..Q], SBC[I]op[A..Q], AND[I]op[A..Q], ORA[I]op[A..Q], EOR[I]op[A..Q]
 		16'b10xx_00xx_111x_xx01,	// SBC[I]op[A..Q]
+		16'b10xx_00xx_0xx0_0010,	// ORA[I]op[A..Q] (zp)w, AND[I]op[A..Q] (zp)w, ADC[I]op[A..Q] (zp)w
+		16'b10xx_00xx_0xx0_1011,	// ORA[I]op[A..Q] aw, AND[I]op[A..Q] aw, ADC[I]op[A..Q] aw
+		16'b10xx_00xx_1111_0010,	// SBC[I]op[A..Q] (zp)y
+		16'b10xx_00xx_1111_1011,	// SBC[I]op[A..Q] aw
 		16'b10xx_00xx_0010_x100:	// BIT[I]op[A..Q] zp
 				src_reg <= SEL_I;
 
@@ -1536,6 +1635,10 @@ always @(posedge clk)
 		16'b1000_0100_1101_1011,	// CMP[J] aw
 		16'b10xx_01xx_0xxx_xx01,	// ADC[J]op[A..Q], SBC[J]op[A..Q], AND[J]op[A..Q], ORA[J]op[A..Q], EOR[J]op[A..Q]
 		16'b10xx_01xx_111x_xx01,	// SBC[J]op[A..Q]
+		16'b10xx_01xx_0xx0_0010,	// ORA[J]op[A..Q] (zp)w, AND[J]op[A..Q] (zp)w, ADC[J]op[A..Q] (zp)w
+		16'b10xx_01xx_0xx0_1011,	// ORA[J]op[A..Q] aw, AND[J]op[A..Q] aw, ADC[J]op[A..Q] aw
+		16'b10xx_01xx_1111_0010,	// SBC[J]op[A..Q] (zp)y
+		16'b10xx_01xx_1111_1011,	// SBC[J]op[A..Q] aw
 		16'b10xx_01xx_0010_x100:	// BIT[J]op[A..Q] zp
 				src_reg <= SEL_J;
 
@@ -1552,6 +1655,10 @@ always @(posedge clk)
 		16'b1000_1000_1101_1011,	// CMP[K] aw
 		16'b10xx_10xx_0xxx_xx01,	// ADC[K]op[A..Q], SBC[K]op[A..Q], AND[K]op[A..Q], ORA[K]op[A..Q], EOR[K]op[A..Q]
 		16'b10xx_10xx_111x_xx01,	// SBC[K]op[A..Q]
+		16'b10xx_10xx_0xx0_0010,	// ORA[K]op[A..Q] (zp)w, AND[K]op[A..Q] (zp)w, ADC[K]op[A..Q] (zp)w
+		16'b10xx_10xx_0xx0_1011,	// ORA[K]op[A..Q] aw, AND[K]op[A..Q] aw, ADC[K]op[A..Q] aw
+		16'b10xx_10xx_1111_0010,	// SBC[K]op[A..Q] (zp)y
+		16'b10xx_10xx_1111_1011,	// SBC[K]op[A..Q] aw
 		16'b10xx_10xx_0010_x100:	// BIT[K]op[A..Q] zp
 				src_reg <= SEL_K;
 
@@ -1568,6 +1675,10 @@ always @(posedge clk)
 		16'b1000_1100_1101_1011,	// CMP[L] aw
 		16'b10xx_11xx_0xxx_xx01,	// ADC[L]op[A..Q], SBC[L]op[A..Q], AND[L]op[A..Q], ORA[L]op[A..Q], EOR[L]op[A..Q]
 		16'b10xx_11xx_111x_xx01,	// SBC[L]op[A..Q]
+		16'b10xx_11xx_0xx0_0010,	// ORA[L]op[A..Q] (zp)w, AND[L]op[A..Q] (zp)w, ADC[L]op[A..Q] (zp)w
+		16'b10xx_11xx_0xx0_1011,	// ORA[L]op[A..Q] aw, AND[L]op[A..Q] aw, ADC[L]op[A..Q] aw
+		16'b10xx_11xx_1111_0010,	// SBC[L]op[A..Q] (zp)y
+		16'b10xx_11xx_1111_1011,	// SBC[L]op[A..Q] aw
 		16'b10xx_11xx_0010_x100:	// BIT[L]op[A..Q] zp
 				src_reg <= SEL_L;
 
@@ -1584,6 +1695,10 @@ always @(posedge clk)
 		16'b1100_0000_1101_1011,	// CMP[M] aw
 		16'b11xx_00xx_0xxx_xx01,	// ADC[M]op[A..Q], SBC[M]op[A..Q], AND[M]op[A..Q], ORA[M]op[A..Q], EOR[M]op[A..Q]
 		16'b11xx_00xx_111x_xx01,	// SBC[M]op[A..Q]
+		16'b11xx_00xx_0xx0_0010,	// ORA[M]op[A..Q] (zp)w, AND[M]op[A..Q] (zp)w, ADC[M]op[A..Q] (zp)w
+		16'b11xx_00xx_0xx0_1011,	// ORA[M]op[A..Q] aw, AND[M]op[A..Q] aw, ADC[M]op[A..Q] aw
+		16'b11xx_00xx_1111_0010,	// SBC[M]op[A..Q] (zp)y
+		16'b11xx_00xx_1111_1011,	// SBC[M]op[A..Q] aw
 		16'b11xx_00xx_0010_x100:	// BIT[M]op[A..Q] zp
 				src_reg <= SEL_M;
 
@@ -1600,6 +1715,10 @@ always @(posedge clk)
 		16'b1100_0100_1101_1011,	// CMP[N] aw
 		16'b11xx_01xx_0xxx_xx01,	// ADC[N]op[A..Q], SBC[N]op[A..Q], AND[N]op[A..Q], ORA[N]op[A..Q], EOR[N]op[A..Q]
 		16'b11xx_01xx_111x_xx01,	// SBC[N]op[A..Q]
+		16'b11xx_01xx_0xx0_0010,	// ORA[N]op[A..Q] (zp)w, AND[N]op[A..Q] (zp)w, ADC[N]op[A..Q] (zp)w
+		16'b11xx_01xx_0xx0_1011,	// ORA[N]op[A..Q] aw, AND[N]op[A..Q] aw, ADC[N]op[A..Q] aw
+		16'b11xx_01xx_1111_0010,	// SBC[N]op[A..Q] (zp)y
+		16'b11xx_01xx_1111_1011,	// SBC[N]op[A..Q] aw
 		16'b11xx_01xx_0010_x100:	// BIT[N]op[A..Q] zp
 				src_reg <= SEL_N;
 
@@ -1616,6 +1735,10 @@ always @(posedge clk)
 		16'b1100_1000_1101_1011,	// CMP[O] aw
 		16'b11xx_10xx_0xxx_xx01,	// ADC[O]op[A..Q], SBC[O]op[A..Q], AND[O]op[A..Q], ORA[O]op[A..Q], EOR[O]op[A..Q]
 		16'b11xx_10xx_111x_xx01,	// SBC[O]op[A..Q]
+		16'b11xx_10xx_0xx0_0010,	// ORA[O]op[A..Q] (zp)w, AND[O]op[A..Q] (zp)w, ADC[O]op[A..Q] (zp)w
+		16'b11xx_10xx_0xx0_1011,	// ORA[O]op[A..Q] aw, AND[O]op[A..Q] aw, ADC[O]op[A..Q] aw
+		16'b11xx_10xx_1111_0010,	// SBC[O]op[A..Q] (zp)y
+		16'b11xx_10xx_1111_1011,	// SBC[O]op[A..Q] aw
 		16'b11xx_10xx_0010_x100:	// BIT[O]op[A..Q] zp
 				src_reg <= SEL_O;
 
@@ -1632,10 +1755,13 @@ always @(posedge clk)
 		16'b1100_1100_1101_1011,	// CMP[Q] aw
 		16'b11xx_11xx_0xxx_xx01,	// ADC[Q]op[A..Q], SBC[Q]op[A..Q], AND[Q]op[A..Q], ORA[Q]op[A..Q], EOR[Q]op[A..Q]
 		16'b11xx_11xx_111x_xx01,	// SBC[Q]op[A..Q]
+		16'b11xx_11xx_0xx0_0010,	// ORA[Q]op[A..Q] (zp)w, AND[Q]op[A..Q] (zp)w, ADC[Q]op[A..Q] (zp)w
+		16'b11xx_11xx_0xx0_1011,	// ORA[Q]op[A..Q] aw, AND[Q]op[A..Q] aw, ADC[Q]op[A..Q] aw
+		16'b11xx_11xx_1111_0010,	// SBC[Q]op[A..Q] (zp)y
+		16'b11xx_11xx_1111_1011,	// SBC[Q]op[A..Q] aw
 		16'b11xx_11xx_0010_x100:	// BIT[Q]op[A..Q] zp
 				src_reg <= SEL_Q;
-				
-		//default: src_reg <= SEL_A;
+	
 	endcase
 
 always @(posedge clk) 
@@ -1691,14 +1817,14 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
-		16'b00xx_00xx_1010_0xxx,	// LDA[A..Q], LDX, LDY
-		16'b00xx_00xx_1010_1001,
-		16'b00xx_00xx_1010_11xx,
-		16'b00xx_00xx_1011_xxx1,
-		16'b00xx_00xx_1011_01x0,
-		16'b00xx_00xx_1011_11x0,
-		16'b00xx_00xx_1011_0010,
-		16'b0000_0000_1100_0010:
+		16'b00xx_00xx_1010_0xxx,	// LD[A..Q] zpx, zp, LDX #, zp, LDY #, zp
+		16'b00xx_00xx_1010_1001,	// LD[A..Q] #
+		16'b00xx_00xx_1010_11xx,	// LDY a, LD[A..Q] a, LDX a, LDW a
+		16'b00xx_00xx_1011_xxx1,	// LD[A..Q] (zp)y, zpx, ay, aw, ax, LDX zpw, aw
+		16'b00xx_00xx_1011_01x0,	// LDY zpx, LDX zpy
+		16'b00xx_00xx_1011_11x0,	// LDY ax, LDX ay
+		16'b00xx_00xx_1011_0010,	// LD[A..Q] zpw
+		16'b0000_0000_1100_0010:	// LDW #
 				load_only <= 1;
 		default:	load_only <= 0;
 	endcase
@@ -1706,7 +1832,7 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
-		16'b0000_0000_111x_x110,	// INC
+		16'b0000_0000_111x_x110,	// INC zp, zpx, a, ax
 		16'b0000_0000_11x0_1000, 	// INX, INY
 		16'b0000_0000_1101_1000,	// INW
 		16'bxxxx_xxxx_0001_1010:	// INC[A..Q]
@@ -1719,7 +1845,8 @@ always @(posedge clk )
      if( (state == DECODE || state == BRK0) && RDY )
      	casex( IR[15:0] ) 	   	
 		16'bxxxx_xxxx_011x_xx01,	// ADC[A..Q]i, (zpx), (zp)y, zp, zpx, ay, ax, a op[A..Q]
-		16'bxxxx_xxxx_0111_0010:	// ADC[A..Q](zp)w
+		16'bxxxx_xxxx_0111_0010,	// ADC[A..Q](zp)w op[A..Q]
+		16'bxxxx_xxxx_0111_1011:	// ADC[A..Q] aw op[A..Q]
 					adc_sbc <= 1;
 
 		default:	adc_sbc <= 0;
@@ -1791,8 +1918,7 @@ always @(posedge clk )
 		16'b0000_0000_110x_x110,	// DEC
 		16'bxxxx_xxxx_11xx_xx01,	// CMP[A..Q]i, (zpx), (zp)y, zp, zpx, ay, a, ax, SBC[A..Q]i, (zpx), (zp)y, zp, zpx, ay, a, ax op[A..Q]
 		16'bxxxx_xxxx_11x1_0010,	// CMP[A..Q](zp)w, SBC[A..Q](zp)w op[A..Q]
-		16'bxx00_xx00_1101_0010,	// CMP[A..Q](zp)w
-		16'bxx00_xx00_1101_1011,	// CMP[A..Q]aw
+		16'bxx00_xx00_11x1_1011,	// CMP[A..Q]aw, SBC[A..Q]aw op[A..Q]
 		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm, zpg)
 		16'b0000_0000_11x0_1100,	// CPX, CPY abs
 		16'b0000_0000_1110_0010,	// CPW i
