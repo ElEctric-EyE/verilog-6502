@@ -1634,7 +1634,7 @@ always @(posedge clk)
 		16'b11xx_11xx_111x_xx01,	// SBC[Q]op[A..Q]
 		16'b11xx_11xx_0010_x100:	// BIT[Q]op[A..Q] zp
 				src_reg <= SEL_Q;
-
+				
 		//default: src_reg <= SEL_A;
 	endcase
 
@@ -1669,7 +1669,8 @@ always @(posedge clk)
 		16'bxx00_xx00_1001_0010,	// ST[A..Q] (zp)w
 		16'bxx00_xx00_1001_1011,	// ST[A..Q] aw
 		16'bxx00_xx00_1001_01xx,	// STY zpx, ST[A..Q] zpx, STX zpy, STX zpw
-		16'bxx00_xx00_100x_11xx:	// ST[A..Q] ax, STX ay, STX aw, STX a, STY a, ST[A..Q] a, STW a		16'bxx00_xx00_1001_1011:	// ST[A..Q] aw
+		16'bxx00_xx00_100x_11xx,	// ST[A..Q] ax, STX ay, STX aw, STX a, STY a, ST[A..Q] a, STW a		
+		16'bxx00_xx00_1001_1011:	// ST[A..Q] aw
 				store <= 1;
 
 		default:	store <= 0;
@@ -1772,7 +1773,8 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] ) 			
-		16'bxxxx_xxxx_00xx_xx10:	// ROL[A..D], ASL[A..D]
+		16'bxxxx_xxxx_00xx_x110,	// ROL[A..D], ASL[A..D]
+		16'bxxxx_xxxx_00x0_1010:	// ROL[A..D], ASL[A..D]
 				op <= OP_ROL;
 
 		16'bxxxx_xxxx_0010_x100:   // BIT[A..Q] zp/abs
