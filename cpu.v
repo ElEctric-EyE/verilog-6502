@@ -1664,12 +1664,12 @@ always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[15:0] )
 		16'b0000_0000_0111_0100,	// STW zpx
-		16'b0000_0000_100x_01x0,	// STX zp,zpy, STY zp,zpx
-		16'b0000_0000_100x_1110,	// STX a,ay
-		16'b0000_0000_100x_x111,	// STW a,zp, STX zpw,aw
-		16'bxx00_xx00_100x_xx01,	// ST[A..Q] (zpx),(zp)y, zp, zpx, ay, a, ax
+		16'bxx00_xx00_1000_01xx,	// STY zp, ST[A..Q] zp, STX zp, STW zp
+		16'bxx00_xx00_1001_x001,	// ST[A..Q] (zp)y, ay
 		16'bxx00_xx00_1001_0010,	// ST[A..Q] (zp)w
-		16'bxx00_xx00_1001_1011:	// ST[A..Q] aw
+		16'bxx00_xx00_1001_1011,	// ST[A..Q] aw
+		16'bxx00_xx00_1001_01xx,	// STY zpx, ST[A..Q] zpx, STX zpy, STX zpw
+		16'bxx00_xx00_100x_11xx:	// ST[A..Q] ax, STX ay, STX aw, STX a, STY a, ST[A..Q] a, STW a		16'bxx00_xx00_1001_1011:	// ST[A..Q] aw
 				store <= 1;
 
 		default:	store <= 0;
