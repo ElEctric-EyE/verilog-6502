@@ -1821,8 +1821,8 @@ always @(posedge clk )
 		16'b00xx_00xx_1010_1001,	// LD[A..Q] #
 		16'b00xx_00xx_1010_11xx,	// LDY a, LD[A..Q] a, LDX a, LDW a
 		16'b00xx_00xx_1011_xxx1,	// LD[A..Q] (zp)y, zpx, ay, aw, ax, LDX zpw, aw
-		16'b00xx_00xx_1011_01x0,	// LDY zpx, LDX zpy
-		16'b00xx_00xx_1011_11x0,	// LDY ax, LDX ay
+		16'b0000_0000_1011_01x0,	// LDY zpx, LDX zpy
+		16'b0000_0000_1011_11x0,	// LDY ax, LDX ay
 		16'b00xx_00xx_1011_0010,	// LD[A..Q] zpw
 		16'b0000_0000_1100_0010:	// LDW #
 				load_only <= 1;
@@ -1918,7 +1918,7 @@ always @(posedge clk )
 		16'b0000_0000_110x_x110,	// DEC
 		16'bxxxx_xxxx_11xx_xx01,	// CMP[A..Q]i, (zpx), (zp)y, zp, zpx, ay, a, ax, SBC[A..Q]i, (zpx), (zp)y, zp, zpx, ay, a, ax op[A..Q]
 		16'bxxxx_xxxx_11x1_0010,	// CMP[A..Q](zp)w, SBC[A..Q](zp)w op[A..Q]
-		16'bxx00_xx00_11x1_1011,	// CMP[A..Q]aw, SBC[A..Q]aw op[A..Q]
+		16'bxxxx_xxxx_11x1_1011,	// CMP[A..Q]aw, SBC[A..Q]aw op[A..Q]
 		16'b0000_0000_11x0_0x00,	// CPX, CPY (imm, zpg)
 		16'b0000_0000_11x0_1100,	// CPX, CPY abs
 		16'b0000_0000_1110_0010,	// CPW i
