@@ -1,4 +1,4 @@
-/*FILE: /NewIndex.b/cpu.v DATE:04/17/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
+/*FILE: /NewIndex.b/cpu.v DATE:04/18/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
  * verilog-6502 project: verilog model of 6502 and 65Org16.x CPU core
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
@@ -1015,7 +1015,7 @@ always @(posedge clk)
 always @(posedge clk)
 	  if( state == DECODE && RDY )
 	   casex( IR[15:0] )				
-		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (abs, absx, zpg, zpgx)
+		16'bxxxx_0000_0xxx_x110,	// ASL, ROL, LSR, ROR (abs, absx, zpg, zpgx)
 		16'bxxxx_xxxx_0xx0_1010:	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (acc)
 					E_Reg <= IR[15:12]+1;	//note: no shift will occur when 'illegal' <shift, rotate> opcodes IR[15:12] = 1111. A +1 ensures compatibility with original NMOS6502 <shift,rotate> opcodes.
 
@@ -1037,7 +1037,7 @@ always @(posedge clk)
 		16'bxxxx_xxxx_11x1_0100,	
 		16'bxxxx_xxxx_0xxx_0101,
 		16'bxxxx_xxxx_1x1x_0101,
-		16'bxxxx_xxxx_0xxx_0110,
+		16'bxxxx_0000_0xxx_0110,
 		16'bxxxx_xxxx_1x1x_0110,
 		16'bxxxx_xxxx_110x_0110,
 		16'bxxxx_xxxx_101x_0111,	
@@ -1056,7 +1056,7 @@ always @(posedge clk)
 		16'bxxxx_xxxx_101x_1100,
 		16'bxxxx_xxxx_0xxx_1101,
 		16'bxxxx_xxxx_1x1x_1101,
-		16'bxxxx_xxxx_0xxx_1110,
+		16'bxxxx_0000_0xxx_1110,
 		16'bxxxx_xxxx_1x1x_1110,
 		16'bxxxx_xxxx_110x_1110,
 		16'bxxxx_xxxx_00x0_1111,
@@ -1114,7 +1114,6 @@ always @(posedge clk)
 		16'bxx00_xx00_0xx0_1011,	// ORA[A..Q]op[A] aw, AND[A..Q]op[A] aw, ADC[A..Q]op[A] aw
 		16'bxx00_xx00_1111_0010,	// SBC[A..Q]op[A] (zp)y
 		16'bxx00_xx00_1111_1011,	// SBC[A..Q]op[A] aw
-		16'bxxxx_xx00_0xxx_x110,	// ASL[A..D]op[A], ROL[A..D]op[A], LSR[A..D]op[A], ROR[A..D]op[A] (abs, absx, zpg, zpgx)
 		16'bxxxx_xx00_0xx0_1010,	// ASL[A..D]op[A], ROL[A..D]op[A], LSR[A..D]op[A], ROR[A..D]op[A] (acc)
 		16'bxx00_xx00_0010_x100:	// BIT[A..Q]op[A] zp
 				dst_reg <= SEL_A; 
@@ -1134,7 +1133,6 @@ always @(posedge clk)
 		16'bxx00_xx01_0xx0_1011,	// ORA[A..Q]op[B] aw, AND[A..Q]op[B] aw, ADC[A..Q]op[B] aw
 		16'bxx00_xx01_1111_0010,	// SBC[A..Q]op[B] (zp)y
 		16'bxx00_xx01_1111_1011,	// SBC[A..Q]op[B] aw
-		16'bxxxx_xx01_0xxx_x110,	// ASL[A..D]op[B], ROL[A..D]op[B], LSR[A..D]op[B], ROR[A..D]op[B] (abs, absx, zpg, zpgx)
 		16'bxxxx_xx01_0xx0_1010,	// ASL[A..D]op[B], ROL[A..D]op[B], LSR[A..D]op[B], ROR[A..D]op[B] (acc)
 		16'bxx00_xx01_0010_x100:	// BIT[A..Q]op[B] zp
             dst_reg <= SEL_B; 
@@ -1154,7 +1152,6 @@ always @(posedge clk)
 		16'bxx00_xx10_0xx0_1011,	// ORA[A..Q]op[C] aw, AND[A..Q]op[C] aw, ADC[A..Q]op[C] aw
 		16'bxx00_xx10_1111_0010,	// SBC[A..Q]op[C] (zp)y
 		16'bxx00_xx10_1111_1011,	// SBC[A..Q]op[C] aw
-		16'bxxxx_xx10_0xxx_x110,	// ASL[A..D]op[C], ROL[A..D]op[C], LSR[A..D]op[C], ROR[A..D]op[C] (abs, absx, zpg, zpgx)
 		16'bxxxx_xx10_0xx0_1010,	// ASL[A..D]op[C], ROL[A..D]op[C], LSR[A..D]op[C], ROR[A..D]op[C] (acc)
 		16'bxx00_xx10_0010_x100:	// BIT[A..Q]op[C] zp
             dst_reg <= SEL_C; 
@@ -1174,7 +1171,6 @@ always @(posedge clk)
 		16'bxx00_xx11_0xx0_1011,	// ORA[A..Q]op[D] aw, AND[A..Q]op[D] aw, ADC[A..Q]op[D] aw
 		16'bxx00_xx11_1111_0010,	// SBC[A..Q]op[D] (zp)y
 		16'bxx00_xx11_1111_1011,	// SBC[A..Q]op[D] aw
-		16'bxxxx_xx11_0xxx_x110,	// ASL[A..D]op[D], ROL[A..D]op[D], LSR[A..D]op[D], ROR[A..D]op[D] (abs, absx, zpg, zpgx)
 		16'bxxxx_xx11_0xx0_1010,	// ASL[A..D]op[D], ROL[A..D]op[D], LSR[A..D]op[D], ROR[A..D]op[D] (acc)
 		16'bxx00_xx11_0010_x100:	// BIT[A..Q]op[D] zp
 		      dst_reg <= SEL_D;
@@ -1451,7 +1447,6 @@ always @(posedge clk)
 		16'b00xx_00xx_0xx0_1011,	// ORA[A]op[A..Q] aw, AND[A]op[A..Q] aw, ADC[A]op[A..Q] aw
 		16'b00xx_00xx_1111_0010,	// SBC[A]op[A..Q] (zp)y
 		16'b00xx_00xx_1111_1011,	// SBC[A]op[A..Q] aw
-		16'bxxxx_00xx_0xxx_x110,	// ASL[A]op[A..D], ROL[A]op[A..D], LSR[A]op[A..D], ROR[A]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_00xx_0xx0_1010,	// ASL[A]op[A..D], ROL[A]op[A..D], LSR[A]op[A..D], ROR[A]op[A..D] (acc)
 		16'b00xx_00xx_0010_x100:	// BIT[A]op[A..Q] zp
             src_reg <= SEL_A; 
@@ -1473,7 +1468,6 @@ always @(posedge clk)
 		16'b00xx_01xx_0xx0_1011,	// ORA[B]op[A..Q] aw, AND[B]op[A..Q] aw, ADC[B]op[A..Q] aw
 		16'b00xx_01xx_1111_0010,	// SBC[B]op[A..Q] (zp)y
 		16'b00xx_01xx_1111_1011,	// SBC[B]op[A..Q] aw
-		16'bxxxx_01xx_0xxx_x110,	// ASL[B]op[A..D], ROL[B]op[A..D], LSR[B]op[A..D], ROR[B]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_01xx_0xx0_1010,	// ASL[B]op[A..D], ROL[B]op[A..D], LSR[B]op[A..D], ROR[B]op[A..D] (acc)
 		16'b00xx_01xx_0010_x100:	// BIT[B]op[A..Q] zp
             src_reg <= SEL_B; 
@@ -1495,7 +1489,6 @@ always @(posedge clk)
 		16'b00xx_10xx_0xx0_1011,	// ORA[C]op[A..Q] aw, AND[C]op[A..Q] aw, ADC[C]op[A..Q] aw
 		16'b00xx_10xx_1111_0010,	// SBC[C]op[A..Q] (zp)y
 		16'b00xx_10xx_1111_1011,	// SBC[C]op[A..Q] aw
-		16'bxxxx_10xx_0xxx_x110,	// ASL[C]op[A..D], ROL[C]op[A..D], LSR[C]op[A..D], ROR[C]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_10xx_0xx0_1010,	// ASL[C]op[A..D], ROL[C]op[A..D], LSR[C]op[A..D], ROR[C]op[A..D] (acc)
 		16'b00xx_10xx_0010_x100:	// BIT[C]op[A..Q] zp
             src_reg <= SEL_C; 
@@ -1517,7 +1510,6 @@ always @(posedge clk)
 		16'b00xx_11xx_0xx0_1011,	// ORA[D]op[A..Q] aw, AND[A]op[A..Q] aw, ADC[D]op[A..Q] aw
 		16'b00xx_11xx_1111_0010,	// SBC[D]op[A..Q] (zp)y
 		16'b00xx_11xx_1111_1011,	// SBC[D]op[A..Q] aw
-		16'bxxxx_11xx_0xxx_x110,	// ASL[D]op[A..D], ROL[D]op[A..D], LSR[D]op[A..D], ROR[D]op[A..D] (abs, absx, zpg, zpgx)
 		16'bxxxx_11xx_0xx0_1010,	// ASL[D]op[A..D], ROL[D]op[A..D], LSR[D]op[A..D], ROR[D]op[A..D] (acc)
 		16'b00xx_11xx_0010_x100:	// BIT[D]op[A..Q] zp
             src_reg <= SEL_D;
@@ -1806,7 +1798,7 @@ always @(posedge clk)
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
-		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D]
+		16'bxxxx_0000_0xxx_x110,	// ASL, ROL, LSR, ROR (abs, absx, zpg, zpgx)
 		16'b0000_0000_11xx_x110:	// DEC zp, zpx, a, ax, INC zp, zpx, a, ax
 				write_back <= 1;
 
@@ -1855,8 +1847,8 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
-		16'bxxxx_xxxx_0xxx_x110,	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (abs, absx, zpg, zpgx)
-		16'bxxxx_xxxx_0xx0_1010:	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (acc)
+		16'bxxxx_0000_0xxx_x110,	// ASL, ROL, LSR, ROR a, ax, zp, zpx
+		16'bxxxx_xxxx_0xx0_1010:	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] acc
 				shift <= 1;
 
 		default:	shift <= 0;
@@ -1880,8 +1872,8 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
-		16'bxxxx_xxxx_01xx_x110,	// ROR[A..D]op[A..D], LSR[A..D]op[A..D]
-		16'bxxxx_xxxx_01x0_1010:	//
+		16'bxxxx_0000_01xx_x110,	// ROR, LSR a, ax, zp, zpx
+		16'bxxxx_xxxx_01x0_1010:	// LSR[A..D]op[A..D], ROR[A..D]op[A..D] acc
 				shift_right <= 1;
 
 		default:	shift_right <= 0; 
@@ -1890,8 +1882,8 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
-		16'bxxxx_xxxx_0x10_1010,	// ROL[A..D], ROR[A..D]
-		16'bxxxx_xxxx_0x1x_x110:	// ROR[A..D], ROL[A..D]
+		16'bxxxx_xxxx_0x10_1010,	// ROL[A..D]op[A..D], ROR[A..D]op[A..D] acc
+		16'bxxxx_0000_0x1x_x110:	// ROR, ROL a, ax, zp, zpx
 				rotate <= 1;
 
 		default:	rotate <= 0; 
@@ -1900,15 +1892,15 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] ) 			
-		16'bxxxx_xxxx_00xx_x110,	// ROL[A..D], ASL[A..D]
-		16'bxxxx_xxxx_00x0_1010:	// ROL[A..D], ASL[A..D]
+		16'bxxxx_0000_00xx_x110,	// ROL, ASL a, ax, zp, zpx
+		16'bxxxx_xxxx_00x0_1010:	// ASL[A..D]op[A..D], ROL[A..D]op[A..D] acc
 				op <= OP_ROL;
 
-		16'bxxxx_xxxx_0010_x100:   // BIT[A..Q] zp/abs
+		16'bxxxx_xxxx_0010_x100:   // BIT[A..Q]op[A..Q] zp, a
 				op <= OP_AND;
 
-		16'bxxxx_xxxx_01xx_x110,	// ROR[A..D], LSR[A..D]
-		16'bxxxx_xxxx_01x0_1010:	//
+		16'bxxxx_0000_01xx_x110,	// ROR, LSR a, ax, zp, zpx
+		16'bxxxx_xxxx_01x0_1010:	// LSR[A..D]op[A..D], ROR[A..D]op[A..D] acc
 				op <= OP_A;
 
 		16'b0000_0000_1111_1000,	// DEW
@@ -1937,7 +1929,7 @@ always @(posedge clk )
 always @(posedge clk )
      if( state == DECODE && RDY )
      	casex( IR[15:0] ) 			
-		16'bxxxx_xxxx_0010_x100:   // BIT[A..Q] zp, a op[A..Q]
+		16'bxxxx_xxxx_0010_x100:   // BIT[A..Q]op[A..Q] zp, a
 				bit <= 1;
 
 		default:	bit <= 0; 
