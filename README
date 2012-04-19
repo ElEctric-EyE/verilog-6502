@@ -44,6 +44,61 @@ LDOi              .MACRO          ;LDO #$xxxx
 LDQi              .MACRO          ;LDQ #$xxxx
                   .BYTE $33A9
                   .ENDM
+LDWi              .MACRO
+                  .BYTE $00C2
+                  .ENDM
+                  
+;STAzp                    $0085
+STBzp             .MACRO          ;STB #$xxxx
+                  .BYTE $0185
+                  .ENDM
+STCzp             .MACRO          ;STC #$xxxx
+                  .BYTE $0285
+                  .ENDM
+STDzp             .MACRO          ;STD #$xxxx
+                  .BYTE $0385
+                  .ENDM
+STEzp             .MACRO          ;STE #$xxxx
+                  .BYTE $1085
+                  .ENDM
+STFzp             .MACRO          ;STF #$xxxx
+                  .BYTE $1185
+                  .ENDM
+STGzp             .MACRO          ;STG #$xxxx
+                  .BYTE $1285
+                  .ENDM
+STHzp             .MACRO          ;STH #$xxxx
+                  .BYTE $1385
+                  .ENDM
+STIzp             .MACRO           ;STI #$xxxx
+                  .BYTE $2085
+                  .ENDM
+STJzp             .MACRO          ;STJ #$xxxx
+                  .BYTE $2185
+                  .ENDM
+STKzp             .MACRO          ;STK #$xxxx
+                  .BYTE $2285
+                  .ENDM
+STLzp             .MACRO          ;STL #$xxxx
+                  .BYTE $2385
+                  .ENDM
+STMzp             .MACRO          ;STM #$xxxx
+                  .BYTE $3085
+                  .ENDM
+STNzp             .MACRO          ;STN #$xxxx
+                  .BYTE $3185
+                  .ENDM
+STOzp             .MACRO          ;STO #$xxxx
+                  .BYTE $3285
+                  .ENDM
+STQzp             .MACRO          ;STQ #$xxxx
+                  .BYTE $3385
+                  .ENDM
+STWzp             .MACRO
+                  .BYTE $0087
+                  .ENDM
+
+
                   
 ;LDA $xxxxxxxx          $00AD
 LDBa              .MACRO          ;LDB $xxxxxxxx
@@ -90,6 +145,9 @@ LDOa              .MACRO          ;LDO $xxxxxxxx
                   .ENDM
 LDQa              .MACRO          ;LDQ $xxxxxxxx
                   .BYTE $33AD
+                  .ENDM
+LDWa              .MACRO
+                  .BYTE $00AF
                   .ENDM
 
 ;STAa                   $008D                  
@@ -138,6 +196,9 @@ STOa              .MACRO          ;STO $xxxxxxxx
 STQa              .MACRO          ;STQ $xxxxxxxx
                   .BYTE $CC8D
                   .ENDM
+STWa              .MACRO
+                  .BYTE $008F
+                  .ENDM
 
 ;CMPAi                  $00C9                  
 CMPBi             .MACRO          ;CMPB #$xxxx
@@ -184,6 +245,9 @@ CMPOi             .MACRO          ;CMPO #$xxxx
                   .ENDM
 CMPQi             .MACRO          ;CMPQ #$xxxx
                   .BYTE $CCC9
+                  .ENDM
+CMPWi             .MACRO
+                  .BYTE $00E2
                   .ENDM
 
 ;PHY               .MACRO
@@ -2947,9 +3011,10 @@ INW               .MACRO
 DEW               .MACRO
                   .BYTE $00F8
                   .ENDM
-LDWi              .MACRO            ;LDW #$xxxx
-                  .BYTE $00C2
+
+STazpw            .MACRO
+                  .BYTE $0092
                   .ENDM
-CPWi              .MACRO            ;CPW #$xxxx
-                  .BYTE $00E2
+LDazpw            .MACRO
+                  .BYTE $00B2
                   .ENDM
