@@ -1,4 +1,4 @@
-/*FILE: /NewIndex.b/cpu.v DATE:04/18/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
+/*FILE: /NewIndex.b/cpu.v DATE:04/20/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
  * verilog-6502 project: verilog model of 6502 and 65Org16.x CPU core
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
@@ -1041,7 +1041,7 @@ always @(posedge clk)
 		16'bxxxx_xxxx_110x_0110,
 		16'bxxxx_xxxx_101x_0111,	
 				
-		16'b0000_0000_xxx0_1000,   
+		16'bxxxx_xxxx_xxx0_1000,   
 		16'bxxxx_xxxx_1001_1000,	// TY[A..Q]
 		16'bxxxx_xxxx_11x1_1000,
 		16'bxxxx_xxxx_0xxx_1001,	
