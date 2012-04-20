@@ -262,9 +262,104 @@ CMPWi             .MACRO
 ;PLX               .MACRO
 ;                  .BYTE $00FA
 ;                  .ENDM
+;PHA                    $0048
+PHB               .MACRO
+                  .BYTE $0448
+                  .ENDM
+PHC               .MACRO
+                  .BYTE $0848
+                  .ENDM
+PHD               .MACRO
+                  .BYTE $0C48
+                  .ENDM
+PHE               .MACRO
+                  .BYTE $4048
+                  .ENDM
+PHF               .MACRO
+                  .BYTE $4448
+                  .ENDM
+PHG               .MACRO
+                  .BYTE $4848
+                  .ENDM
+PHH               .MACRO
+                  .BYTE $4C48
+                  .ENDM
+PHI               .MACRO
+                  .BYTE $8048
+                  .ENDM
+PHJ               .MACRO
+                  .BYTE $8448
+                  .ENDM
+PHK               .MACRO
+                  .BYTE $8848
+                  .ENDM
+PHL               .MACRO
+                  .BYTE $8C48
+                  .ENDM
+PHM               .MACRO
+                  .BYTE $C048
+                  .ENDM
+PHN               .MACRO
+                  .BYTE $C448
+                  .ENDM
+PHO               .MACRO
+                  .BYTE $C848
+                  .ENDM
+PHQ               .MACRO
+                  .BYTE $CC48
+                  .ENDM
+                  
 PHW               .MACRO
                   .BYTE $004B
                   .ENDM
+
+;PLA                    $0068
+PLB               .MACRO
+                  .BYTE $0168
+                  .ENDM
+PLC               .MACRO
+                  .BYTE $0268
+                  .ENDM
+PLD               .MACRO
+                  .BYTE $0368
+                  .ENDM
+PLE               .MACRO
+                  .BYTE $1068
+                  .ENDM
+PLF               .MACRO
+                  .BYTE $1168
+                  .ENDM
+PLG               .MACRO
+                  .BYTE $1268
+                  .ENDM
+PLH               .MACRO
+                  .BYTE $1368
+                  .ENDM
+PLI               .MACRO
+                  .BYTE $2068
+                  .ENDM
+PLJ               .MACRO
+                  .BYTE $2168
+                  .ENDM
+PLK               .MACRO
+                  .BYTE $2268
+                  .ENDM
+PLL               .MACRO
+                  .BYTE $2368
+                  .ENDM
+PLM               .MACRO
+                  .BYTE $3068
+                  .ENDM
+PLN               .MACRO
+                  .BYTE $3168
+                  .ENDM
+PLO               .MACRO
+                  .BYTE $3268
+                  .ENDM
+PLQ               .MACRO
+                  .BYTE $3368
+                  .ENDM
+                  
 PLW               .MACRO
                   .BYTE $006B
                   .ENDM
