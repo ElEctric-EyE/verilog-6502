@@ -135,6 +135,8 @@ initial
 		QAWXYS[SEL_S] = 0; //init stack
 		QAWXYS[SEL_ZPP] = 0;
 		QAWXYS[SEL_SPP] = 0; //init stack pointer to same as zero page, set to 16'h0001 for original 65Org16 address decoding
+		zp_reg = 0;
+		st_reg = 0; //shoud be same value as QAWXYS[SEL_SPP] for proper simulation
 	end
 
 /*
@@ -184,7 +186,8 @@ reg [aw-1:0] PC_temp; 	// intermediate value of PC
 
 reg [4:0] src_reg;	// source register index
 reg [4:0] dst_reg;	// destination register index
-
+reg [dw-1:0] zp_reg;	// shadow ZPP write register
+reg [dw-1:0] st_reg;	// shadow SPP write register
 reg index_y;		// if set, then Y is index reg
 reg index_w;		// if set, then W is index reg, otherwise X is index reg
 reg load_reg;		// loading a register (A thru Q, W, X, Y, S) in this instruction
@@ -446,7 +449,7 @@ always @*
 	PUSH1,
 	RTS0,
 	RTI0,
-	BRK0:		AB = { QAWXYS[SEL_SPP], regfile };
+	BRK0:		AB = { st_reg, regfile };
 
 	BRK1,
 	JSR1,
@@ -456,15 +459,15 @@ always @*
 	RTI1,
 	RTI2,
 	RTI3,
-	BRK2:		AB = { QAWXYS[SEL_SPP], ADD };
+	BRK2:		AB = { st_reg, ADD };
 
 	INDY1,
 	INDX1,
 	ZPX1,
-	INDX2:		AB = { QAWXYS[SEL_ZPP], ADD };
+	INDX2:		AB = { zp_reg, ADD };
 
 	ZP0,
-	INDY0:		AB = { QAWXYS[SEL_ZPP], DIMUX };
+	INDY0:		AB = { zp_reg, DIMUX };
 
 	REG,
 	READ,
@@ -498,7 +501,7 @@ always @*
 
 	PUSH1:	 DO = php ? P : ADD;
 
-	BRK2:	 DO = (IRQ | NMI_edge) ? P : P | QAWXYS[SEL_SPP]; // B bit should be parameterised
+	BRK2:	 DO = (IRQ | NMI_edge) ? P : P | st_reg; // B bit should be parameterised
 
 	default: DO = regfile;
     endcase
@@ -558,6 +561,16 @@ always @*
 always @(posedge clk)
     if( write_register & RDY )
 	QAWXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
+	
+always @(posedge clk)
+    if( write_register & RDY & (regsel == SEL_ZPP) )
+       zp_reg <= ADD;
+
+always @(posedge clk)
+    if( write_register & RDY & (regsel == SEL_SPP) )
+       st_reg <= ADD;
+
+
 
 /*
  * register select logic. This determines which of the A thru Q, W, X, Y or
