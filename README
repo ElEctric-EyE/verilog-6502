@@ -3107,6 +3107,104 @@ DEW               .MACRO
                   .BYTE $00F8
                   .ENDM
 
+TAZPP             .MACRO               ;transfer A acc to zeropage pointer
+                  .BYTE $0007
+                  .ENDM
+TBZPP             .MACRO
+                  .BYTE $0407
+                  .ENDM
+TCZPP             .MACRO
+                  .BYTE $0807
+                  .ENDM
+TDZPP             .MACRO
+                  .BYTE $0C07
+                  .ENDM
+TEZPP             .MACRO
+                  .BYTE $4007
+                  .ENDM
+TFZPP             .MACRO
+                  .BYTE $4407
+                  .ENDM
+TGZPP             .MACRO
+                  .BYTE $4807
+                  .ENDM
+THZPP             .MACRO
+                  .BYTE $4C07
+                  .ENDM
+TIZPP             .MACRO
+                  .BYTE $8007
+                  .ENDM
+TJZPP             .MACRO
+                  .BYTE $8407
+                  .ENDM
+TKZPP             .MACRO
+                  .BYTE $8807
+                  .ENDM
+TLZPP             .MACRO
+                  .BYTE $8C07
+                  .ENDM
+TMZPP             .MACRO
+                  .BYTE $C007
+                  .ENDM
+TNZPP             .MACRO
+                  .BYTE $C407
+                  .ENDM
+TOZPP             .MACRO
+                  .BYTE $C807
+                  .ENDM
+TQZPP             .MACRO
+                  .BYTE $CC07
+                  .ENDM
+
+TASPP             .MACRO            ;transfer A acc to stackpage pointer
+                  .BYTE $0027
+                  .ENDM
+TBSPP             .MACRO
+                  .BYTE $0427
+                  .ENDM
+TCSPP             .MACRO
+                  .BYTE $0827
+                  .ENDM
+TDSPP             .MACRO
+                  .BYTE $0C27
+                  .ENDM
+TESPP             .MACRO
+                  .BYTE $4027
+                  .ENDM
+TFSPP             .MACRO
+                  .BYTE $4427
+                  .ENDM
+TGSPP             .MACRO
+                  .BYTE $4827
+                  .ENDM
+THSPP             .MACRO
+                  .BYTE $4C27
+                  .ENDM
+TISPP             .MACRO
+                  .BYTE $8027
+                  .ENDM
+TJSPP             .MACRO
+                  .BYTE $8427
+                  .ENDM
+TKSPP             .MACRO
+                  .BYTE $8827
+                  .ENDM
+TLSPP             .MACRO
+                  .BYTE $8C27
+                  .ENDM
+TMSPP             .MACRO
+                  .BYTE $C027
+                  .ENDM
+TNSPP             .MACRO
+                  .BYTE $C427
+                  .ENDM
+TOSPP             .MACRO
+                  .BYTE $C827
+                  .ENDM
+TQSPP             .MACRO
+                  .BYTE $CC27
+                  .ENDM 
+                  
 STazpw            .MACRO
                   .BYTE $0092
                   .ENDM
