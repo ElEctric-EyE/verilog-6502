@@ -1,4 +1,4 @@
-/*FILE: /NewIndex.b/cpu.v DATE:04/20/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
+/*FILE: /NewIndex.b/cpu.v DATE:04/23/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
  * verilog-6502 project: verilog model of 6502 and 65Org16.x CPU core
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
@@ -927,7 +927,9 @@ always @(posedge clk or posedge reset)
 		
 		16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
 		16'bxxxx_xxxx_1xxx_1000:	state <= REG;   // DEY, TY[A..Q], T[A..Q]Y, INY, INX, INW, DEW
-		16'bxxxx_xxxx_xxx0_1010:	state <= REG;   // <shift/rotate> [A..Q], TX[A..Q], NOP
+		16'bxxxx_xxxx_0xx0_1010:	state <= REG;   // <shift/rotate> [A..Q], TX[A..Q]
+		16'bxxxx_xxxx_10x0_1010:	state <= REG;
+		16'bxxxx_xxxx_1100_1010:	state <= REG;
 		16'bxxxx_xxxx_00x1_1010:	state <= REG;   // INC/DEC [A..Q]
 		16'bxxxx_xxxx_10x1_1010:	state <= REG;   // TSX, TXS
 		16'bxxxx_xxxx_1xx0_1011:	state <= REG;	 // T[A..Q][A..Q],TYX,TXY
@@ -1046,7 +1048,10 @@ always @(posedge clk)
 		16'bxxxx_xxxx_11x1_1000,
 		16'bxxxx_xxxx_0xxx_1001,	
 		16'bxxxx_xxxx_1x1x_1001,
-		16'bxxxx_xxxx_xxxx_1010,
+		16'bxxxx_xxxx_0xxx_1010,
+		16'bxxxx_xxxx_10xx_1010,
+		16'bxxxx_xxxx_110x_1010,
+		16'bxxxx_xxxx_1111_1010,
 		16'bxxxx_xxxx_0xxx_1011,	 
 		16'bxxxx_xxxx_1000_1011,	// T[A..Q][A..Q]
 		16'bxxxx_xxxx_1x1x_1011,
