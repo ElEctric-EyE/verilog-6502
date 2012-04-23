@@ -1,6 +1,6 @@
 A Verilog HDL project for CPU cores related to the old MOS 6502 CPU.
 
-This fork adds various features, see [http://forum.6502.org/viewtopic.php?f=10&t=1842 this thread on the 6502.org forum]
+This fork adds various features, see [this thread on the 6502.org forum](http://forum.6502.org/viewtopic.php?f=10&t=1842)
 
 The 65Org16-master branch is for a CPU core with:
   - 32-bit address space
@@ -16,7 +16,7 @@ Please note:
 
 - The core has had next to no testing,
 
-- Some tools exist: see [http://forum.6502.org/viewtopic.php?f=1&t=1982 http://forum.6502.org/viewtopic.php?f=1&t=1982]
+- Some tools exist: see [this forum thread](http://forum.6502.org/viewtopic.php?f=1&t=1982)
 
 - The upstream fork by BigEd also contains support files for a small system on
   FPGA, intended for xilinx spartan 3 as found on OHO GOP 24-pin module.
