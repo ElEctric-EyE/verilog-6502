@@ -3107,104 +3107,202 @@ DEW               .MACRO
                   .BYTE $00F8
                   .ENDM
 
-TAZPP             .MACRO               ;transfer A acc to zeropage pointer
+TAZ               .MACRO               ;transfer A acc to zeropage pointer
                   .BYTE $0007
                   .ENDM
-TBZPP             .MACRO
+TBZ               .MACRO
                   .BYTE $0407
                   .ENDM
-TCZPP             .MACRO
+TCZ               .MACRO
                   .BYTE $0807
                   .ENDM
-TDZPP             .MACRO
+TDZ               .MACRO
                   .BYTE $0C07
                   .ENDM
-TEZPP             .MACRO
+TEZ               .MACRO
                   .BYTE $4007
                   .ENDM
-TFZPP             .MACRO
+TFZ               .MACRO
                   .BYTE $4407
                   .ENDM
-TGZPP             .MACRO
+TGZ               .MACRO
                   .BYTE $4807
                   .ENDM
-THZPP             .MACRO
+THZ               .MACRO
                   .BYTE $4C07
                   .ENDM
-TIZPP             .MACRO
+TIZ               .MACRO
                   .BYTE $8007
                   .ENDM
-TJZPP             .MACRO
+TJZ               .MACRO
                   .BYTE $8407
                   .ENDM
-TKZPP             .MACRO
+TKZ               .MACRO
                   .BYTE $8807
                   .ENDM
-TLZPP             .MACRO
+TLZ               .MACRO
                   .BYTE $8C07
                   .ENDM
-TMZPP             .MACRO
+TMZ               .MACRO
                   .BYTE $C007
                   .ENDM
-TNZPP             .MACRO
+TNZ               .MACRO
                   .BYTE $C407
                   .ENDM
-TOZPP             .MACRO
+TOZ               .MACRO
                   .BYTE $C807
                   .ENDM
-TQZPP             .MACRO
+TQZ               .MACRO
                   .BYTE $CC07
                   .ENDM
 
-TASPP             .MACRO            ;transfer A acc to stackpage pointer
+TAS               .MACRO            ;transfer A acc to stackpage pointer
                   .BYTE $0027
                   .ENDM
-TBSPP             .MACRO
+TBS               .MACRO
                   .BYTE $0427
                   .ENDM
-TCSPP             .MACRO
+TCS               .MACRO
                   .BYTE $0827
                   .ENDM
-TDSPP             .MACRO
+TDS               .MACRO
                   .BYTE $0C27
                   .ENDM
-TESPP             .MACRO
+TES               .MACRO
                   .BYTE $4027
                   .ENDM
-TFSPP             .MACRO
+TFS               .MACRO
                   .BYTE $4427
                   .ENDM
-TGSPP             .MACRO
+TGS               .MACRO
                   .BYTE $4827
                   .ENDM
-THSPP             .MACRO
+THS               .MACRO
                   .BYTE $4C27
                   .ENDM
-TISPP             .MACRO
+TIS               .MACRO
                   .BYTE $8027
                   .ENDM
-TJSPP             .MACRO
+TJS               .MACRO
                   .BYTE $8427
                   .ENDM
-TKSPP             .MACRO
+TKS               .MACRO
                   .BYTE $8827
                   .ENDM
-TLSPP             .MACRO
+TLS               .MACRO
                   .BYTE $8C27
                   .ENDM
-TMSPP             .MACRO
+TMS               .MACRO
                   .BYTE $C027
                   .ENDM
-TNSPP             .MACRO
+TNS               .MACRO
                   .BYTE $C427
                   .ENDM
-TOSPP             .MACRO
+TOS               .MACRO
                   .BYTE $C827
                   .ENDM
-TQSPP             .MACRO
+TQS               .MACRO
                   .BYTE $CC27
                   .ENDM 
+
+TZA               .MACRO            ;transfer zeropage pointer to A Acc
+                  .BYTE $0017
+                  .ENDM
+TZB               .MACRO
+                  .BYTE $0117
+                  .ENDM
+TZC               .MACRO
+                  .BYTE $0217
+                  .ENDM
+TZD               .MACRO
+                  .BYTE $0317
+                  .ENDM
+TZE               .MACRO
+                  .BYTE $1017
+                  .ENDM
+TZF               .MACRO
+                  .BYTE $1117
+                  .ENDM
+TZG               .MACRO
+                  .BYTE $1217
+                  .ENDM
+TZH               .MACRO
+                  .BYTE $1317
+                  .ENDM
+TZI               .MACRO
+                  .BYTE $2017
+                  .ENDM
+TZJ               .MACRO
+                  .BYTE $2117
+                  .ENDM
+TZK               .MACRO
+                  .BYTE $2217
+                  .ENDM
+TZL               .MACRO
+                  .BYTE $2317
+                  .ENDM
+TZM               .MACRO
+                  .BYTE $3017
+                  .ENDM
+TZN               .MACRO
+                  .BYTE $3117
+                  .ENDM
+TZO               .MACRO
+                  .BYTE $3217
+                  .ENDM
+TZQ               .MACRO
+                  .BYTE $3317
+                  .ENDM
                   
+TSA               .MACRO            ;transfer stackpage pointer to A Acc
+                  .BYTE $0037
+                  .ENDM
+TSB               .MACRO
+                  .BYTE $0137
+                  .ENDM
+TSC               .MACRO
+                  .BYTE $0237
+                  .ENDM
+TSD               .MACRO
+                  .BYTE $0337
+                  .ENDM
+TSE               .MACRO
+                  .BYTE $1037
+                  .ENDM
+TSF               .MACRO
+                  .BYTE $1137
+                  .ENDM
+TSG               .MACRO
+                  .BYTE $1237
+                  .ENDM
+TSH               .MACRO
+                  .BYTE $1337
+                  .ENDM
+TSI               .MACRO
+                  .BYTE $2037
+                  .ENDM
+TSJ               .MACRO
+                  .BYTE $2137
+                  .ENDM
+TSK               .MACRO
+                  .BYTE $2237
+                  .ENDM
+TSL               .MACRO
+                  .BYTE $2337
+                  .ENDM
+TSM               .MACRO
+                  .BYTE $3037
+                  .ENDM
+TSN               .MACRO
+                  .BYTE $3137
+                  .ENDM
+TSO               .MACRO
+                  .BYTE $3237
+                  .ENDM
+TSQ               .MACRO
+                  .BYTE $3337
+                  .ENDM
+                                    
 STazpw            .MACRO
                   .BYTE $0092
                   .ENDM
