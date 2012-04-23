@@ -1,8 +1,0 @@
-//  stub module for i2cslave
-//  fetch original from http://www.fpga4fun.com/I2C.html
-//  specifically http://www.fpga4fun.com/files/I2Cslave1.zip
-//
-//  and apply patch i2cslave.v.patch
-//
-module i2cslave(SDA, SCL, IOout, IOin);
-endmodule
