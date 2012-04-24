@@ -59,7 +59,7 @@ wire [dw-1:0] DIMUX;	//
 reg  [dw-1:0] IRHOLD;	// Hold for Instruction register 
 reg  IRHOLD_valid;	// Valid instruction in IRHOLD
 
-reg  [dw-1:0] QAWXYS[21:0]; 	// A thru Q, W, X, Y, Z and S register file
+reg  [dw-1:0] QAWXYS[31:0]; 	// A thru Q, W, X, Y, Z and S register file
 
 reg  C = 0;		// carry flag (init at zero to avoid X's in ALU sim)
 reg  Z = 0;		// zero flag
