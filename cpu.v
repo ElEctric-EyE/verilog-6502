@@ -923,11 +923,13 @@ always @(posedge clk or posedge reset)
 		16'b0000_0000_1xx1_0100:	state <= ZPX0;  // odd rows, column 4
 		16'bxxxx_xxxx_xxx1_0101:	state <= ZPX0;  // odd rows, column 5
 		16'bxxxx_xxxx_xxx1_0110:	state <= ZPX0;	 // odd rows, column 6
+		16'b0000_0000_10x1_0111:	state <= ZPX0;	 // row 9,B, column 7
 		
 		16'bxxxx_xxxx_0010_1100:	state <= ABS0;  // BIT abs
 		16'b0000_0000_1xx0_1100:	state <= ABS0;  // row 8,A,C,E, column C
-		16'bxxxx_xxxx_xxx0_1101:	state <= ABS0;  // even rows, even D column
-		16'bxxxx_xxxx_xxx0_1110:	state <= ABS0;  // even rows, even E column
+		16'bxxxx_xxxx_xxx0_1101:	state <= ABS0;  // even rows, column D
+		16'bxxxx_xxxx_xxx0_1110:	state <= ABS0;  // even rows, column E
+		16'b0000_0000_1xx0_1111:	state <= ABS0;	 // rows 8,A,C,E, column F
 		
 		16'bxxxx_xxxx_xxx1_1xx1:	state <= ABSX0; // odd rows, column 9,B,D,F
 		16'bxxxx_xxxx_xxx1_11x0:	state <= ABSX0; // odd rows, column C, E
