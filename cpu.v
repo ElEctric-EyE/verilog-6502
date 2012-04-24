@@ -907,8 +907,10 @@ always @(posedge clk or posedge reset)
 		16'b0000_0000_0100_1100:	state <= JMP0;
 		16'b0000_0000_0110_0000:	state <= RTS0;
 		16'b0000_0000_0110_1100:	state <= JMPI0;
+		
 		16'bxxxx_xxxx_xxx0_010x:	state <= ZP0;	 // even rows, columns 4,5
 		16'bxxxx_xxxx_xxx0_0110:	state <= ZP0;	 // even rows, column 6
+		16'bxxxx_xxxx_1xx0_0111:	state <= ZP0;	 // rows 8,A,C,E, column 7
 		
 		16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd rows, column 0
 		
@@ -916,12 +918,11 @@ always @(posedge clk or posedge reset)
 		
 		16'bxxxx_xxxx_xxx1_0001:	state <= INDY0; // odd rows, column 1 --(zp),y
 		16'bxxxx_xxxx_xxx1_0010:	state <= INDY0; // odd rows, column 2 --(zp),w
-		
-		16'bxxxx_xxxx_0xx1_0101:	state <= ZPX0;  // row 1,3,5,7, column 5
-		16'bxxxx_xxxx_0xx1_0110:	state <= ZPX0;	 // row 1,3,5,7, column 6
-		16'bxx00_xx00_10x1_010x:	state <= ZPX0;  // row 9,B, column 4,5
-		16'b0000_0000_0111_0100:	state <= ZPX0;  // STW zpx
-		16'bxxxx_xxxx_11x1_01xx:	state <= ZPX0;  // row D,F, column 4,5,6,7
+				
+		16'b0000_0000_x111_0100:	state <= ZPX0;  // STW zpx, LDW zpx
+		16'b0000_0000_1xx1_0100:	state <= ZPX0;  // odd rows, column 4
+		16'bxxxx_xxxx_xxx1_0101:	state <= ZPX0;  // odd rows, column 5
+		16'bxxxx_xxxx_xxx1_0110:	state <= ZPX0;	 // odd rows, column 6
 		
 		16'bxxxx_xxxx_0010_1100:	state <= ABS0;  // BIT abs
 		16'b0000_0000_1xx0_1100:	state <= ABS0;  // row 8,A,C,E, column C
@@ -1077,7 +1078,8 @@ always @(posedge clk)
 		16'bxxxx_xxxx_1000_1011,	// T[A..Q][A..Q]
 		16'bxxxx_xxxx_1x1x_1011,
 		16'b0000_0000_1100_1011,	// TXY
-		16'bxxxx_xxxx_101x_1100,
+		16'b0000_0000_101x_1100,	// LDY a, ax
+		16'b0000_0000_1101_1100,	// LDW ax
 		16'bxxxx_xxxx_0xxx_1101,
 		16'bxxxx_xxxx_1x1x_1101,
 		16'bxxxx_0000_0xxx_1110,
