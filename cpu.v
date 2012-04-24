@@ -1097,10 +1097,10 @@ always @(posedge clk)
 always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[15:0] )
-		16'bxx00_xx00_0000_0111:	// T[A..Q]Z
+		16'bxx00_xx00_0001_0111:	// T[A..Q]Z
 				dst_reg <= SEL_ZPP;
 				
-		16'bxx00_xx00_0010_0111:	// T[A..Q]S
+		16'bxx00_xx00_0011_0111:	// T[A..Q]S
 				dst_reg <= SEL_SPP;
 				
 		16'b0000_0000_1110_1000,	// INX
@@ -1448,10 +1448,10 @@ always @(posedge clk)
 always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[15:0] )
-		16'b00xx_00xx_0001_0111:	// TZ[A..Q]
+		16'b00xx_00xx_0000_0111:	// TZ[A..Q]
 				src_reg <= SEL_ZPP;
 				
-		16'b00xx_00xx_0011_0111:	// TS[A..Q]
+		16'b00xx_00xx_0010_0111:	// TS[A..Q]
 				src_reg <= SEL_SPP;
 		
 		16'b00xx_00xx_0110_1000,	// PL[A..Q]
