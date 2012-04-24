@@ -3,7 +3,7 @@
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
- * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B thru Q accumulators. Added full accumulator to accumulator transfer opcodes. Added BigEd's 16-bit barrel shifter logic to A thru D Acc's. Added WDC65C02 PHX,PHY,PLX,PLY opcodes. Added WDC65C02 INC[A], DEC[A] opcodes, also INC[B..Q], DEC[B..Q]. Added W index register with same addressing modes as Y. Added relocatable stack and zero pages. Added Transfer opcodes for stack and zero pages pointers. That's it for .b CORE!
+ * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com> stripped BCD, removed SED,CLD opcodes, added full 16-bit IR decoding, added Arlet's updates from 5 months ago. Added B thru Q accumulators. Added full accumulator to accumulator transfer opcodes. Added BigEd's 16-bit barrel shifter logic to A thru D Acc's. Added WDC65C02 PHX,PHY,PLX,PLY opcodes. Added WDC65C02 INC[A], DEC[A] opcodes, also INC[B..Q], DEC[B..Q]. Added W index register with same addressing modes as Y. Added relocatable stack and zero pages. Added Transfer opcodes for stack and zero pages pointers. Added index transfer opcodes for W. That's it for .b CORE!
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -956,7 +956,7 @@ always @(posedge clk or posedge reset)
 		16'bxxxx_xxxx_00x1_1010:	state <= REG;   // INC/DEC [A..Q]
 		16'bxxxx_xxxx_10x1_1010:	state <= REG;   // TSX, TXS
 		16'bxxxx_xxxx_1xx0_1011:	state <= REG;	 // T[A..Q][A..Q],TYX,TXY
-		16'bxxxx_xxxx_000x_1111:	state <= REG;	 // TW[A..Q], T[A..Q]W
+		16'bxxxx_xxxx_0xxx_1111:	state <= REG;	 // TW[A..Q], T[A..Q]W, TWX, TWY, TXW, TYW
 	  endcase
 
         ZP0	: state <= write_back ? READ : FETCH;
@@ -1087,7 +1087,7 @@ always @(posedge clk)
 		16'bxxxx_0000_0xxx_1110,
 		16'bxxxx_xxxx_1x1x_1110,
 		16'bxxxx_xxxx_110x_1110,
-		16'bxxxx_xxxx_000x_1111,
+		16'bxxxx_xxxx_0xxx_1111,
 		16'bxxxx_xxxx_101x_1111:
 					load_reg <= 1;
 
@@ -1108,7 +1108,8 @@ always @(posedge clk)
 		16'bxx00_xx00_1010_xx10,	// LDX, T[A..Q]X
 		16'b0000_0000_1011_x11x,	// LDX zpy/zpw, LDX ay,aw
 		16'b0000_0000_1111_1010,	// PLX
-		16'b0000_0000_1010_1011:	// TYX
+		16'b0000_0000_1010_1011,	// TYX
+		16'b0000_0000_0010_1111:	// TWX
 				dst_reg <= SEL_X;
 
 		16'bxx00_xx00_0100_1000,	// PH[A..Q]
@@ -1122,7 +1123,8 @@ always @(posedge clk)
 		16'b0000_0000_101x_x100,	// LDY a,ax, zp,zpx
 		16'bxx00_xx00_1010_x000, 	// LDY #imm, T[A..Q]Y
 		16'b0000_0000_0111_1010,	// PLY
-		16'b0000_0000_1100_1011:	// TXY
+		16'b0000_0000_1100_1011,	// TXY
+		16'b0000_0000_0100_1111:	// TWY
 				dst_reg <= SEL_Y;
 				
 		16'b0000_0000_11x1_1000,	// INW, DEW
@@ -1130,7 +1132,7 @@ always @(posedge clk)
 		16'b0000_0000_11x1_0100,	// LDW ax,zpx
 		16'b0000_0000_1010_x111,	// LDW a,zp
 		16'b0000_0000_0110_1011,	// PLW
-		16'bxx00_xx00_0001_1111:	// T[A..Q]W
+		16'bxx00_xx00_0xx1_1111:	// T[A..Q]W, TXW, TYW
 				dst_reg <= SEL_W;
 
 		16'b0000_0000_00x1_0111,	// TZ[A], TS[A]
@@ -1465,7 +1467,8 @@ always @(posedge clk)
 		16'b0000_0000_1110_xx00,	// INX, CPX
 		16'b0000_0000_1100_1010,	// DEX
 		16'b0000_0000_1100_1011,	// TXY
-		16'b0000_0000_1101_1010:	// PHX
+		16'b0000_0000_1101_1010,	// PHX
+		16'b0000_0000_0011_1111:	// TXW
 				src_reg <= SEL_X; 
 
 		16'b0000_0000_100x_x100,	// STY zp,zpx,a
@@ -1474,7 +1477,8 @@ always @(posedge clk)
 		16'b0000_0000_1100_1100,	// CPY a
 		16'b0000_0000_1x00_1000,	// DEY, INY
 		16'b0000_0000_1010_1011,	// TYX
-		16'b0000_0000_0101_1010:	// PHY
+		16'b0000_0000_0101_1010,	// PHY
+		16'b0000_0000_0101_1111:	// TYW
 				src_reg <= SEL_Y;
 		
 		16'b0000_0000_11x1_1000,	// INW, DEW
@@ -1483,7 +1487,7 @@ always @(posedge clk)
 		16'b0000_0000_1000_x111,	//	STW zp,a
 		16'b0000_0000_0111_0100,	// STW zpx
 		16'b0000_0000_0100_1011,	// PHW
-		16'b00xx_00xx_0000_1111:	// TW[A..Q]
+		16'b00xx_00xx_0xx0_1111:	// TW[A..Q], TWX, TWY
 				src_reg <= SEL_W;
 
 		16'b0000_0000_00x0_0111,	// T[A]Z, T[A]S
