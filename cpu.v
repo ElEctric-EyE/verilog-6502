@@ -1,4 +1,4 @@
-/*FILE: /relocatable stack and zero page/cpu.v DATE:04/24/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
+/*FILE: /relocatable stack and zero page/cpu.v DATE:04/25/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
  * verilog-6502 project: verilog model of 6502 and 65Org16.x CPU core
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
@@ -950,11 +950,7 @@ always @(posedge clk or posedge reset)
 		16'bxxxx_xxxx_00xx_0111:	state <= REG;	 // T[A..Q]Z, T[A..Q]S, TZ[A..Q], TS[A..Q]
 		16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
 		16'bxxxx_xxxx_1xxx_1000:	state <= REG;   // DEY, TY[A..Q], T[A..Q]Y, INY, INX, INW, DEW
-		16'bxxxx_xxxx_0xx0_1010:	state <= REG;   // <shift/rotate> [A..Q], TX[A..Q]
-		16'bxxxx_xxxx_10x0_1010:	state <= REG;
-		16'bxxxx_xxxx_1100_1010:	state <= REG;
-		16'bxxxx_xxxx_00x1_1010:	state <= REG;   // INC/DEC [A..Q]
-		16'bxxxx_xxxx_10x1_1010:	state <= REG;   // TSX, TXS
+		16'bxxxx_xxxx_xxxx_1010:	state <= REG;   // <shift/rotate> [A..Q], TX[A..Q]
 		16'bxxxx_xxxx_1xx0_1011:	state <= REG;	 // T[A..Q][A..Q],TYX,TXY
 		16'bxxxx_xxxx_0xxx_1111:	state <= REG;	 // TW[A..Q], T[A..Q]W, TWX, TWY, TXW, TYW
 	  endcase
@@ -1055,27 +1051,24 @@ always @(posedge clk)
 		16'bxxxx_xxxx_1x1x_0001,	
 		16'bxxxx_xxxx_0xx1_0010,
 		16'bxxxx_xxxx_101x_0010,
-		16'bxxxx_xxxx_1100_0010,	// LDW i
+		16'b0000_0000_1100_0010,	// LDW i
 		16'bxxxx_xxxx_1111_0010,	// SBC[A..Q]op[A..Q] (zp)w
-		16'bxxxx_xxxx_101x_0100,
-		16'bxxxx_xxxx_11x1_0100,	
+		16'b0000_0000_101x_0100,
+		16'b0000_0000_1111_0100,	
 		16'bxxxx_xxxx_0xxx_0101,
 		16'bxxxx_xxxx_1x1x_0101,
 		16'bxxxx_0000_0xxx_0110,
-		16'bxxxx_xxxx_1x1x_0110,
-		16'bxxxx_xxxx_110x_0110,
+		16'b0000_0000_1x1x_0110,
+		16'b0000_0000_110x_0110,
 		16'bxxxx_xxxx_00xx_0111,
-		16'bxxxx_xxxx_101x_0111,	
+		16'b0000_0000_101x_0111,	
 				
 		16'bxxxx_xxxx_xxx0_1000,   
-		16'bxxxx_xxxx_1001_1000,	// TY[A..Q]
-		16'bxxxx_xxxx_11x1_1000,
+		16'b00xx_00xx_1001_1000,	// TY[A..Q]
+		16'b0000_0000_11x1_1000,
 		16'bxxxx_xxxx_0xxx_1001,	
 		16'bxxxx_xxxx_1x1x_1001,
-		16'bxxxx_xxxx_0xxx_1010,
-		16'bxxxx_xxxx_10xx_1010,
-		16'bxxxx_xxxx_110x_1010,
-		16'bxxxx_xxxx_1111_1010,
+		16'bxxxx_xxxx_xxxx_1010,
 		16'bxxxx_xxxx_0xxx_1011,	 
 		16'bxxxx_xxxx_1000_1011,	// T[A..Q][A..Q]
 		16'bxxxx_xxxx_1x1x_1011,
@@ -1085,10 +1078,10 @@ always @(posedge clk)
 		16'bxxxx_xxxx_0xxx_1101,
 		16'bxxxx_xxxx_1x1x_1101,
 		16'bxxxx_0000_0xxx_1110,
-		16'bxxxx_xxxx_1x1x_1110,
-		16'bxxxx_xxxx_110x_1110,
+		16'b0000_0000_1x1x_1110,
+		16'b0000_0000_110x_1110,
 		16'bxxxx_xxxx_0xxx_1111,
-		16'bxxxx_xxxx_101x_1111:
+		16'b0000_0000_101x_1111:
 					load_reg <= 1;
 
 		default:	load_reg <= 0;
