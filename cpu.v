@@ -1,4 +1,4 @@
-/*FILE: /relocatable stack and zero page/cpu.v DATE:04/25/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
+/*FILE: /relocatable stack and zero page/cpu.v DATE:04/27/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
  * verilog-6502 project: verilog model of 6502 and 65Org16.x CPU core
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
@@ -908,9 +908,9 @@ always @(posedge clk or posedge reset)
 		16'b0000_0000_0110_0000:	state <= RTS0;
 		16'b0000_0000_0110_1100:	state <= JMPI0;
 		
-		16'bxxxx_xxxx_xxx0_010x:	state <= ZP0;	 // even rows, columns 4,5
-		16'bxxxx_xxxx_xxx0_0110:	state <= ZP0;	 // even rows, column 6
-		16'bxxxx_xxxx_1xx0_0111:	state <= ZP0;	 // rows 8,A,C,E, column 7
+		16'bxxxx_xxxx_0xx0_010x:	state <= ZP0;	 // even rows, columns 4,5
+		16'bxxxx_0000_0xx0_0110:	state <= ZP0;	 // even rows, column 6
+		16'bxxxx_xxxx_1xx0_01xx:	state <= ZP0;	 // rows 8,A,C,E, column 7
 		
 		16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd rows, column 0
 		
@@ -931,8 +931,8 @@ always @(posedge clk or posedge reset)
 		16'bxxxx_xxxx_xxx0_1110:	state <= ABS0;  // even rows, column E
 		16'b0000_0000_1xx0_1111:	state <= ABS0;	 // rows 8,A,C,E, column F
 		
-		16'bxxxx_xxxx_xxx1_1xx1:	state <= ABSX0; // odd rows, column 9,B,D,F
-		16'bxxxx_xxxx_xxx1_11x0:	state <= ABSX0; // odd rows, column C, E
+		16'bxxxx_xxxx_xxx1_10x1:	state <= ABSX0; // odd rows, column 9,B
+		16'bxxxx_xxxx_xxx1_11x0:	state <= ABSX0; // odd rows, column C,E
 		16'bxxxx_xxxx_xxx1_1101:	state <= ABSX0; // odd rows, column D
 		16'b0000_0000_10x1_1111:	state <= ABSX0; // rows 9,B, column F
 				
