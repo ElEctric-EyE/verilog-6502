@@ -908,9 +908,9 @@ always @(posedge clk or posedge reset)
 		16'b0000_0000_0110_0000:	state <= RTS0;
 		16'b0000_0000_0110_1100:	state <= JMPI0;
 		
-		16'bxxxx_xxxx_0xx0_010x:	state <= ZP0;	 // even rows, columns 4,5
-		16'bxxxx_0000_0xx0_0110:	state <= ZP0;	 // even rows, column 6
-		16'bxxxx_xxxx_1xx0_01xx:	state <= ZP0;	 // rows 8,A,C,E, column 7
+		16'bxxxx_xxxx_0xx0_010x:	state <= ZP0;	 // rows 0,2,4,6, columns 4,5
+		16'bxxxx_0000_0xx0_0110:	state <= ZP0;	 // rows 0,2,4,6, column 6
+		16'bxxxx_xxxx_1xx0_01xx:	state <= ZP0;	 // rows 8,A,C,E, column 4,5,6,7
 		
 		16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd rows, column 0
 		
@@ -919,22 +919,20 @@ always @(posedge clk or posedge reset)
 		16'bxxxx_xxxx_xxx1_0001:	state <= INDY0; // odd rows, column 1 --(zp),y
 		16'bxxxx_xxxx_xxx1_0010:	state <= INDY0; // odd rows, column 2 --(zp),w
 				
-		16'b0000_0000_x111_0100:	state <= ZPX0;  // STW zpx, LDW zpx
-		16'b0000_0000_1xx1_0100:	state <= ZPX0;  // odd rows, column 4
-		16'bxxxx_xxxx_xxx1_0101:	state <= ZPX0;  // odd rows, column 5
-		16'bxxxx_xxxx_xxx1_0110:	state <= ZPX0;	 // odd rows, column 6
-		16'b0000_0000_10x1_0111:	state <= ZPX0;	 // row 9,B, column 7
+		16'b0000_0000_0111_0100:	state <= ZPX0;  // STW zpx
+		16'bxxxx_xxxx_0xx1_0101:	state <= ZPX0;  // odd rows, column 5
+		16'bxxxx_xxxx_0xx1_0110:	state <= ZPX0;	 // odd rows, column 6
+		16'b00xx_00xx_1xx1_01xx:	state <= ZPX0;  // rows 9,B,D,F, columns 4,5,6,7
 		
 		16'bxxxx_xxxx_0010_1100:	state <= ABS0;  // BIT abs
-		16'b0000_0000_1xx0_1100:	state <= ABS0;  // row 8,A,C,E, column C
-		16'bxxxx_xxxx_xxx0_1101:	state <= ABS0;  // even rows, column D
-		16'bxxxx_xxxx_xxx0_1110:	state <= ABS0;  // even rows, column E
-		16'b0000_0000_1xx0_1111:	state <= ABS0;	 // rows 8,A,C,E, column F
+		16'bxxxx_xxxx_0xx0_1101:	state <= ABS0;  // rows 0,2,4,6, column D
+		16'bxxxx_xxxx_0xx0_1110:	state <= ABS0;  // rows 0,2,4,6, column E
+		16'bxxxx_xxxx_1xx0_11xx:	state <= ABS0;	 // rows 8,A,C,E, column C,D,E,F
 		
 		16'bxxxx_xxxx_xxx1_10x1:	state <= ABSX0; // odd rows, column 9,B
-		16'bxxxx_xxxx_xxx1_11x0:	state <= ABSX0; // odd rows, column C,E
-		16'bxxxx_xxxx_xxx1_1101:	state <= ABSX0; // odd rows, column D
-		16'b0000_0000_10x1_1111:	state <= ABSX0; // rows 9,B, column F
+		16'bxxxx_xxxx_0xx1_1101:	state <= ABSX0; // rows 1,3,5,7, column D
+		16'bxxxx_xxxx_0xx1_1110:	state <= ABSX0; // rows 1,3,5,7, columnn E
+		16'bxxxx_xxxx_1xx1_11xx:	state <= ABSX0; // rows 9,B,D, column C,D,E,F
 				
 		16'bxx00_xx00_0x00_1000:	state <= PUSH0; // PH[A..Q], PHP
 		16'b0000_0000_x101_1010:	state <= PUSH0; // PHX, PHY
