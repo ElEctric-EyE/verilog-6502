@@ -1,4 +1,4 @@
-/*FILE: /relocatable stack and zero page/cpu.v DATE:04/27/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
+/*FILE: /relocatable stack and zero page/cpu.v DATE:05/02/2012 -- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
  * verilog-6502 project: verilog model of 6502 and 65Org16.x CPU core
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
@@ -132,7 +132,7 @@ initial
 		QAWXYS[SEL_X] = 0;
 		QAWXYS[SEL_Y] = 0;
 		QAWXYS[SEL_W] = 0;
-		QAWXYS[SEL_S] = 1; //init stack
+		QAWXYS[SEL_S] = 16'hffff; //init stack
 		QAWXYS[SEL_ZPP] = 0;
 		QAWXYS[SEL_SPP] = 0; //init stack pointer to same as zero page, set to 16'h0001 for original 65Org16 address decoding
 		zp_reg = 0;
