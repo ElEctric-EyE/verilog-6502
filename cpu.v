@@ -132,7 +132,7 @@ initial
 		QAWXYS[SEL_X] = 0;
 		QAWXYS[SEL_Y] = 0;
 		QAWXYS[SEL_W] = 0;
-		QAWXYS[SEL_S] = 0; //init stack
+		QAWXYS[SEL_S] = 1; //init stack
 		QAWXYS[SEL_ZPP] = 0;
 		QAWXYS[SEL_SPP] = 0; //init stack pointer to same as zero page, set to 16'h0001 for original 65Org16 address decoding
 		zp_reg = 0;
