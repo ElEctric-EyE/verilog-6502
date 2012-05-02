@@ -107,9 +107,78 @@ parameter
 	SEL_X	   = 5'd16,
 	SEL_Y    = 5'd17,
 	SEL_W		= 5'd18,
-	SEL_S    = 5'd19,
-	SEL_ZPP	= 5'd20,
-	SEL_SPP	= 5'd21;
+	SEL_S    = 5'd19;
+	//SEL_ZPP	= 5'd20,
+	//SEL_SPP	= 5'd21;
+
+
+/*
+ * define some signals for watching in simulator output
+ */
+
+
+`ifdef SIM
+wire [dw-1:0]   Qacc = QAWXYS[SEL_Q];	// Accumulator
+wire [dw-1:0]   Oacc = QAWXYS[SEL_O];	// Accumulator
+wire [dw-1:0]   Nacc = QAWXYS[SEL_N];	// Accumulator
+wire [dw-1:0]   Macc = QAWXYS[SEL_M];	// Accumulator
+wire [dw-1:0]   Lacc = QAWXYS[SEL_L];	// Accumulator
+wire [dw-1:0]   Kacc = QAWXYS[SEL_K];	// Accumulator
+wire [dw-1:0]   Jacc = QAWXYS[SEL_J];	// Accumulator
+wire [dw-1:0]   Iacc = QAWXYS[SEL_I];	// Accumulator
+wire [dw-1:0]   Hacc = QAWXYS[SEL_H];	// Accumulator
+wire [dw-1:0]   Gacc = QAWXYS[SEL_G];	// Accumulator
+wire [dw-1:0]   Facc = QAWXYS[SEL_F];	// Accumulator
+wire [dw-1:0]   Eacc = QAWXYS[SEL_E];	// Accumulator
+wire [dw-1:0]   Dacc = QAWXYS[SEL_D];	// Accumulator
+wire [dw-1:0]   Cacc = QAWXYS[SEL_C];	// Accumulator
+wire [dw-1:0]   Bacc = QAWXYS[SEL_B];	// Accumulator
+wire [dw-1:0]   Aacc = QAWXYS[SEL_A];	// Accumulator
+wire [dw-1:0]   X = QAWXYS[SEL_X];	// X register
+wire [dw-1:0]   Y = QAWXYS[SEL_Y];	// Y register
+wire [dw-1:0]   W = QAWXYS[SEL_W];	// W register 
+wire [dw-1:0]   S = QAWXYS[SEL_S];	// Stack pointer
+//wire [dw-1:0]	ZPP = QAWXYS[SEL_ZPP];	// Zero Page Pointer
+//wire [dw-1:0]	STP = QAWXYS[SEL_SPP];	// Stack Page Pointer
+`endif
+
+wire [dw-1:0] P = { 8'b0, N, V, 3'b0, I, Z, C };
+
+/*
+ * instruction decoder/sequencer
+ */
+
+reg [5:0] state;
+
+/*
+ * control signals
+ */
+
+reg PC_inc;		// Increment PC
+reg [aw-1:0] PC_temp; 	// intermediate value of PC 
+
+reg [4:0] src_reg;	// source register index
+reg [4:0] dst_reg;	// destination register index
+//reg [dw-1:0] zp_reg;	// shadow ZPP write register
+//reg [dw-1:0] st_reg;	// shadow SPP write register
+reg index_y;		// if set, then Y is index reg
+reg index_w;		// if set, then W is index reg, otherwise X is index reg
+reg load_reg;		// loading a register (A thru Q, W, X, Y, S) in this instruction
+reg inc;		// increment
+reg write_back;		// set if memory is read/modified/written 
+reg load_only;		// LD[A..Q]/LDW/LDX/LDY instruction
+reg store;		// doing store (ST[A..Q]/STW/STX/STY)
+reg adc_sbc;		// doing ADC/SBC
+reg compare;		// doing CMP/CPY/CPX/CPW
+reg shift;		// doing shift/rotate instruction
+reg rotate;		// doing rotate (no shift)
+reg backwards;		// backwards branch
+reg cond_true;		// branch condition is true
+reg [2:0] cond_code;	// condition code bits from instruction
+reg shift_right;	// Instruction ALU shift/rotate right 
+reg alu_shift_right;	// Current cycle shift right enable
+reg [3:0] op;		// Main ALU operation for instruction
+reg [3:0] alu_op;	// Current cycle ALU operation 
 
 initial
 	begin
@@ -133,80 +202,12 @@ initial
 		QAWXYS[SEL_Y] = 0;
 		QAWXYS[SEL_W] = 0;
 		QAWXYS[SEL_S] = 16'hffff; //init stack
-		QAWXYS[SEL_ZPP] = 0;
-		QAWXYS[SEL_SPP] = 0; //init stack pointer to same as zero page, set to 16'h0001 for original 65Org16 address decoding
-		zp_reg = 0;
-		st_reg = 0; //shoud be same value as QAWXYS[SEL_SPP] for proper simulation
+		//QAWXYS[SEL_ZPP] = 0;
+		//QAWXYS[SEL_SPP] = 16'h0001; //init stack pointer to same as zero page, set to 16'h0001 for original 65Org16 address decoding
+		//zp_reg = 0;
+		//st_reg = 16'h0001; //shoud be same value as QAWXYS[SEL_SPP] for proper simulation
 	end
-
-/*
- * define some signals for watching in simulator output
- */
-
-
-//`ifdef SIM
-wire [dw-1:0]   Qacc = QAWXYS[SEL_Q];	// Accumulator
-wire [dw-1:0]   Oacc = QAWXYS[SEL_O];	// Accumulator
-wire [dw-1:0]   Nacc = QAWXYS[SEL_N];	// Accumulator
-wire [dw-1:0]   Macc = QAWXYS[SEL_M];	// Accumulator
-wire [dw-1:0]   Lacc = QAWXYS[SEL_L];	// Accumulator
-wire [dw-1:0]   Kacc = QAWXYS[SEL_K];	// Accumulator
-wire [dw-1:0]   Jacc = QAWXYS[SEL_J];	// Accumulator
-wire [dw-1:0]   Iacc = QAWXYS[SEL_I];	// Accumulator
-wire [dw-1:0]   Hacc = QAWXYS[SEL_H];	// Accumulator
-wire [dw-1:0]   Gacc = QAWXYS[SEL_G];	// Accumulator
-wire [dw-1:0]   Facc = QAWXYS[SEL_F];	// Accumulator
-wire [dw-1:0]   Eacc = QAWXYS[SEL_E];	// Accumulator
-wire [dw-1:0]   Dacc = QAWXYS[SEL_D];	// Accumulator
-wire [dw-1:0]   Cacc = QAWXYS[SEL_C];	// Accumulator
-wire [dw-1:0]   Bacc = QAWXYS[SEL_B];	// Accumulator
-wire [dw-1:0]   Aacc = QAWXYS[SEL_A];	// Accumulator
-wire [dw-1:0]   X = QAWXYS[SEL_X];	// X register
-wire [dw-1:0]   Y = QAWXYS[SEL_Y];	// Y register
-wire [dw-1:0]   W = QAWXYS[SEL_W];	// W register 
-wire [dw-1:0]   S = QAWXYS[SEL_S];	// Stack pointer
-wire [dw-1:0]	ZPP = QAWXYS[SEL_ZPP];	// Zero Page Pointer
-wire [dw-1:0]	STP = QAWXYS[SEL_SPP];	// Stack Page Pointer
-//`endif
-
-wire [dw-1:0] P = { N, V, 3'b0, I, Z, C };
-
-/*
- * instruction decoder/sequencer
- */
-
-reg [5:0] state;
-
-/*
- * control signals
- */
-
-reg PC_inc;		// Increment PC
-reg [aw-1:0] PC_temp; 	// intermediate value of PC 
-
-reg [4:0] src_reg;	// source register index
-reg [4:0] dst_reg;	// destination register index
-reg [dw-1:0] zp_reg;	// shadow ZPP write register
-reg [dw-1:0] st_reg;	// shadow SPP write register
-reg index_y;		// if set, then Y is index reg
-reg index_w;		// if set, then W is index reg, otherwise X is index reg
-reg load_reg;		// loading a register (A thru Q, W, X, Y, S) in this instruction
-reg inc;		// increment
-reg write_back;		// set if memory is read/modified/written 
-reg load_only;		// LD[A..Q]/LDW/LDX/LDY instruction
-reg store;		// doing store (ST[A..Q]/STW/STX/STY)
-reg adc_sbc;		// doing ADC/SBC
-reg compare;		// doing CMP/CPY/CPX/CPW
-reg shift;		// doing shift/rotate instruction
-reg rotate;		// doing rotate (no shift)
-reg backwards;		// backwards branch
-reg cond_true;		// branch condition is true
-reg [2:0] cond_code;	// condition code bits from instruction
-reg shift_right;	// Instruction ALU shift/rotate right 
-reg alu_shift_right;	// Current cycle shift right enable
-reg [3:0] op;		// Main ALU operation for instruction
-reg [3:0] alu_op;	// Current cycle ALU operation 
-
+	
 /* 
  * some flip flops to remember we're doing special instructions. These
  * get loaded at the DECODE state, and used later
@@ -296,7 +297,7 @@ parameter
     ZPX0   = 6'd48, // ZP, X   - fetch ZP, and send to ALU (+X)
     ZPX1   = 6'd49; // ZP, X   - load from memory
 
-//`ifdef SIM
+`ifdef SIM
 
 /*
  * easy to read names in simulator output
@@ -360,7 +361,7 @@ always @*
 //always @( PC )
 	//$display( "%t, PC:%04x A:%02x X:%02x Y:%02x S:%02x C:%d Z:%d V:%d N:%d", $time, PC, A, X, Y, S, C, Z, V, N );
 
-//`endif
+`endif
 
 
 
@@ -428,7 +429,10 @@ always @(posedge clk)
 /*
  * Address Generator 
  */
-
+parameter
+	ZEROPAGE  = 16'h0000, 
+	STACKPAGE = 16'h0001;
+	
 always @*
     case( state )
 	ABSX1,
@@ -449,7 +453,7 @@ always @*
 	PUSH1,
 	RTS0,
 	RTI0,
-	BRK0:		AB = { st_reg, regfile };
+	BRK0:		AB = { STACKPAGE, regfile };
 
 	BRK1,
 	JSR1,
@@ -459,15 +463,15 @@ always @*
 	RTI1,
 	RTI2,
 	RTI3,
-	BRK2:		AB = { st_reg, ADD };
+	BRK2:		AB = { STACKPAGE, ADD };
 
 	INDY1,
 	INDX1,
 	ZPX1,
-	INDX2:		AB = { zp_reg, ADD };
+	INDX2:		AB = { ZEROPAGE, ADD };
 
 	ZP0,
-	INDY0:		AB = { zp_reg, DIMUX };
+	INDY0:		AB = { ZEROPAGE, DIMUX };
 
 	REG,
 	READ,
@@ -562,13 +566,13 @@ always @(posedge clk)
     if( write_register & RDY )
 	QAWXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
 	
-always @(posedge clk)
-    if( write_register & RDY & (regsel == SEL_ZPP) )
-       zp_reg <= ADD;
+//always @(posedge clk)
+//    if( write_register & RDY & (regsel == SEL_ZPP) )
+//       zp_reg <= ADD;
 
-always @(posedge clk)
-    if( write_register & RDY & (regsel == SEL_SPP) )
-       st_reg <= ADD;
+//always @(posedge clk)
+//    if( write_register & RDY & (regsel == SEL_SPP) )
+//       st_reg <= ADD;
 
 
 
@@ -582,7 +586,7 @@ always @*
 	INDY1,
 	INDX0,
 	ZPX0,
-    	ABSX0  : regsel = index_w ? SEL_W : index_y ? SEL_Y : SEL_X;
+    	ABSX0  : regsel = index_y ? SEL_Y : index_w ? SEL_W : SEL_X;
 
 	DECODE : regsel = dst_reg; 
 
@@ -903,37 +907,12 @@ always @(posedge clk or posedge reset)
 																 //							IR[13:12,9:8]: dst_reg.
 		16'b0000_0000_0000_0000:	state <= BRK0;
 		16'b0000_0000_0010_0000:	state <= JSR0;
+		16'bxxxx_xxxx_0010_1100:	state <= ABS0;  // BIT abs
 		16'b0000_0000_0100_0000:	state <= RTI0;  // 
 		16'b0000_0000_0100_1100:	state <= JMP0;
 		16'b0000_0000_0110_0000:	state <= RTS0;
 		16'b0000_0000_0110_1100:	state <= JMPI0;
 		
-		16'bxxxx_xxxx_0xx0_010x:	state <= ZP0;	 // rows 0,2,4,6, columns 4,5
-		16'bxxxx_0000_0xx0_0110:	state <= ZP0;	 // rows 0,2,4,6, column 6
-		16'bxxxx_xxxx_1xx0_01xx:	state <= ZP0;	 // rows 8,A,C,E, column 4,5,6,7
-		
-		16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd rows, column 0
-		
-		16'bxxxx_xxxx_xxx0_0001:	state <= INDX0; // even rows, column 1 --(zp,x)
-		
-		16'bxxxx_xxxx_xxx1_0001:	state <= INDY0; // odd rows, column 1 --(zp),y
-		16'bxxxx_xxxx_xxx1_0010:	state <= INDY0; // odd rows, column 2 --(zp),w
-				
-		16'b0000_0000_0111_0100:	state <= ZPX0;  // STW zpx
-		16'bxxxx_xxxx_0xx1_0101:	state <= ZPX0;  // odd rows, column 5
-		16'bxxxx_xxxx_0xx1_0110:	state <= ZPX0;	 // odd rows, column 6
-		16'b00xx_00xx_1xx1_01xx:	state <= ZPX0;  // rows 9,B,D,F, columns 4,5,6,7
-		
-		16'bxxxx_xxxx_0010_1100:	state <= ABS0;  // BIT abs
-		16'bxxxx_xxxx_0xx0_1101:	state <= ABS0;  // rows 0,2,4,6, column D
-		16'bxxxx_xxxx_0xx0_1110:	state <= ABS0;  // rows 0,2,4,6, column E
-		16'bxxxx_xxxx_1xx0_11xx:	state <= ABS0;	 // rows 8,A,C,E, column C,D,E,F
-		
-		16'bxxxx_xxxx_xxx1_10x1:	state <= ABSX0; // odd rows, column 9,B
-		16'bxxxx_xxxx_0xx1_1101:	state <= ABSX0; // rows 1,3,5,7, column D
-		16'bxxxx_xxxx_0xx1_1110:	state <= ABSX0; // rows 1,3,5,7, columnn E
-		16'bxxxx_xxxx_1xx1_11xx:	state <= ABSX0; // rows 9,B,D, column C,D,E,F
-				
 		16'bxx00_xx00_0x00_1000:	state <= PUSH0; // PH[A..Q], PHP
 		16'b0000_0000_x101_1010:	state <= PUSH0; // PHX, PHY
 		16'b0000_0000_0100_1011:	state <= PUSH0; // PHW
@@ -942,12 +921,41 @@ always @(posedge clk or posedge reset)
 		16'b0000_0000_x111_1010:	state <= PULL0; // PLY, PLX
 		16'b0000_0000_0110_1011:	state <= PULL0; // PLW
 		
+		16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
+		
 		16'b0000_0000_1xx0_00x0:	state <= FETCH; // IMM, row 8,A,C,E, column 0,2
+		
+		16'bxxxx_xxxx_1xx0_11xx:	state <= ABS0;	 // rows 8,A,C,E, column C,D,E,F
+		
+		16'bxxxx_xxxx_1xxx_1000:	state <= REG;   // DEY, TY[A..Q], T[A..Q]Y, INY, INX, INW, DEW
+		
+		16'bxxxx_xxxx_xxx0_0001:	state <= INDX0; // even rows, column 1 --(zp,x)
+		
+		16'bxxxx_xxxx_1xx0_01xx:	state <= ZP0;	 // rows 8,A,C,E, column 4,5,6,7
+		16'bxxxx_xxxx_0xx0_010x:	state <= ZP0;	 // rows 0,2,4,6, columns 4,5
+		16'bxxxx_0000_0xx0_0110:	state <= ZP0;	 // rows 0,2,4,6, column 6
+		
 		16'bxxxx_xxxx_xxx0_1001:	state <= FETCH; // IMM, even rows, column 9
 		
+		16'bxxxx_xxxx_0xx0_1101:	state <= ABS0;  // rows 0,2,4,6, column D
+		16'bxxxx_0000_0xx0_1110:	state <= ABS0;  // rows 0,2,4,6, column E
+		
+		16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd rows, column 0
+		
+		16'bxxxx_xxxx_xxx1_0001:	state <= INDY0; // odd rows, column 1 --(zp),y
+		16'bxxxx_xxxx_xxx1_0010:	state <= INDY0; // odd rows, column 2 --(zp),w
+				
+		16'b0000_0000_0111_0100:	state <= ZPX0;  // STW zpx
+		16'bxxxx_xxxx_0xx1_0101:	state <= ZPX0;  // odd rows, column 5
+		16'bxxxx_0000_0xx1_0110:	state <= ZPX0;	 // odd rows, column 6
+		16'b00xx_00xx_1xx1_01xx:	state <= ZPX0;  // rows 9,B,D,F, columns 4,5,6,7
+		
+		16'bxxxx_xxxx_xxx1_10x1:	state <= ABSX0; // odd rows, column 9,B
+		16'bxxxx_xxxx_0xx1_1101:	state <= ABSX0; // rows 1,3,5,7, column D
+		16'bxxxx_0000_0xx1_1110:	state <= ABSX0; // rows 1,3,5,7, columnn E
+		16'bxxxx_xxxx_1xx1_11xx:	state <= ABSX0; // rows 9,B,D,F, column C,D,E,F
+				
 		16'bxxxx_xxxx_00xx_0111:	state <= REG;	 // T[A..Q]Z, T[A..Q]S, TZ[A..Q], TS[A..Q]
-		16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
-		16'bxxxx_xxxx_1xxx_1000:	state <= REG;   // DEY, TY[A..Q], T[A..Q]Y, INY, INX, INW, DEW
 		16'bxxxx_xxxx_xxxx_1010:	state <= REG;   // <shift/rotate> [A..Q], TX[A..Q]
 		16'bxxxx_xxxx_1xx0_1011:	state <= REG;	 // T[A..Q][A..Q],TYX,TXY
 		16'bxxxx_xxxx_0xxx_1111:	state <= REG;	 // TW[A..Q], T[A..Q]W, TWX, TWY, TXW, TYW
@@ -1056,8 +1064,8 @@ always @(posedge clk)
 		16'bxxxx_xxxx_0xxx_0101,
 		16'bxxxx_xxxx_1x1x_0101,
 		16'bxxxx_0000_0xxx_0110,
-		16'b0000_0000_1x1x_0110,
-		16'b0000_0000_110x_0110,
+		16'bxxxx_xxxx_1x1x_0110,
+		16'bxxxx_xxxx_110x_0110,
 		16'bxxxx_xxxx_00xx_0111,
 		16'b0000_0000_101x_0111,	
 				
@@ -1076,8 +1084,8 @@ always @(posedge clk)
 		16'bxxxx_xxxx_0xxx_1101,
 		16'bxxxx_xxxx_1x1x_1101,
 		16'bxxxx_0000_0xxx_1110,
-		16'b0000_0000_1x1x_1110,
-		16'b0000_0000_110x_1110,
+		16'bxxxx_xxxx_1x1x_1110,
+		16'bxxxx_xxxx_110x_1110,
 		16'bxxxx_xxxx_0xxx_1111,
 		16'b0000_0000_101x_1111:
 					load_reg <= 1;
@@ -1088,11 +1096,11 @@ always @(posedge clk)
 always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[15:0] )
-		16'bxx00_xx00_0001_0111:	// T[A..Q]Z
-				dst_reg <= SEL_ZPP;
+		//16'bxx00_xx00_0001_0111:	// T[A..Q]Z
+		//		dst_reg <= SEL_ZPP;
 				
-		16'bxx00_xx00_0011_0111:	// T[A..Q]S
-				dst_reg <= SEL_SPP;
+		//16'bxx00_xx00_0011_0111:	// T[A..Q]S
+		//		dst_reg <= SEL_SPP;
 				
 		16'b0000_0000_1110_1000,	// INX
 		16'b0000_0000_1100_1010,	// DEX
@@ -1433,17 +1441,17 @@ always @(posedge clk)
 		16'bxx11_xx11_1111_1011,	// SBC[A..Q]op[Q] aw
 		16'b1111_1111_0010_x100:	// BIT[Q] zp, a
 		      dst_reg <= SEL_Q;
-
+		
 	endcase
 
 always @(posedge clk)
      if( state == DECODE && RDY )
      	casex( IR[15:0] )
-		16'b00xx_00xx_0000_0111:	// TZ[A..Q]
-				src_reg <= SEL_ZPP;
+		//16'b00xx_00xx_0000_0111:	// TZ[A..Q]
+		//		src_reg <= SEL_ZPP;
 				
-		16'b00xx_00xx_0010_0111:	// TS[A..Q]
-				src_reg <= SEL_SPP;
+		//16'b00xx_00xx_0010_0111:	// TS[A..Q]
+		//		src_reg <= SEL_SPP;
 		
 		16'b00xx_00xx_0110_1000,	// PL[A..Q]
 		16'b0000_0000_x111_1010,	// PLX, PLY
@@ -1826,23 +1834,23 @@ always @(posedge clk)
 always @(posedge clk) 
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
-		16'bxxxx_xxxx_xxx1_0001,	// INDY
-		16'b0000_0000_10x1_x110, 	// LDX/STX zpy, ay
-		16'bxxxx_xxxx_xxx1_1001:	// abs, Y
-				index_y <= 1;
-
-		default:	index_y <= 0;
-	endcase
-
-always @(posedge clk) 
-     if( state == DECODE && RDY )
-     	casex( IR[15:0] )  			
 		16'bxxxx_xxxx_xxx1_0010,	// INDW
 		16'b0000_0000_10x1_x111, 	// LDX/STX zpw, aw
 		16'bxxxx_xxxx_xxx1_1011:	// abs, W
 				index_w <= 1;
 
 		default:	index_w <= 0;
+	endcase
+	
+always @(posedge clk) 
+     if( state == DECODE && RDY )
+     	casex( IR[15:0] )  			
+		16'bxxxx_xxxx_xxx1_0001,	// INDY
+		16'b0000_0000_10x1_x110, 	// LDX/STX zpy, ay
+		16'bxxxx_xxxx_xxx1_1001:	// abs, Y
+				index_y <= 1;
+
+		default:	index_y <= 0;
 	endcase
 
 always @(posedge clk)
