@@ -1,5 +1,5 @@
-/*FILE: /relocatable stack and zero page/cpu.v DATE:05/03/2012
--- remember to uncomment 4 'ifdef SIM' statements when not running simulation. --
+/*FILE: /relocatable stack and zero page/cpu.v DATE:05/09/2012
+-- remember to uncomment 2 'ifdef SIM','endif' statements when not running simulation. --
  *
  * verilog-6502 project: verilog model of 6502 and 65Org16.x CPU core
  *
@@ -1168,7 +1168,8 @@ always @(posedge clk)
 				
 		16'b0000_0000_11x1_1000,	// INW, DEW
 		16'b0000_0000_1100_0010,	// LDW #
-		16'b0000_0000_11x1_0100,	// LDW ax,zpx
+		16'b0000_0000_1111_0100,	// LDW zpx
+                  16'b0000_0000_1101_1100,   // LDW ax
 		16'b0000_0000_1010_x111,	// LDW a,zp
 		16'b0000_0000_0110_1011,	// PLW
 		16'bxx00_xx00_0xx1_1111:	// T[A..Q]W, TXW, TYW
@@ -1902,9 +1903,7 @@ always @(posedge clk)
 		16'bxx00_xx00_1001_0010,	// ST[A..Q] (zp)w
 		16'bxx00_xx00_1001_1011,	// ST[A..Q] aw
 		16'bxx00_xx00_1001_01xx,	// STY zpx, ST[A..Q] zpx, STX zpy, STX zpw
-		16'bxx00_xx00_100x_11xx,	// ST[A..Q] ax, STX ay, STX aw, STX a, STY a, ST[A..Q] a, STW a		
-		16'bxx00_xx00_1001_1011:	// ST[A..Q] aw
-				store <= 1;
+		16'bxx00_xx00_100x_11xx:	// ST[A..Q] ax, STX ay, STX aw, STX a, STY a, ST[A..Q] a, STW a				store <= 1;
 
 		default:	store <= 0;
 
@@ -1931,7 +1930,9 @@ always @(posedge clk )
 		16'b0000_0000_1011_01x0,	// LDY zpx, LDX zpy
 		16'b0000_0000_1011_11x0,	// LDY ax, LDX ay
 		16'b00xx_00xx_1011_0010,	// LD[A..Q] zpw
-		16'b0000_0000_1100_0010:	// LDW #
+		16'b0000_0000_1100_0010,	// LDW #
+                  16'b0000_0000_1111_0100,	// LDW zpx
+		16'b0000_0000_1101_1100:	// LDW ax
 				load_only <= 1;
 		default:	load_only <= 0;
 	endcase
@@ -2034,8 +2035,10 @@ always @(posedge clk )
 
 		16'bxxxx_xxxx_010x_xx01,	// EOR[A..Q]op[A..Q]
 		16'bxxxx_xxxx_0101_0010,	// EOR[A..Q](zp)w op[A..Q]
+                  16'bxxxx_xxxx_0101_1011,    // EOR[A..Q]aw op[A..Q]
 		16'bxxxx_xxxx_00xx_xx01,	// ORA[A..Q]i, (zpx), (zp)y, zp, zpx, ay, ax,a op[A..Q], AND[A..Q]i, (zpx), (zp)y, zp, zpx, ay, ax,a op[A..Q]
-		16'bxxxx_xxxx_00x1_0010:	// ORA[A..Q](zp)w op[A..Q], AND[A..Q](zp)w op[A..Q]
+		16'bxxxx_xxxx_00x1_0010,	// ORA[A..Q](zp)w op[A..Q], AND[A..Q](zp)w op[A..Q]
+                  16'bxxxx_xxxx_00x1_1011:  // ORA[A..Q]aw op[A..Q], AND[A..Q]aw op[A..Q]
 		op <= { 2'b11, IR[6:5] };
 
 		default: 	op <= OP_ADD; 
