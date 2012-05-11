@@ -1,4 +1,5 @@
-;LDAi                    $00A9
+; NEW 65O16 OPCODES!   5/11/2012
+;LDA #$xxxx             $00A9
 LDBi              .MACRO          ;LDB #$xxxx
                   .BYTE $01A9
                   .ENDM
@@ -47,58 +48,56 @@ LDQi              .MACRO          ;LDQ #$xxxx
 LDWi              .MACRO
                   .BYTE $00C2
                   .ENDM
-                  
-;STAzp                    $0085
-STBzp             .MACRO          ;STB #$xxxx
-                  .BYTE $0185
-                  .ENDM
-STCzp             .MACRO          ;STC #$xxxx
-                  .BYTE $0285
-                  .ENDM
-STDzp             .MACRO          ;STD #$xxxx
-                  .BYTE $0385
-                  .ENDM
-STEzp             .MACRO          ;STE #$xxxx
-                  .BYTE $1085
-                  .ENDM
-STFzp             .MACRO          ;STF #$xxxx
-                  .BYTE $1185
-                  .ENDM
-STGzp             .MACRO          ;STG #$xxxx
-                  .BYTE $1285
-                  .ENDM
-STHzp             .MACRO          ;STH #$xxxx
-                  .BYTE $1385
-                  .ENDM
-STIzp             .MACRO           ;STI #$xxxx
-                  .BYTE $2085
-                  .ENDM
-STJzp             .MACRO          ;STJ #$xxxx
-                  .BYTE $2185
-                  .ENDM
-STKzp             .MACRO          ;STK #$xxxx
-                  .BYTE $2285
-                  .ENDM
-STLzp             .MACRO          ;STL #$xxxx
-                  .BYTE $2385
-                  .ENDM
-STMzp             .MACRO          ;STM #$xxxx
-                  .BYTE $3085
-                  .ENDM
-STNzp             .MACRO          ;STN #$xxxx
-                  .BYTE $3185
-                  .ENDM
-STOzp             .MACRO          ;STO #$xxxx
-                  .BYTE $3285
-                  .ENDM
-STQzp             .MACRO          ;STQ #$xxxx
-                  .BYTE $3385
-                  .ENDM
-STWzp             .MACRO
-                  .BYTE $0087
-                  .ENDM
 
-
+;LDA $xxxx              $00A5
+LDBzp             .MACRO          ;LDB $xxxx
+                  .BYTE $01A5
+                  .ENDM
+LDCzp             .MACRO          ;LDC $xxxx
+                  .BYTE $02A5
+                  .ENDM
+LDDzp             .MACRO          ;LDD $xxxx
+                  .BYTE $03A5
+                  .ENDM
+LDEzp             .MACRO          ;LDE $xxxx
+                  .BYTE $10A5
+                  .ENDM
+LDFzp             .MACRO          ;LDF $xxxx
+                  .BYTE $11A5
+                  .ENDM
+LDGzp             .MACRO          ;LDG $xxxx
+                  .BYTE $12A5
+                  .ENDM
+LDHzp             .MACRO          ;LDH $xxxx
+                  .BYTE $13A5
+                  .ENDM
+LDIzp             .MACRO          ;LDI $xxxx
+                  .BYTE $20A5
+                  .ENDM
+LDJzp             .MACRO          ;LDJ $xxxx
+                  .BYTE $21A5
+                  .ENDM
+LDKzp             .MACRO          ;LDK $xxxx
+                  .BYTE $22A5
+                  .ENDM
+LDLzp             .MACRO          ;LDL $xxxx
+                  .BYTE $23A5
+                  .ENDM
+LDMzp             .MACRO          ;LDM $xxxx
+                  .BYTE $30A5
+                  .ENDM
+LDNzp             .MACRO          ;LDN $xxxx
+                  .BYTE $31A5
+                  .ENDM
+LDOzp             .MACRO          ;LDO $xxxx
+                  .BYTE $32A5
+                  .ENDM
+LDQzp             .MACRO          ;LDQ $xxxx
+                  .BYTE $33A5
+                  .ENDM
+LDWzp             .MACRO
+                  .BYTE $00A7
+                  .ENDM
                   
 ;LDA $xxxxxxxx          $00AD
 LDBa              .MACRO          ;LDB $xxxxxxxx
@@ -149,8 +148,250 @@ LDQa              .MACRO          ;LDQ $xxxxxxxx
 LDWa              .MACRO
                   .BYTE $00AF
                   .ENDM
+                  
+;LDA $xxxx,x            $00B5
+LDBzpx            .MACRO          
+                  .BYTE $01B5
+                  .ENDM
+LDCzpx            .MACRO          
+                  .BYTE $02B5
+                  .ENDM
+LDDzpx            .MACRO          
+                  .BYTE $03B5
+                  .ENDM
+LDEzpx            .MACRO          
+                  .BYTE $10B5
+                  .ENDM
+LDFzpx            .MACRO          
+                  .BYTE $11B5
+                  .ENDM
+LDGzpx            .MACRO          
+                  .BYTE $12B5
+                  .ENDM
+LDHzpx            .MACRO          
+                  .BYTE $13B5
+                  .ENDM
+LDIzpx            .MACRO          
+                  .BYTE $20B5
+                  .ENDM
+LDJzpx            .MACRO          
+                  .BYTE $21B5
+                  .ENDM
+LDKzpx            .MACRO          
+                  .BYTE $22B5
+                  .ENDM
+LDLzpx            .MACRO          
+                  .BYTE $23B5
+                  .ENDM
+LDMzpx            .MACRO          
+                  .BYTE $30B5
+                  .ENDM
+LDNzpx            .MACRO          
+                  .BYTE $31B5
+                  .ENDM
+LDOzpx            .MACRO          
+                  .BYTE $32B5
+                  .ENDM
+LDQzpx            .MACRO          
+                  .BYTE $33B5
+                  .ENDM
+LDWzpx            .MACRO
+                  .BYTE $00F4
+                  
+;LDA $xxxxxxxx,x        $00BD
+LDBax             .MACRO          
+                  .BYTE $01BD
+                  .ENDM
+LDCax             .MACRO          
+                  .BYTE $02BD
+                  .ENDM
+LDDax             .MACRO          
+                  .BYTE $03BD
+                  .ENDM
+LDEax             .MACRO          
+                  .BYTE $10BD
+                  .ENDM
+LDFax             .MACRO          
+                  .BYTE $11BD
+                  .ENDM
+LDGax             .MACRO          
+                  .BYTE $12BD
+                  .ENDM
+LDHax             .MACRO          
+                  .BYTE $13BD
+                  .ENDM
+LDIax             .MACRO          
+                  .BYTE $20BD
+                  .ENDM
+LDJax             .MACRO          
+                  .BYTE $21BD
+                  .ENDM
+LDKax             .MACRO          
+                  .BYTE $22BD
+                  .ENDM
+LDLax             .MACRO          
+                  .BYTE $23BD
+                  .ENDM
+LDMax             .MACRO          
+                  .BYTE $30BD
+                  .ENDM
+LDNax             .MACRO          
+                  .BYTE $31BD
+                  .ENDM
+LDOax             .MACRO          
+                  .BYTE $32BD
+                  .ENDM
+LDQax             .MACRO          
+                  .BYTE $33BD
+                  .ENDM
+                  
+;LDA $xxxxxxxx,y        $00B9
+LDBay             .MACRO          
+                  .BYTE $01B9
+                  .ENDM
+LDCay             .MACRO          
+                  .BYTE $02B9
+                  .ENDM
+LDDay             .MACRO          
+                  .BYTE $03B9
+                  .ENDM
+LDEay             .MACRO          
+                  .BYTE $10B9
+                  .ENDM
+LDFay             .MACRO          
+                  .BYTE $11B9
+                  .ENDM
+LDGay             .MACRO          
+                  .BYTE $12B9
+                  .ENDM
+LDHay             .MACRO          
+                  .BYTE $13B9
+                  .ENDM
+LDIay             .MACRO          
+                  .BYTE $20B9
+                  .ENDM
+LDJay             .MACRO          
+                  .BYTE $21B9
+                  .ENDM
+LDKay             .MACRO          
+                  .BYTE $22B9
+                  .ENDM
+LDLay             .MACRO          
+                  .BYTE $23B9
+                  .ENDM
+LDMay             .MACRO          
+                  .BYTE $30B9
+                  .ENDM
+LDNay             .MACRO          
+                  .BYTE $31B9
+                  .ENDM
+LDOay             .MACRO          
+                  .BYTE $32B9
+                  .ENDM
+LDQay             .MACRO          
+                  .BYTE $33B9
+                  .ENDM
 
-;STAa                   $008D                  
+LDAaw             .MACRO        ;LDA $xxxxxxxx,w
+                  .BYTE $00BB
+                  .ENDM
+LDBaw             .MACRO          
+                  .BYTE $01BB
+                  .ENDM
+LDCaw             .MACRO          
+                  .BYTE $02BB
+                  .ENDM
+LDDaw             .MACRO          
+                  .BYTE $03BB
+                  .ENDM
+LDEaw             .MACRO          
+                  .BYTE $10BB
+                  .ENDM
+LDFaw             .MACRO          
+                  .BYTE $11BB
+                  .ENDM
+LDGaw             .MACRO          
+                  .BYTE $12BB
+                  .ENDM
+LDHaw             .MACRO          
+                  .BYTE $13BB
+                  .ENDM
+LDIaw             .MACRO          
+                  .BYTE $20BB
+                  .ENDM
+LDJaw             .MACRO          
+                  .BYTE $21BB
+                  .ENDM
+LDKaw             .MACRO          
+                  .BYTE $22BB
+                  .ENDM
+LDLaw             .MACRO          
+                  .BYTE $23BB
+                  .ENDM
+LDMaw             .MACRO          
+                  .BYTE $30BB
+                  .ENDM
+LDNaw             .MACRO          
+                  .BYTE $31BB
+                  .ENDM
+LDOaw             .MACRO          
+                  .BYTE $32BB
+                  .ENDM
+LDQaw             .MACRO          
+                  .BYTE $33BB
+                  .ENDM
+                  
+;STA $xxxx              $0085
+STBzp             .MACRO          ;STB $xxxx
+                  .BYTE $0185
+                  .ENDM
+STCzp             .MACRO          ;STC $xxxx
+                  .BYTE $0285
+                  .ENDM
+STDzp             .MACRO          ;STD $xxxx
+                  .BYTE $0385
+                  .ENDM
+STEzp             .MACRO          ;STE $xxxx
+                  .BYTE $1085
+                  .ENDM
+STFzp             .MACRO          ;STF $xxxx
+                  .BYTE $1185
+                  .ENDM
+STGzp             .MACRO          ;STG $xxxx
+                  .BYTE $1285
+                  .ENDM
+STHzp             .MACRO          ;STH $xxxx
+                  .BYTE $1385
+                  .ENDM
+STIzp             .MACRO          ;STI $xxxx
+                  .BYTE $2085
+                  .ENDM
+STJzp             .MACRO          ;STJ $xxxx
+                  .BYTE $2185
+                  .ENDM
+STKzp             .MACRO          ;STK $xxxx
+                  .BYTE $2285
+                  .ENDM
+STLzp             .MACRO          ;STL $xxxx
+                  .BYTE $2385
+                  .ENDM
+STMzp             .MACRO          ;STM $xxxx
+                  .BYTE $3085
+                  .ENDM
+STNzp             .MACRO          ;STN $xxxx
+                  .BYTE $3185
+                  .ENDM
+STOzp             .MACRO          ;STO $xxxx
+                  .BYTE $3285
+                  .ENDM
+STQzp             .MACRO          ;STQ $xxxx
+                  .BYTE $3385
+                  .ENDM
+STWzp             .MACRO
+                  .BYTE $0087
+                  .ENDM
+
+;STA $xxxxxxxx          $008D                  
 STBa              .MACRO          ;STB $xxxxxxxx
                   .BYTE $048D
                   .ENDM
@@ -198,6 +439,202 @@ STQa              .MACRO          ;STQ $xxxxxxxx
                   .ENDM
 STWa              .MACRO
                   .BYTE $008F
+                  .ENDM
+                  
+;STA $xxxx,x            $0095
+STBzpx            .MACRO          ;STB $xxxx,x
+                  .BYTE $0195
+                  .ENDM
+STCzpx            .MACRO          ;STC $xxxx,x
+                  .BYTE $0295
+                  .ENDM
+STDzpx            .MACRO          ;STD $xxxx,x
+                  .BYTE $0395
+                  .ENDM
+STEzpx            .MACRO          ;STE $xxxx,x
+                  .BYTE $1095
+                  .ENDM
+STFzpx            .MACRO          ;STF $xxxx,x
+                  .BYTE $1195
+                  .ENDM
+STGzpx            .MACRO          ;STG $xxxx,x
+                  .BYTE $1295
+                  .ENDM
+STHzpx            .MACRO          ;STH $xxxx,x
+                  .BYTE $1395
+                  .ENDM
+STIzpx            .MACRO          ;STI $xxxx,x
+                  .BYTE $2095
+                  .ENDM
+STJzpx            .MACRO          ;STJ $xxxx,x
+                  .BYTE $2195
+                  .ENDM
+STKzpx            .MACRO          ;STK $xxxx,x
+                  .BYTE $2295
+                  .ENDM
+STLzpx            .MACRO          ;STL $xxxx,x
+                  .BYTE $2395
+                  .ENDM
+STMzpx            .MACRO          ;STM $xxxx,x
+                  .BYTE $3095
+                  .ENDM
+STNzpx            .MACRO          ;STN $xxxx,x
+                  .BYTE $3195
+                  .ENDM
+STOzpx            .MACRO          ;STO $xxxx,x
+                  .BYTE $3295
+                  .ENDM
+STQzpx            .MACRO          ;STQ $xxxx,x
+                  .BYTE $3395
+                  .ENDM
+STWzpx            .MACRO
+                  .BYTE $0074
+                  .ENDM
+                  
+;STA $xxxxxxxx,x        $009D
+STBax             .MACRO          ;STB $xxxxxxxx,x
+                  .BYTE $019D
+                  .ENDM
+STCax             .MACRO          ;STC $xxxxxxxx,x
+                  .BYTE $029D
+                  .ENDM
+STDax             .MACRO          ;STD $xxxxxxxx,x
+                  .BYTE $039D
+                  .ENDM
+STEax             .MACRO          ;STE $xxxxxxxx,x
+                  .BYTE $109D
+                  .ENDM
+STFax             .MACRO          ;STF $xxxxxxxx,x
+                  .BYTE $119D
+                  .ENDM
+STGax             .MACRO          ;STG $xxxxxxxx,x
+                  .BYTE $129D
+                  .ENDM
+STHax             .MACRO          ;STH $xxxxxxxx,x
+                  .BYTE $139D
+                  .ENDM
+STIax             .MACRO          ;STI $xxxxxxxx,x
+                  .BYTE $209D
+                  .ENDM
+STJax             .MACRO          ;STJ $xxxxxxxx,x
+                  .BYTE $219D
+                  .ENDM
+STKax             .MACRO          ;STK $xxxxxxxx,x
+                  .BYTE $229D
+                  .ENDM
+STLax             .MACRO          ;STL $xxxxxxxx,x
+                  .BYTE $239D
+                  .ENDM
+STMax             .MACRO          ;STM $xxxxxxxx,x
+                  .BYTE $309D
+                  .ENDM
+STNax             .MACRO          ;STN $xxxxxxxx,x
+                  .BYTE $319D
+                  .ENDM
+STOax             .MACRO          ;STO $xxxxxxxx,x
+                  .BYTE $329D
+                  .ENDM
+STQax             .MACRO          ;STQ $xxxxxxxx,x
+                  .BYTE $339D
+                  .ENDM
+STWax             .MACRO
+                  .BYTE $0087
+                  .ENDM
+
+;STA $xxxxxxxx,y        $0099
+STBay             .MACRO          ;STB $xxxxxxxx,y
+                  .BYTE $0199
+                  .ENDM
+STCay             .MACRO          ;STC $xxxxxxxx,y
+                  .BYTE $0299
+                  .ENDM
+STDay             .MACRO          ;STD $xxxxxxxx,y
+                  .BYTE $0399
+                  .ENDM
+STEay             .MACRO          ;STE $xxxxxxxx,y
+                  .BYTE $1099
+                  .ENDM
+STFay             .MACRO          ;STF $xxxxxxxx,y
+                  .BYTE $1199
+                  .ENDM
+STGay             .MACRO          ;STG $xxxxxxxx,y
+                  .BYTE $1299
+                  .ENDM
+STHay             .MACRO          ;STH $xxxxxxxx,y
+                  .BYTE $1399
+                  .ENDM
+STIay             .MACRO          ;STI $xxxxxxxx,y
+                  .BYTE $2099
+                  .ENDM
+STJay             .MACRO          ;STJ $xxxxxxxx,y
+                  .BYTE $2199
+                  .ENDM
+STKay             .MACRO          ;STK $xxxxxxxx,y
+                  .BYTE $2299
+                  .ENDM
+STLay             .MACRO          ;STL $xxxxxxxx,y
+                  .BYTE $2399
+                  .ENDM
+STMay             .MACRO          ;STM $xxxxxxxx,y
+                  .BYTE $3099
+                  .ENDM
+STNay             .MACRO          ;STN $xxxxxxxx,y
+                  .BYTE $3199
+                  .ENDM
+STOay             .MACRO          ;STO $xxxxxxxx,y
+                  .BYTE $3299
+                  .ENDM
+STQay             .MACRO          ;STQ $xxxxxxxx,y
+                  .BYTE $3399
+                  .ENDM
+
+STAaw             .MACRO          ;STA $xxxxxxxx,w
+                  .BYTE $009B
+                  .ENDM
+STBaw             .MACRO          ;STB $xxxxxxxx,w
+                  .BYTE $019B
+                  .ENDM
+STCaw             .MACRO          ;STC $xxxxxxxx,w
+                  .BYTE $029B
+                  .ENDM
+STDaw             .MACRO          ;STD $xxxxxxxx,w
+                  .BYTE $039B
+                  .ENDM
+STEaw             .MACRO          ;STE $xxxxxxxx,w
+                  .BYTE $109B
+                  .ENDM
+STFaw             .MACRO          ;STF $xxxxxxxx,w
+                  .BYTE $119B
+                  .ENDM
+STGaw             .MACRO          ;STG $xxxxxxxx,w
+                  .BYTE $129B
+                  .ENDM
+STHaw             .MACRO          ;STH $xxxxxxxx,w
+                  .BYTE $139B
+                  .ENDM
+STIaw             .MACRO          ;STI $xxxxxxxx,w
+                  .BYTE $209B
+                  .ENDM
+STJaw             .MACRO          ;STJ $xxxxxxxx,w
+                  .BYTE $219B
+                  .ENDM
+STKaw             .MACRO          ;STK $xxxxxxxx,w
+                  .BYTE $229B
+                  .ENDM
+STLaw             .MACRO          ;STL $xxxxxxxx,w
+                  .BYTE $239B
+                  .ENDM
+STMaw             .MACRO          ;STM $xxxxxxxx,w
+                  .BYTE $309B
+                  .ENDM
+STNaw             .MACRO          ;STN $xxxxxxxx,w
+                  .BYTE $319B
+                  .ENDM
+STOaw             .MACRO          ;STO $xxxxxxxx,w
+                  .BYTE $329B
+                  .ENDM
+STQaw             .MACRO          ;STQ $xxxxxxxx,w
+                  .BYTE $339B
                   .ENDM
 
 ;CMPAi                  $00C9                  
@@ -262,6 +699,7 @@ CMPWi             .MACRO
 ;PLX               .MACRO
 ;                  .BYTE $00FA
 ;                  .ENDM
+
 ;PHA                    $0048
 PHB               .MACRO
                   .BYTE $0448
@@ -368,7 +806,19 @@ TYX               .MACRO
                   .BYTE $00AB
                   .ENDM
 TXY               .MACRO
-                  .BYTE $00BB
+                  .BYTE $00CB
+                  .ENDM
+TYW               .MACRO
+                  .BYTE $005F
+                  .ENDM
+TXW               .MACRO
+                  .BYTE $003F
+                  .ENDM
+TWX               .MACRO
+                  .BYTE $002F
+                  .ENDM
+TWY               .MACRO
+                  .BYTE $004F
                   .ENDM
                                     
 ;TAY                    $00A8
@@ -417,6 +867,7 @@ TOY               .MACRO
 TQY               .MACRO
                   .BYTE $CCA8
                   .ENDM
+                  
 ;TYA                    $0098                
 TYB               .MACRO          ;Breg <= Yreg
                   .BYTE $0198
@@ -463,6 +914,7 @@ TYO               .MACRO
 TYQ               .MACRO
                   .BYTE $3398
                   .ENDM
+                  
 ;TAX                    $00AA                 
 TBX               .MACRO
                   .BYTE $04AA
@@ -558,52 +1010,52 @@ TXQ               .MACRO
                   .ENDM
                   
 TAW               .MACRO
-                  .BYTE $002F
+                  .BYTE $001F
                   .ENDM
 TBW               .MACRO
-                  .BYTE $042F
+                  .BYTE $041F
                   .ENDM
 TCW               .MACRO
-                  .BYTE $082F
+                  .BYTE $081F
                   .ENDM
 TDW               .MACRO
-                  .BYTE $0C2F
+                  .BYTE $0C1F
                   .ENDM
 TEW               .MACRO
-                  .BYTE $402F
+                  .BYTE $401F
                   .ENDM
 TFW               .MACRO
-                  .BYTE $442F
+                  .BYTE $441F
                   .ENDM
 TGW               .MACRO
-                  .BYTE $482F
+                  .BYTE $481F
                   .ENDM
 THW               .MACRO
-                  .BYTE $4C2F
+                  .BYTE $4C1F
                   .ENDM
 TIW               .MACRO
-                  .BYTE $802F
+                  .BYTE $801F
                   .ENDM
 TJW               .MACRO
-                  .BYTE $842F
+                  .BYTE $841F
                   .ENDM
 TKW               .MACRO
-                  .BYTE $882F
+                  .BYTE $881F
                   .ENDM
 TLW               .MACRO
-                  .BYTE $8C2F
+                  .BYTE $8C1F
                   .ENDM
 TMW               .MACRO
-                  .BYTE $C02F
+                  .BYTE $C01F
                   .ENDM
 TNW               .MACRO
-                  .BYTE $C42F
+                  .BYTE $C41F
                   .ENDM
 TOW               .MACRO
-                  .BYTE $C82F
+                  .BYTE $C81F
                   .ENDM
 TQW               .MACRO
-                  .BYTE $CC2F
+                  .BYTE $CC1F
                   .ENDM
                   
 TWA               .MACRO
@@ -2221,10 +2673,8 @@ ADCQopOi          .MACRO
 ADCQopQi          .MACRO
                   .BYTE $FF69
                   .ENDM
-                  
-;-------------------------------------------------------------------------------
 
-;ADC #$                 $0069
+;SBC #$                 $00E9
 SBCAopBi          .MACRO          
                   .BYTE $04E9
                   .ENDM
@@ -3004,6 +3454,2352 @@ SBCQopOi          .MACRO
                   .ENDM
 SBCQopQi          .MACRO
                   .BYTE $FFE9
+                  .ENDM
+                  
+;ORA #$                 $0009
+ORAAopBi          .MACRO          
+                  .BYTE $0409
+                  .ENDM
+ORAAopCi          .MACRO
+                  .BYTE $0809
+                  .ENDM
+ORAAopDi          .MACRO
+                  .BYTE $0C09
+                  .ENDM
+ORAAopEi          .MACRO          
+                  .BYTE $4009
+                  .ENDM
+ORAAopFi          .MACRO
+                  .BYTE $4409
+                  .ENDM
+ORAAopGi          .MACRO
+                  .BYTE $4809
+                  .ENDM                  
+ORAAopHi          .MACRO          
+                  .BYTE $4C09
+                  .ENDM
+ORAAopIi          .MACRO
+                  .BYTE $8009
+                  .ENDM
+ORAAopJi          .MACRO
+                  .BYTE $8409
+                  .ENDM
+ORAAopKi          .MACRO          
+                  .BYTE $8809
+                  .ENDM
+ORAAopLi          .MACRO
+                  .BYTE $8C09
+                  .ENDM
+ORAAopMi          .MACRO
+                  .BYTE $C009
+                  .ENDM                  
+ORAAopNi          .MACRO          
+                  .BYTE $C409
+                  .ENDM
+ORAAopOi          .MACRO
+                  .BYTE $C809
+                  .ENDM
+ORAAopQi          .MACRO
+                  .BYTE $CC09
+                  .ENDM
+                                    
+ORABopAi          .MACRO
+                  .BYTE $0109
+                  .ENDM                
+ORABopBi          .MACRO          
+                  .BYTE $0509
+                  .ENDM
+ORABopCi          .MACRO
+                  .BYTE $0909
+                  .ENDM
+ORABopDi          .MACRO
+                  .BYTE $0D09
+                  .ENDM
+ORABopEi          .MACRO          
+                  .BYTE $4109
+                  .ENDM
+ORABopFi          .MACRO
+                  .BYTE $4509
+                  .ENDM
+ORABopGi          .MACRO
+                  .BYTE $4909
+                  .ENDM                  
+ORABopHi          .MACRO          
+                  .BYTE $4D09
+                  .ENDM
+ORABopIi          .MACRO
+                  .BYTE $8109
+                  .ENDM
+ORABopJi          .MACRO
+                  .BYTE $8509
+                  .ENDM
+ORABopKi          .MACRO          
+                  .BYTE $8909
+                  .ENDM
+ORABopLi          .MACRO
+                  .BYTE $8D09
+                  .ENDM
+ORABopMi          .MACRO
+                  .BYTE $C109
+                  .ENDM                  
+ORABopNi          .MACRO          
+                  .BYTE $C509
+                  .ENDM
+ORABopOi          .MACRO
+                  .BYTE $C909
+                  .ENDM
+ORABopQi          .MACRO
+                  .BYTE $CD09
+                  .ENDM
+                                    
+ORACopAi          .MACRO
+                  .BYTE $0209
+                  .ENDM                
+ORACopBi          .MACRO          
+                  .BYTE $0609
+                  .ENDM
+ORACopCi          .MACRO
+                  .BYTE $0A09
+                  .ENDM
+ORACopDi          .MACRO
+                  .BYTE $0E09
+                  .ENDM
+ORACopEi          .MACRO          
+                  .BYTE $4209
+                  .ENDM
+ORACopFi          .MACRO
+                  .BYTE $4609
+                  .ENDM
+ORACopGi          .MACRO
+                  .BYTE $4A09
+                  .ENDM                  
+ORACopHi          .MACRO          
+                  .BYTE $4E09
+                  .ENDM
+ORACopIi          .MACRO
+                  .BYTE $8209
+                  .ENDM
+ORACopJi          .MACRO
+                  .BYTE $8609
+                  .ENDM
+ORACopKi          .MACRO          
+                  .BYTE $8A09
+                  .ENDM
+ORACopLi          .MACRO
+                  .BYTE $8E09
+                  .ENDM
+ORACopMi          .MACRO
+                  .BYTE $C209
+                  .ENDM                  
+ORACopNi          .MACRO          
+                  .BYTE $C609
+                  .ENDM
+ORACopOi          .MACRO
+                  .BYTE $CA09
+                  .ENDM
+ORACopQi          .MACRO
+                  .BYTE $CE09
+                  .ENDM
+
+ORADopAi          .MACRO
+                  .BYTE $0309
+                  .ENDM                
+ORADopBi          .MACRO          
+                  .BYTE $0709
+                  .ENDM
+ORADopCi          .MACRO
+                  .BYTE $0B09
+                  .ENDM
+ORADopDi          .MACRO
+                  .BYTE $0F09
+                  .ENDM
+ORADopEi          .MACRO          
+                  .BYTE $4309
+                  .ENDM
+ORADopFi          .MACRO
+                  .BYTE $4709
+                  .ENDM
+ORADopGi          .MACRO
+                  .BYTE $4B09
+                  .ENDM                  
+ORADopHi          .MACRO          
+                  .BYTE $4F09
+                  .ENDM
+ORADopIi          .MACRO
+                  .BYTE $8309
+                  .ENDM
+ORADopJi          .MACRO
+                  .BYTE $8709
+                  .ENDM
+ORADopKi          .MACRO          
+                  .BYTE $8B09
+                  .ENDM
+ORADopLi          .MACRO
+                  .BYTE $8F09
+                  .ENDM
+ORADopMi          .MACRO
+                  .BYTE $C309
+                  .ENDM                  
+ORADopNi          .MACRO          
+                  .BYTE $C709
+                  .ENDM
+ORADopOi          .MACRO
+                  .BYTE $CB09
+                  .ENDM
+ORADopQi          .MACRO
+                  .BYTE $CF09
+                  .ENDM                  
+
+ORAEopAi          .MACRO
+                  .BYTE $1009
+                  .ENDM                
+ORAEopBi          .MACRO          
+                  .BYTE $1409
+                  .ENDM
+ORAEopCi          .MACRO
+                  .BYTE $1809
+                  .ENDM
+ORAEopDi          .MACRO
+                  .BYTE $1C09
+                  .ENDM
+ORAEopEi          .MACRO          
+                  .BYTE $5009
+                  .ENDM
+ORAEopFi          .MACRO
+                  .BYTE $5409
+                  .ENDM
+ORAEopGi          .MACRO
+                  .BYTE $5809
+                  .ENDM                  
+ORAEopHi          .MACRO          
+                  .BYTE $5C09
+                  .ENDM
+ORAEopIi          .MACRO
+                  .BYTE $9009
+                  .ENDM
+ORAEopJi          .MACRO
+                  .BYTE $9409
+                  .ENDM
+ORAEopKi          .MACRO          
+                  .BYTE $9809
+                  .ENDM
+ORAEopLi          .MACRO
+                  .BYTE $9C09
+                  .ENDM
+ORAEopMi          .MACRO
+                  .BYTE $D009
+                  .ENDM                  
+ORAEopNi          .MACRO          
+                  .BYTE $D409
+                  .ENDM
+ORAEopOi          .MACRO
+                  .BYTE $D809
+                  .ENDM
+ORAEopQi          .MACRO
+                  .BYTE $DC09
+                  .ENDM
+                  
+ORAFopAi          .MACRO
+                  .BYTE $1109
+                  .ENDM                
+ORAFopBi          .MACRO          
+                  .BYTE $1509
+                  .ENDM
+ORAFopCi          .MACRO
+                  .BYTE $1909
+                  .ENDM
+ORAFopDi          .MACRO
+                  .BYTE $1D09
+                  .ENDM
+ORAFopEi          .MACRO          
+                  .BYTE $5109
+                  .ENDM
+ORAFopFi          .MACRO
+                  .BYTE $5509
+                  .ENDM
+ORAFopGi          .MACRO
+                  .BYTE $5909
+                  .ENDM                  
+ORAFopHi          .MACRO          
+                  .BYTE $5D09
+                  .ENDM
+ORAFopIi          .MACRO
+                  .BYTE $9109
+                  .ENDM
+ORAFopJi          .MACRO
+                  .BYTE $9509
+                  .ENDM
+ORAFopKi          .MACRO          
+                  .BYTE $9909
+                  .ENDM
+ORAFopLi          .MACRO
+                  .BYTE $9D09
+                  .ENDM
+ORAFopMi          .MACRO
+                  .BYTE $D109
+                  .ENDM                  
+ORAFopNi          .MACRO          
+                  .BYTE $D509
+                  .ENDM
+ORAFopOi          .MACRO
+                  .BYTE $D909
+                  .ENDM
+ORAFopQi          .MACRO
+                  .BYTE $DD09
+                  .ENDM                  
+                           
+ORAGopAi          .MACRO
+                  .BYTE $1209
+                  .ENDM                
+ORAGopBi          .MACRO          
+                  .BYTE $1609
+                  .ENDM
+ORAGopCi          .MACRO
+                  .BYTE $1A09
+                  .ENDM
+ORAGopDi          .MACRO
+                  .BYTE $1E09
+                  .ENDM
+ORAGopEi          .MACRO          
+                  .BYTE $5209
+                  .ENDM
+ORAGopFi          .MACRO
+                  .BYTE $5609
+                  .ENDM
+ORAGopGi          .MACRO
+                  .BYTE $5A09
+                  .ENDM                  
+ORAGopHi          .MACRO          
+                  .BYTE $5E09
+                  .ENDM
+ORAGopIi          .MACRO
+                  .BYTE $9209
+                  .ENDM
+ORAGopJi          .MACRO
+                  .BYTE $9609
+                  .ENDM
+ORAGopKi          .MACRO          
+                  .BYTE $9A09
+                  .ENDM
+ORAGopLi          .MACRO
+                  .BYTE $9E09
+                  .ENDM
+ORAGopMi          .MACRO
+                  .BYTE $D209
+                  .ENDM                  
+ORAGopNi          .MACRO          
+                  .BYTE $D609
+                  .ENDM
+ORAGopOi          .MACRO
+                  .BYTE $DA09
+                  .ENDM
+ORAGopQi          .MACRO
+                  .BYTE $DE09
+                  .ENDM
+                  
+ORAHopAi          .MACRO
+                  .BYTE $1309
+                  .ENDM                
+ORAHopBi          .MACRO          
+                  .BYTE $1709
+                  .ENDM
+ORAHopCi          .MACRO
+                  .BYTE $1B09
+                  .ENDM
+ORAHopDi          .MACRO
+                  .BYTE $1F09
+                  .ENDM
+ORAHopEi          .MACRO          
+                  .BYTE $5309
+                  .ENDM
+ORAHopFi          .MACRO
+                  .BYTE $5709
+                  .ENDM
+ORAHopGi          .MACRO
+                  .BYTE $5B09
+                  .ENDM                  
+ORAHopHi          .MACRO          
+                  .BYTE $5F09
+                  .ENDM
+ORAHopIi          .MACRO
+                  .BYTE $9309
+                  .ENDM
+ORAHopJi          .MACRO
+                  .BYTE $9709
+                  .ENDM
+ORAHopKi          .MACRO          
+                  .BYTE $9B09
+                  .ENDM
+ORAHopLi          .MACRO
+                  .BYTE $9F09
+                  .ENDM
+ORAHopMi          .MACRO
+                  .BYTE $D309
+                  .ENDM                  
+ORAHopNi          .MACRO          
+                  .BYTE $D709
+                  .ENDM
+ORAHopOi          .MACRO
+                  .BYTE $DB09
+                  .ENDM
+ORAHopQi          .MACRO
+                  .BYTE $DF09
+                  .ENDM
+                  
+ORAIopAi          .MACRO
+                  .BYTE $2009
+                  .ENDM                
+ORAIopBi          .MACRO          
+                  .BYTE $2409
+                  .ENDM
+ORAIopCi          .MACRO
+                  .BYTE $2809
+                  .ENDM
+ORAIopDi          .MACRO
+                  .BYTE $2C09
+                  .ENDM
+ORAIopEi          .MACRO          
+                  .BYTE $6009
+                  .ENDM
+ORAIopFi          .MACRO
+                  .BYTE $6409
+                  .ENDM
+ORAIopGi          .MACRO
+                  .BYTE $6809
+                  .ENDM                  
+ORAIopHi          .MACRO          
+                  .BYTE $6C09
+                  .ENDM
+ORAIopIi          .MACRO
+                  .BYTE $A009
+                  .ENDM
+ORAIopJi          .MACRO
+                  .BYTE $A409
+                  .ENDM
+ORAIopKi          .MACRO          
+                  .BYTE $A809
+                  .ENDM
+ORAIopLi          .MACRO
+                  .BYTE $AC09
+                  .ENDM
+ORAIopMi          .MACRO
+                  .BYTE $E009
+                  .ENDM                  
+ORAIopNi          .MACRO          
+                  .BYTE $E409
+                  .ENDM
+ORAIopOi          .MACRO
+                  .BYTE $E809
+                  .ENDM
+ORAIopQi          .MACRO
+                  .BYTE $EC09
+                  .ENDM
+                  
+ORAJopAi          .MACRO
+                  .BYTE $2109
+                  .ENDM                
+ORAJopBi          .MACRO          
+                  .BYTE $2509
+                  .ENDM
+ORAJopCi          .MACRO
+                  .BYTE $2909
+                  .ENDM
+ORAJopDi          .MACRO
+                  .BYTE $2D09
+                  .ENDM
+ORAJopEi          .MACRO          
+                  .BYTE $6109
+                  .ENDM
+ORAJopFi          .MACRO
+                  .BYTE $6509
+                  .ENDM
+ORAJopGi          .MACRO
+                  .BYTE $0909
+                  .ENDM                  
+ORAJopHi          .MACRO          
+                  .BYTE $6D09
+                  .ENDM
+ORAJopIi          .MACRO
+                  .BYTE $A109
+                  .ENDM
+ORAJopJi          .MACRO
+                  .BYTE $A509
+                  .ENDM
+ORAJopKi          .MACRO          
+                  .BYTE $A909
+                  .ENDM
+ORAJopLi          .MACRO
+                  .BYTE $AD09
+                  .ENDM
+ORAJopMi          .MACRO
+                  .BYTE $E109
+                  .ENDM                  
+ORAJopNi          .MACRO          
+                  .BYTE $E509
+                  .ENDM
+ORAJopOi          .MACRO
+                  .BYTE $0909
+                  .ENDM
+ORAJopQi          .MACRO
+                  .BYTE $ED09
+                  .ENDM
+                  
+ORAKopAi          .MACRO
+                  .BYTE $2209
+                  .ENDM                
+ORAKopBi          .MACRO          
+                  .BYTE $2609
+                  .ENDM
+ORAKopCi          .MACRO
+                  .BYTE $2A09
+                  .ENDM
+ORAKopDi          .MACRO
+                  .BYTE $2E09
+                  .ENDM
+ORAKopEi          .MACRO          
+                  .BYTE $6209
+                  .ENDM
+ORAKopFi          .MACRO
+                  .BYTE $6609
+                  .ENDM
+ORAKopGi          .MACRO
+                  .BYTE $6A09
+                  .ENDM                  
+ORAKopHi          .MACRO          
+                  .BYTE $6E09
+                  .ENDM
+ORAKopIi          .MACRO
+                  .BYTE $A209
+                  .ENDM
+ORAKopJi          .MACRO
+                  .BYTE $A609
+                  .ENDM
+ORAKopKi          .MACRO          
+                  .BYTE $AA09
+                  .ENDM
+ORAKopLi          .MACRO
+                  .BYTE $AE09
+                  .ENDM
+ORAKopMi          .MACRO
+                  .BYTE $E209
+                  .ENDM                  
+ORAKopNi          .MACRO          
+                  .BYTE $E609
+                  .ENDM
+ORAKopOi          .MACRO
+                  .BYTE $EA09
+                  .ENDM
+ORAKopQi          .MACRO
+                  .BYTE $EE09
+                  .ENDM
+                  
+ORALopAi          .MACRO
+                  .BYTE $2309
+                  .ENDM                
+ORALopBi          .MACRO          
+                  .BYTE $2709
+                  .ENDM
+ORALopCi          .MACRO
+                  .BYTE $2B09
+                  .ENDM
+ORALopDi          .MACRO
+                  .BYTE $2F09
+                  .ENDM
+ORALopEi          .MACRO          
+                  .BYTE $6309
+                  .ENDM
+ORALopFi          .MACRO
+                  .BYTE $6709
+                  .ENDM
+ORALopGi          .MACRO
+                  .BYTE $6B09
+                  .ENDM                  
+ORALopHi          .MACRO          
+                  .BYTE $6F09
+                  .ENDM
+ORALopIi          .MACRO
+                  .BYTE $A309
+                  .ENDM
+ORALopJi          .MACRO
+                  .BYTE $A709
+                  .ENDM
+ORALopKi          .MACRO          
+                  .BYTE $AB09
+                  .ENDM
+ORALopLi          .MACRO
+                  .BYTE $AF09
+                  .ENDM
+ORALopMi          .MACRO
+                  .BYTE $E309
+                  .ENDM                  
+ORALopNi          .MACRO          
+                  .BYTE $E709
+                  .ENDM
+ORALopOi          .MACRO
+                  .BYTE $EB09
+                  .ENDM
+ORALopQi          .MACRO
+                  .BYTE $EF09
+                  .ENDM
+                  
+ORAMopAi          .MACRO
+                  .BYTE $3009
+                  .ENDM                
+ORAMopBi          .MACRO          
+                  .BYTE $3409
+                  .ENDM
+ORAMopCi          .MACRO
+                  .BYTE $3809
+                  .ENDM
+ORAMopDi          .MACRO
+                  .BYTE $3C09
+                  .ENDM
+ORAMopEi          .MACRO          
+                  .BYTE $7009
+                  .ENDM
+ORAMopFi          .MACRO
+                  .BYTE $7409
+                  .ENDM
+ORAMopGi          .MACRO
+                  .BYTE $7809
+                  .ENDM                  
+ORAMopHi          .MACRO          
+                  .BYTE $7C09
+                  .ENDM
+ORAMopIi          .MACRO
+                  .BYTE $B009
+                  .ENDM
+ORAMopJi          .MACRO
+                  .BYTE $B409
+                  .ENDM
+ORAMopKi          .MACRO          
+                  .BYTE $B809
+                  .ENDM
+ORAMopLi          .MACRO
+                  .BYTE $BC09
+                  .ENDM
+ORAMopMi          .MACRO
+                  .BYTE $F009
+                  .ENDM                  
+ORAMopNi          .MACRO          
+                  .BYTE $F409
+                  .ENDM
+ORAMopOi          .MACRO
+                  .BYTE $F809
+                  .ENDM
+ORAMopQi          .MACRO
+                  .BYTE $FC09
+                  .ENDM
+                  
+ORANopAi          .MACRO
+                  .BYTE $3109
+                  .ENDM                
+ORANopBi          .MACRO          
+                  .BYTE $3509
+                  .ENDM
+ORANopCi          .MACRO
+                  .BYTE $3909
+                  .ENDM
+ORANopDi          .MACRO
+                  .BYTE $3D09
+                  .ENDM
+ORANopEi          .MACRO          
+                  .BYTE $7109
+                  .ENDM
+ORANopFi          .MACRO
+                  .BYTE $7509
+                  .ENDM
+ORANopGi          .MACRO
+                  .BYTE $7909
+                  .ENDM                  
+ORANopHi          .MACRO          
+                  .BYTE $7D09
+                  .ENDM
+ORANopIi          .MACRO
+                  .BYTE $B109
+                  .ENDM
+ORANopJi          .MACRO
+                  .BYTE $B509
+                  .ENDM
+ORANopKi          .MACRO          
+                  .BYTE $B909
+                  .ENDM
+ORANopLi          .MACRO
+                  .BYTE $BD09
+                  .ENDM
+ORANopMi          .MACRO
+                  .BYTE $F109
+                  .ENDM                  
+ORANopNi          .MACRO          
+                  .BYTE $F509
+                  .ENDM
+ORANopOi          .MACRO
+                  .BYTE $F909
+                  .ENDM
+ORANopQi          .MACRO
+                  .BYTE $FD09
+                  .ENDM
+            
+ORAOopAi          .MACRO
+                  .BYTE $3209
+                  .ENDM                
+ORAOopBi          .MACRO          
+                  .BYTE $3609
+                  .ENDM
+ORAOopCi          .MACRO
+                  .BYTE $3A09
+                  .ENDM
+ORAOopDi          .MACRO
+                  .BYTE $3E09
+                  .ENDM
+ORAOopEi          .MACRO          
+                  .BYTE $7209
+                  .ENDM
+ORAOopFi          .MACRO
+                  .BYTE $7609
+                  .ENDM
+ORAOopGi          .MACRO
+                  .BYTE $7A09
+                  .ENDM                  
+ORAOopHi          .MACRO          
+                  .BYTE $7E09
+                  .ENDM
+ORAOopIi          .MACRO
+                  .BYTE $B209
+                  .ENDM
+ORAOopJi          .MACRO
+                  .BYTE $B609
+                  .ENDM
+ORAOopKi          .MACRO          
+                  .BYTE $BA09
+                  .ENDM
+ORAOopLi          .MACRO
+                  .BYTE $BE09
+                  .ENDM
+ORAOopMi          .MACRO
+                  .BYTE $F209
+                  .ENDM                  
+ORAOopNi          .MACRO          
+                  .BYTE $F609
+                  .ENDM
+ORAOopOi          .MACRO
+                  .BYTE $FA09
+                  .ENDM
+ORAOopQi          .MACRO
+                  .BYTE $FE09
+                  .ENDM
+                  
+ORAQopAi          .MACRO
+                  .BYTE $3309
+                  .ENDM                
+ORAQopBi          .MACRO          
+                  .BYTE $3709
+                  .ENDM
+ORAQopCi          .MACRO
+                  .BYTE $3B09
+                  .ENDM
+ORAQopDi          .MACRO
+                  .BYTE $3F09
+                  .ENDM
+ORAQopEi          .MACRO          
+                  .BYTE $7309
+                  .ENDM
+ORAQopFi          .MACRO
+                  .BYTE $7709
+                  .ENDM
+ORAQopGi          .MACRO
+                  .BYTE $7B09
+                  .ENDM                  
+ORAQopHi          .MACRO          
+                  .BYTE $7F09
+                  .ENDM
+ORAQopIi          .MACRO
+                  .BYTE $B309
+                  .ENDM
+ORAQopJi          .MACRO
+                  .BYTE $B709
+                  .ENDM
+ORAQopKi          .MACRO          
+                  .BYTE $BB09
+                  .ENDM
+ORAQopLi          .MACRO
+                  .BYTE $BF09
+                  .ENDM
+ORAQopMi          .MACRO
+                  .BYTE $F309
+                  .ENDM                  
+ORAQopNi          .MACRO          
+                  .BYTE $F709
+                  .ENDM
+ORAQopOi          .MACRO
+                  .BYTE $FB09
+                  .ENDM
+ORAQopQi          .MACRO
+                  .BYTE $FF09
+                  .ENDM
+                  
+;AND #$                 $0029
+ANDAopBi          .MACRO          
+                  .BYTE $0429
+                  .ENDM
+ANDAopCi          .MACRO
+                  .BYTE $0829
+                  .ENDM
+ANDAopDi          .MACRO
+                  .BYTE $0C29
+                  .ENDM
+ANDAopEi          .MACRO          
+                  .BYTE $4029
+                  .ENDM
+ANDAopFi          .MACRO
+                  .BYTE $4429
+                  .ENDM
+ANDAopGi          .MACRO
+                  .BYTE $4829
+                  .ENDM                  
+ANDAopHi          .MACRO          
+                  .BYTE $4C29
+                  .ENDM
+ANDAopIi          .MACRO
+                  .BYTE $8029
+                  .ENDM
+ANDAopJi          .MACRO
+                  .BYTE $8429
+                  .ENDM
+ANDAopKi          .MACRO          
+                  .BYTE $8829
+                  .ENDM
+ANDAopLi          .MACRO
+                  .BYTE $8C29
+                  .ENDM
+ANDAopMi          .MACRO
+                  .BYTE $C029
+                  .ENDM                  
+ANDAopNi          .MACRO          
+                  .BYTE $C429
+                  .ENDM
+ANDAopOi          .MACRO
+                  .BYTE $C829
+                  .ENDM
+ANDAopQi          .MACRO
+                  .BYTE $CC29
+                  .ENDM
+                                    
+ANDBopAi          .MACRO
+                  .BYTE $0129
+                  .ENDM                
+ANDBopBi          .MACRO          
+                  .BYTE $0529
+                  .ENDM
+ANDBopCi          .MACRO
+                  .BYTE $0929
+                  .ENDM
+ANDBopDi          .MACRO
+                  .BYTE $0D29
+                  .ENDM
+ANDBopEi          .MACRO          
+                  .BYTE $4129
+                  .ENDM
+ANDBopFi          .MACRO
+                  .BYTE $4529
+                  .ENDM
+ANDBopGi          .MACRO
+                  .BYTE $4929
+                  .ENDM                  
+ANDBopHi          .MACRO          
+                  .BYTE $4D29
+                  .ENDM
+ANDBopIi          .MACRO
+                  .BYTE $8129
+                  .ENDM
+ANDBopJi          .MACRO
+                  .BYTE $8529
+                  .ENDM
+ANDBopKi          .MACRO          
+                  .BYTE $8929
+                  .ENDM
+ANDBopLi          .MACRO
+                  .BYTE $8D29
+                  .ENDM
+ANDBopMi          .MACRO
+                  .BYTE $C129
+                  .ENDM                  
+ANDBopNi          .MACRO          
+                  .BYTE $C529
+                  .ENDM
+ANDBopOi          .MACRO
+                  .BYTE $C929
+                  .ENDM
+ANDBopQi          .MACRO
+                  .BYTE $CD29
+                  .ENDM
+                                    
+ANDCopAi          .MACRO
+                  .BYTE $0229
+                  .ENDM                
+ANDCopBi          .MACRO          
+                  .BYTE $0629
+                  .ENDM
+ANDCopCi          .MACRO
+                  .BYTE $0A29
+                  .ENDM
+ANDCopDi          .MACRO
+                  .BYTE $0E29
+                  .ENDM
+ANDCopEi          .MACRO          
+                  .BYTE $4229
+                  .ENDM
+ANDCopFi          .MACRO
+                  .BYTE $4629
+                  .ENDM
+ANDCopGi          .MACRO
+                  .BYTE $4A29
+                  .ENDM                  
+ANDCopHi          .MACRO          
+                  .BYTE $4E29
+                  .ENDM
+ANDCopIi          .MACRO
+                  .BYTE $8229
+                  .ENDM
+ANDCopJi          .MACRO
+                  .BYTE $8629
+                  .ENDM
+ANDCopKi          .MACRO          
+                  .BYTE $8A29
+                  .ENDM
+ANDCopLi          .MACRO
+                  .BYTE $8E29
+                  .ENDM
+ANDCopMi          .MACRO
+                  .BYTE $C229
+                  .ENDM                  
+ANDCopNi          .MACRO          
+                  .BYTE $C629
+                  .ENDM
+ANDCopOi          .MACRO
+                  .BYTE $CA29
+                  .ENDM
+ANDCopQi          .MACRO
+                  .BYTE $CE29
+                  .ENDM
+
+ANDDopAi          .MACRO
+                  .BYTE $0329
+                  .ENDM                
+ANDDopBi          .MACRO          
+                  .BYTE $0729
+                  .ENDM
+ANDDopCi          .MACRO
+                  .BYTE $0B29
+                  .ENDM
+ANDDopDi          .MACRO
+                  .BYTE $0F29
+                  .ENDM
+ANDDopEi          .MACRO          
+                  .BYTE $4329
+                  .ENDM
+ANDDopFi          .MACRO
+                  .BYTE $4729
+                  .ENDM
+ANDDopGi          .MACRO
+                  .BYTE $4B29
+                  .ENDM                  
+ANDDopHi          .MACRO          
+                  .BYTE $4F29
+                  .ENDM
+ANDDopIi          .MACRO
+                  .BYTE $8329
+                  .ENDM
+ANDDopJi          .MACRO
+                  .BYTE $8729
+                  .ENDM
+ANDDopKi          .MACRO          
+                  .BYTE $8B29
+                  .ENDM
+ANDDopLi          .MACRO
+                  .BYTE $8F29
+                  .ENDM
+ANDDopMi          .MACRO
+                  .BYTE $C329
+                  .ENDM                  
+ANDDopNi          .MACRO          
+                  .BYTE $C729
+                  .ENDM
+ANDDopOi          .MACRO
+                  .BYTE $CB29
+                  .ENDM
+ANDDopQi          .MACRO
+                  .BYTE $CF29
+                  .ENDM                  
+
+ANDEopAi          .MACRO
+                  .BYTE $1029
+                  .ENDM                
+ANDEopBi          .MACRO          
+                  .BYTE $1429
+                  .ENDM
+ANDEopCi          .MACRO
+                  .BYTE $1829
+                  .ENDM
+ANDEopDi          .MACRO
+                  .BYTE $1C29
+                  .ENDM
+ANDEopEi          .MACRO          
+                  .BYTE $5029
+                  .ENDM
+ANDEopFi          .MACRO
+                  .BYTE $5429
+                  .ENDM
+ANDEopGi          .MACRO
+                  .BYTE $5829
+                  .ENDM                  
+ANDEopHi          .MACRO          
+                  .BYTE $5C29
+                  .ENDM
+ANDEopIi          .MACRO
+                  .BYTE $9029
+                  .ENDM
+ANDEopJi          .MACRO
+                  .BYTE $9429
+                  .ENDM
+ANDEopKi          .MACRO          
+                  .BYTE $9829
+                  .ENDM
+ANDEopLi          .MACRO
+                  .BYTE $9C29
+                  .ENDM
+ANDEopMi          .MACRO
+                  .BYTE $D029
+                  .ENDM                  
+ANDEopNi          .MACRO          
+                  .BYTE $D429
+                  .ENDM
+ANDEopOi          .MACRO
+                  .BYTE $D829
+                  .ENDM
+ANDEopQi          .MACRO
+                  .BYTE $DC29
+                  .ENDM
+                  
+ANDFopAi          .MACRO
+                  .BYTE $1129
+                  .ENDM                
+ANDFopBi          .MACRO          
+                  .BYTE $1529
+                  .ENDM
+ANDFopCi          .MACRO
+                  .BYTE $1929
+                  .ENDM
+ANDFopDi          .MACRO
+                  .BYTE $1D29
+                  .ENDM
+ANDFopEi          .MACRO          
+                  .BYTE $5129
+                  .ENDM
+ANDFopFi          .MACRO
+                  .BYTE $5529
+                  .ENDM
+ANDFopGi          .MACRO
+                  .BYTE $5929
+                  .ENDM                  
+ANDFopHi          .MACRO          
+                  .BYTE $5D29
+                  .ENDM
+ANDFopIi          .MACRO
+                  .BYTE $9129
+                  .ENDM
+ANDFopJi          .MACRO
+                  .BYTE $9529
+                  .ENDM
+ANDFopKi          .MACRO          
+                  .BYTE $9929
+                  .ENDM
+ANDFopLi          .MACRO
+                  .BYTE $9D29
+                  .ENDM
+ANDFopMi          .MACRO
+                  .BYTE $D129
+                  .ENDM                  
+ANDFopNi          .MACRO          
+                  .BYTE $D529
+                  .ENDM
+ANDFopOi          .MACRO
+                  .BYTE $D929
+                  .ENDM
+ANDFopQi          .MACRO
+                  .BYTE $DD29
+                  .ENDM                  
+                           
+ANDGopAi          .MACRO
+                  .BYTE $1229
+                  .ENDM                
+ANDGopBi          .MACRO          
+                  .BYTE $1629
+                  .ENDM
+ANDGopCi          .MACRO
+                  .BYTE $1A29
+                  .ENDM
+ANDGopDi          .MACRO
+                  .BYTE $1E29
+                  .ENDM
+ANDGopEi          .MACRO          
+                  .BYTE $5229
+                  .ENDM
+ANDGopFi          .MACRO
+                  .BYTE $5629
+                  .ENDM
+ANDGopGi          .MACRO
+                  .BYTE $5A29
+                  .ENDM                  
+ANDGopHi          .MACRO          
+                  .BYTE $5E29
+                  .ENDM
+ANDGopIi          .MACRO
+                  .BYTE $9229
+                  .ENDM
+ANDGopJi          .MACRO
+                  .BYTE $9629
+                  .ENDM
+ANDGopKi          .MACRO          
+                  .BYTE $9A29
+                  .ENDM
+ANDGopLi          .MACRO
+                  .BYTE $9E29
+                  .ENDM
+ANDGopMi          .MACRO
+                  .BYTE $D229
+                  .ENDM                  
+ANDGopNi          .MACRO          
+                  .BYTE $D629
+                  .ENDM
+ANDGopOi          .MACRO
+                  .BYTE $DA29
+                  .ENDM
+ANDGopQi          .MACRO
+                  .BYTE $DE29
+                  .ENDM
+                  
+ANDHopAi          .MACRO
+                  .BYTE $1329
+                  .ENDM                
+ANDHopBi          .MACRO          
+                  .BYTE $1729
+                  .ENDM
+ANDHopCi          .MACRO
+                  .BYTE $1B29
+                  .ENDM
+ANDHopDi          .MACRO
+                  .BYTE $1F29
+                  .ENDM
+ANDHopEi          .MACRO          
+                  .BYTE $5329
+                  .ENDM
+ANDHopFi          .MACRO
+                  .BYTE $5729
+                  .ENDM
+ANDHopGi          .MACRO
+                  .BYTE $5B29
+                  .ENDM                  
+ANDHopHi          .MACRO          
+                  .BYTE $5F29
+                  .ENDM
+ANDHopIi          .MACRO
+                  .BYTE $9329
+                  .ENDM
+ANDHopJi          .MACRO
+                  .BYTE $9729
+                  .ENDM
+ANDHopKi          .MACRO          
+                  .BYTE $9B29
+                  .ENDM
+ANDHopLi          .MACRO
+                  .BYTE $9F29
+                  .ENDM
+ANDHopMi          .MACRO
+                  .BYTE $D329
+                  .ENDM                  
+ANDHopNi          .MACRO          
+                  .BYTE $D729
+                  .ENDM
+ANDHopOi          .MACRO
+                  .BYTE $DB29
+                  .ENDM
+ANDHopQi          .MACRO
+                  .BYTE $DF29
+                  .ENDM
+                  
+ANDIopAi          .MACRO
+                  .BYTE $2029
+                  .ENDM                
+ANDIopBi          .MACRO          
+                  .BYTE $2429
+                  .ENDM
+ANDIopCi          .MACRO
+                  .BYTE $2829
+                  .ENDM
+ANDIopDi          .MACRO
+                  .BYTE $2C29
+                  .ENDM
+ANDIopEi          .MACRO          
+                  .BYTE $6029
+                  .ENDM
+ANDIopFi          .MACRO
+                  .BYTE $6429
+                  .ENDM
+ANDIopGi          .MACRO
+                  .BYTE $6829
+                  .ENDM                  
+ANDIopHi          .MACRO          
+                  .BYTE $6C29
+                  .ENDM
+ANDIopIi          .MACRO
+                  .BYTE $A029
+                  .ENDM
+ANDIopJi          .MACRO
+                  .BYTE $A429
+                  .ENDM
+ANDIopKi          .MACRO          
+                  .BYTE $A829
+                  .ENDM
+ANDIopLi          .MACRO
+                  .BYTE $AC29
+                  .ENDM
+ANDIopMi          .MACRO
+                  .BYTE $E029
+                  .ENDM                  
+ANDIopNi          .MACRO          
+                  .BYTE $E429
+                  .ENDM
+ANDIopOi          .MACRO
+                  .BYTE $E829
+                  .ENDM
+ANDIopQi          .MACRO
+                  .BYTE $EC29
+                  .ENDM
+                  
+ANDJopAi          .MACRO
+                  .BYTE $2129
+                  .ENDM                
+ANDJopBi          .MACRO          
+                  .BYTE $2529
+                  .ENDM
+ANDJopCi          .MACRO
+                  .BYTE $2929
+                  .ENDM
+ANDJopDi          .MACRO
+                  .BYTE $2D29
+                  .ENDM
+ANDJopEi          .MACRO          
+                  .BYTE $6129
+                  .ENDM
+ANDJopFi          .MACRO
+                  .BYTE $6529
+                  .ENDM
+ANDJopGi          .MACRO
+                  .BYTE $2929
+                  .ENDM                  
+ANDJopHi          .MACRO          
+                  .BYTE $6D29
+                  .ENDM
+ANDJopIi          .MACRO
+                  .BYTE $A129
+                  .ENDM
+ANDJopJi          .MACRO
+                  .BYTE $A529
+                  .ENDM
+ANDJopKi          .MACRO          
+                  .BYTE $A929
+                  .ENDM
+ANDJopLi          .MACRO
+                  .BYTE $AD29
+                  .ENDM
+ANDJopMi          .MACRO
+                  .BYTE $E129
+                  .ENDM                  
+ANDJopNi          .MACRO          
+                  .BYTE $E529
+                  .ENDM
+ANDJopOi          .MACRO
+                  .BYTE $2929
+                  .ENDM
+ANDJopQi          .MACRO
+                  .BYTE $ED29
+                  .ENDM
+                  
+ANDKopAi          .MACRO
+                  .BYTE $2229
+                  .ENDM                
+ANDKopBi          .MACRO          
+                  .BYTE $2629
+                  .ENDM
+ANDKopCi          .MACRO
+                  .BYTE $2A29
+                  .ENDM
+ANDKopDi          .MACRO
+                  .BYTE $2E29
+                  .ENDM
+ANDKopEi          .MACRO          
+                  .BYTE $6229
+                  .ENDM
+ANDKopFi          .MACRO
+                  .BYTE $6629
+                  .ENDM
+ANDKopGi          .MACRO
+                  .BYTE $6A29
+                  .ENDM                  
+ANDKopHi          .MACRO          
+                  .BYTE $6E29
+                  .ENDM
+ANDKopIi          .MACRO
+                  .BYTE $A229
+                  .ENDM
+ANDKopJi          .MACRO
+                  .BYTE $A629
+                  .ENDM
+ANDKopKi          .MACRO          
+                  .BYTE $AA29
+                  .ENDM
+ANDKopLi          .MACRO
+                  .BYTE $AE29
+                  .ENDM
+ANDKopMi          .MACRO
+                  .BYTE $E229
+                  .ENDM                  
+ANDKopNi          .MACRO          
+                  .BYTE $E629
+                  .ENDM
+ANDKopOi          .MACRO
+                  .BYTE $EA29
+                  .ENDM
+ANDKopQi          .MACRO
+                  .BYTE $EE29
+                  .ENDM
+                  
+ANDLopAi          .MACRO
+                  .BYTE $2329
+                  .ENDM                
+ANDLopBi          .MACRO          
+                  .BYTE $2729
+                  .ENDM
+ANDLopCi          .MACRO
+                  .BYTE $2B29
+                  .ENDM
+ANDLopDi          .MACRO
+                  .BYTE $2F29
+                  .ENDM
+ANDLopEi          .MACRO          
+                  .BYTE $6329
+                  .ENDM
+ANDLopFi          .MACRO
+                  .BYTE $6729
+                  .ENDM
+ANDLopGi          .MACRO
+                  .BYTE $6B29
+                  .ENDM                  
+ANDLopHi          .MACRO          
+                  .BYTE $6F29
+                  .ENDM
+ANDLopIi          .MACRO
+                  .BYTE $A329
+                  .ENDM
+ANDLopJi          .MACRO
+                  .BYTE $A729
+                  .ENDM
+ANDLopKi          .MACRO          
+                  .BYTE $AB29
+                  .ENDM
+ANDLopLi          .MACRO
+                  .BYTE $AF29
+                  .ENDM
+ANDLopMi          .MACRO
+                  .BYTE $E329
+                  .ENDM                  
+ANDLopNi          .MACRO          
+                  .BYTE $E729
+                  .ENDM
+ANDLopOi          .MACRO
+                  .BYTE $EB29
+                  .ENDM
+ANDLopQi          .MACRO
+                  .BYTE $EF29
+                  .ENDM
+                  
+ANDMopAi          .MACRO
+                  .BYTE $3029
+                  .ENDM                
+ANDMopBi          .MACRO          
+                  .BYTE $3429
+                  .ENDM
+ANDMopCi          .MACRO
+                  .BYTE $3829
+                  .ENDM
+ANDMopDi          .MACRO
+                  .BYTE $3C29
+                  .ENDM
+ANDMopEi          .MACRO          
+                  .BYTE $7029
+                  .ENDM
+ANDMopFi          .MACRO
+                  .BYTE $7429
+                  .ENDM
+ANDMopGi          .MACRO
+                  .BYTE $7829
+                  .ENDM                  
+ANDMopHi          .MACRO          
+                  .BYTE $7C29
+                  .ENDM
+ANDMopIi          .MACRO
+                  .BYTE $B029
+                  .ENDM
+ANDMopJi          .MACRO
+                  .BYTE $B429
+                  .ENDM
+ANDMopKi          .MACRO          
+                  .BYTE $B829
+                  .ENDM
+ANDMopLi          .MACRO
+                  .BYTE $BC29
+                  .ENDM
+ANDMopMi          .MACRO
+                  .BYTE $F029
+                  .ENDM                  
+ANDMopNi          .MACRO          
+                  .BYTE $F429
+                  .ENDM
+ANDMopOi          .MACRO
+                  .BYTE $F829
+                  .ENDM
+ANDMopQi          .MACRO
+                  .BYTE $FC29
+                  .ENDM
+                  
+ANDNopAi          .MACRO
+                  .BYTE $3129
+                  .ENDM                
+ANDNopBi          .MACRO          
+                  .BYTE $3529
+                  .ENDM
+ANDNopCi          .MACRO
+                  .BYTE $3929
+                  .ENDM
+ANDNopDi          .MACRO
+                  .BYTE $3D29
+                  .ENDM
+ANDNopEi          .MACRO          
+                  .BYTE $7129
+                  .ENDM
+ANDNopFi          .MACRO
+                  .BYTE $7529
+                  .ENDM
+ANDNopGi          .MACRO
+                  .BYTE $7929
+                  .ENDM                  
+ANDNopHi          .MACRO          
+                  .BYTE $7D29
+                  .ENDM
+ANDNopIi          .MACRO
+                  .BYTE $B129
+                  .ENDM
+ANDNopJi          .MACRO
+                  .BYTE $B529
+                  .ENDM
+ANDNopKi          .MACRO          
+                  .BYTE $B929
+                  .ENDM
+ANDNopLi          .MACRO
+                  .BYTE $BD29
+                  .ENDM
+ANDNopMi          .MACRO
+                  .BYTE $F129
+                  .ENDM                  
+ANDNopNi          .MACRO          
+                  .BYTE $F529
+                  .ENDM
+ANDNopOi          .MACRO
+                  .BYTE $F929
+                  .ENDM
+ANDNopQi          .MACRO
+                  .BYTE $FD29
+                  .ENDM
+            
+ANDOopAi          .MACRO
+                  .BYTE $3229
+                  .ENDM                
+ANDOopBi          .MACRO          
+                  .BYTE $3629
+                  .ENDM
+ANDOopCi          .MACRO
+                  .BYTE $3A29
+                  .ENDM
+ANDOopDi          .MACRO
+                  .BYTE $3E29
+                  .ENDM
+ANDOopEi          .MACRO          
+                  .BYTE $7229
+                  .ENDM
+ANDOopFi          .MACRO
+                  .BYTE $7629
+                  .ENDM
+ANDOopGi          .MACRO
+                  .BYTE $7A29
+                  .ENDM                  
+ANDOopHi          .MACRO          
+                  .BYTE $7E29
+                  .ENDM
+ANDOopIi          .MACRO
+                  .BYTE $B229
+                  .ENDM
+ANDOopJi          .MACRO
+                  .BYTE $B629
+                  .ENDM
+ANDOopKi          .MACRO          
+                  .BYTE $BA29
+                  .ENDM
+ANDOopLi          .MACRO
+                  .BYTE $BE29
+                  .ENDM
+ANDOopMi          .MACRO
+                  .BYTE $F229
+                  .ENDM                  
+ANDOopNi          .MACRO          
+                  .BYTE $F629
+                  .ENDM
+ANDOopOi          .MACRO
+                  .BYTE $FA29
+                  .ENDM
+ANDOopQi          .MACRO
+                  .BYTE $FE29
+                  .ENDM
+                  
+ANDQopAi          .MACRO
+                  .BYTE $3329
+                  .ENDM                
+ANDQopBi          .MACRO          
+                  .BYTE $3729
+                  .ENDM
+ANDQopCi          .MACRO
+                  .BYTE $3B29
+                  .ENDM
+ANDQopDi          .MACRO
+                  .BYTE $3F29
+                  .ENDM
+ANDQopEi          .MACRO          
+                  .BYTE $7329
+                  .ENDM
+ANDQopFi          .MACRO
+                  .BYTE $7729
+                  .ENDM
+ANDQopGi          .MACRO
+                  .BYTE $7B29
+                  .ENDM                  
+ANDQopHi          .MACRO          
+                  .BYTE $7F29
+                  .ENDM
+ANDQopIi          .MACRO
+                  .BYTE $B329
+                  .ENDM
+ANDQopJi          .MACRO
+                  .BYTE $B729
+                  .ENDM
+ANDQopKi          .MACRO          
+                  .BYTE $BB29
+                  .ENDM
+ANDQopLi          .MACRO
+                  .BYTE $BF29
+                  .ENDM
+ANDQopMi          .MACRO
+                  .BYTE $F329
+                  .ENDM                  
+ANDQopNi          .MACRO          
+                  .BYTE $F729
+                  .ENDM
+ANDQopOi          .MACRO
+                  .BYTE $FB29
+                  .ENDM
+ANDQopQi          .MACRO
+                  .BYTE $FF29
+                  .ENDM
+                  
+;EOR #$                 $0049
+EORAopBi          .MACRO          
+                  .BYTE $0449
+                  .ENDM
+EORAopCi          .MACRO
+                  .BYTE $0849
+                  .ENDM
+EORAopDi          .MACRO
+                  .BYTE $0C49
+                  .ENDM
+EORAopEi          .MACRO          
+                  .BYTE $4049
+                  .ENDM
+EORAopFi          .MACRO
+                  .BYTE $4449
+                  .ENDM
+EORAopGi          .MACRO
+                  .BYTE $4849
+                  .ENDM                  
+EORAopHi          .MACRO          
+                  .BYTE $4C49
+                  .ENDM
+EORAopIi          .MACRO
+                  .BYTE $8049
+                  .ENDM
+EORAopJi          .MACRO
+                  .BYTE $8449
+                  .ENDM
+EORAopKi          .MACRO          
+                  .BYTE $8849
+                  .ENDM
+EORAopLi          .MACRO
+                  .BYTE $8C49
+                  .ENDM
+EORAopMi          .MACRO
+                  .BYTE $C049
+                  .ENDM                  
+EORAopNi          .MACRO          
+                  .BYTE $C449
+                  .ENDM
+EORAopOi          .MACRO
+                  .BYTE $C849
+                  .ENDM
+EORAopQi          .MACRO
+                  .BYTE $CC49
+                  .ENDM
+                                    
+EORBopAi          .MACRO
+                  .BYTE $0149
+                  .ENDM                
+EORBopBi          .MACRO          
+                  .BYTE $0549
+                  .ENDM
+EORBopCi          .MACRO
+                  .BYTE $0949
+                  .ENDM
+EORBopDi          .MACRO
+                  .BYTE $0D49
+                  .ENDM
+EORBopEi          .MACRO          
+                  .BYTE $4149
+                  .ENDM
+EORBopFi          .MACRO
+                  .BYTE $4549
+                  .ENDM
+EORBopGi          .MACRO
+                  .BYTE $4949
+                  .ENDM                  
+EORBopHi          .MACRO          
+                  .BYTE $4D49
+                  .ENDM
+EORBopIi          .MACRO
+                  .BYTE $8149
+                  .ENDM
+EORBopJi          .MACRO
+                  .BYTE $8549
+                  .ENDM
+EORBopKi          .MACRO          
+                  .BYTE $8949
+                  .ENDM
+EORBopLi          .MACRO
+                  .BYTE $8D49
+                  .ENDM
+EORBopMi          .MACRO
+                  .BYTE $C149
+                  .ENDM                  
+EORBopNi          .MACRO          
+                  .BYTE $C549
+                  .ENDM
+EORBopOi          .MACRO
+                  .BYTE $C949
+                  .ENDM
+EORBopQi          .MACRO
+                  .BYTE $CD49
+                  .ENDM
+                                    
+EORCopAi          .MACRO
+                  .BYTE $0249
+                  .ENDM                
+EORCopBi          .MACRO          
+                  .BYTE $0649
+                  .ENDM
+EORCopCi          .MACRO
+                  .BYTE $0A49
+                  .ENDM
+EORCopDi          .MACRO
+                  .BYTE $0E49
+                  .ENDM
+EORCopEi          .MACRO          
+                  .BYTE $4249
+                  .ENDM
+EORCopFi          .MACRO
+                  .BYTE $4649
+                  .ENDM
+EORCopGi          .MACRO
+                  .BYTE $4A49
+                  .ENDM                  
+EORCopHi          .MACRO          
+                  .BYTE $4E49
+                  .ENDM
+EORCopIi          .MACRO
+                  .BYTE $8249
+                  .ENDM
+EORCopJi          .MACRO
+                  .BYTE $8649
+                  .ENDM
+EORCopKi          .MACRO          
+                  .BYTE $8A49
+                  .ENDM
+EORCopLi          .MACRO
+                  .BYTE $8E49
+                  .ENDM
+EORCopMi          .MACRO
+                  .BYTE $C249
+                  .ENDM                  
+EORCopNi          .MACRO          
+                  .BYTE $C649
+                  .ENDM
+EORCopOi          .MACRO
+                  .BYTE $CA49
+                  .ENDM
+EORCopQi          .MACRO
+                  .BYTE $CE49
+                  .ENDM
+
+EORDopAi          .MACRO
+                  .BYTE $0349
+                  .ENDM                
+EORDopBi          .MACRO          
+                  .BYTE $0749
+                  .ENDM
+EORDopCi          .MACRO
+                  .BYTE $0B49
+                  .ENDM
+EORDopDi          .MACRO
+                  .BYTE $0F49
+                  .ENDM
+EORDopEi          .MACRO          
+                  .BYTE $4349
+                  .ENDM
+EORDopFi          .MACRO
+                  .BYTE $4749
+                  .ENDM
+EORDopGi          .MACRO
+                  .BYTE $4B49
+                  .ENDM                  
+EORDopHi          .MACRO          
+                  .BYTE $4F49
+                  .ENDM
+EORDopIi          .MACRO
+                  .BYTE $8349
+                  .ENDM
+EORDopJi          .MACRO
+                  .BYTE $8749
+                  .ENDM
+EORDopKi          .MACRO          
+                  .BYTE $8B49
+                  .ENDM
+EORDopLi          .MACRO
+                  .BYTE $8F49
+                  .ENDM
+EORDopMi          .MACRO
+                  .BYTE $C349
+                  .ENDM                  
+EORDopNi          .MACRO          
+                  .BYTE $C749
+                  .ENDM
+EORDopOi          .MACRO
+                  .BYTE $CB49
+                  .ENDM
+EORDopQi          .MACRO
+                  .BYTE $CF49
+                  .ENDM                  
+
+EOREopAi          .MACRO
+                  .BYTE $1049
+                  .ENDM                
+EOREopBi          .MACRO          
+                  .BYTE $1449
+                  .ENDM
+EOREopCi          .MACRO
+                  .BYTE $1849
+                  .ENDM
+EOREopDi          .MACRO
+                  .BYTE $1C49
+                  .ENDM
+EOREopEi          .MACRO          
+                  .BYTE $5049
+                  .ENDM
+EOREopFi          .MACRO
+                  .BYTE $5449
+                  .ENDM
+EOREopGi          .MACRO
+                  .BYTE $5849
+                  .ENDM                  
+EOREopHi          .MACRO          
+                  .BYTE $5C49
+                  .ENDM
+EOREopIi          .MACRO
+                  .BYTE $9049
+                  .ENDM
+EOREopJi          .MACRO
+                  .BYTE $9449
+                  .ENDM
+EOREopKi          .MACRO          
+                  .BYTE $9849
+                  .ENDM
+EOREopLi          .MACRO
+                  .BYTE $9C49
+                  .ENDM
+EOREopMi          .MACRO
+                  .BYTE $D049
+                  .ENDM                  
+EOREopNi          .MACRO          
+                  .BYTE $D449
+                  .ENDM
+EOREopOi          .MACRO
+                  .BYTE $D849
+                  .ENDM
+EOREopQi          .MACRO
+                  .BYTE $DC49
+                  .ENDM
+                  
+EORFopAi          .MACRO
+                  .BYTE $1149
+                  .ENDM                
+EORFopBi          .MACRO          
+                  .BYTE $1549
+                  .ENDM
+EORFopCi          .MACRO
+                  .BYTE $1949
+                  .ENDM
+EORFopDi          .MACRO
+                  .BYTE $1D49
+                  .ENDM
+EORFopEi          .MACRO          
+                  .BYTE $5149
+                  .ENDM
+EORFopFi          .MACRO
+                  .BYTE $5549
+                  .ENDM
+EORFopGi          .MACRO
+                  .BYTE $5949
+                  .ENDM                  
+EORFopHi          .MACRO          
+                  .BYTE $5D49
+                  .ENDM
+EORFopIi          .MACRO
+                  .BYTE $9149
+                  .ENDM
+EORFopJi          .MACRO
+                  .BYTE $9549
+                  .ENDM
+EORFopKi          .MACRO          
+                  .BYTE $9949
+                  .ENDM
+EORFopLi          .MACRO
+                  .BYTE $9D49
+                  .ENDM
+EORFopMi          .MACRO
+                  .BYTE $D149
+                  .ENDM                  
+EORFopNi          .MACRO          
+                  .BYTE $D549
+                  .ENDM
+EORFopOi          .MACRO
+                  .BYTE $D949
+                  .ENDM
+EORFopQi          .MACRO
+                  .BYTE $DD49
+                  .ENDM                  
+                           
+EORGopAi          .MACRO
+                  .BYTE $1249
+                  .ENDM                
+EORGopBi          .MACRO          
+                  .BYTE $1649
+                  .ENDM
+EORGopCi          .MACRO
+                  .BYTE $1A49
+                  .ENDM
+EORGopDi          .MACRO
+                  .BYTE $1E49
+                  .ENDM
+EORGopEi          .MACRO          
+                  .BYTE $5249
+                  .ENDM
+EORGopFi          .MACRO
+                  .BYTE $5649
+                  .ENDM
+EORGopGi          .MACRO
+                  .BYTE $5A49
+                  .ENDM                  
+EORGopHi          .MACRO          
+                  .BYTE $5E49
+                  .ENDM
+EORGopIi          .MACRO
+                  .BYTE $9249
+                  .ENDM
+EORGopJi          .MACRO
+                  .BYTE $9649
+                  .ENDM
+EORGopKi          .MACRO          
+                  .BYTE $9A49
+                  .ENDM
+EORGopLi          .MACRO
+                  .BYTE $9E49
+                  .ENDM
+EORGopMi          .MACRO
+                  .BYTE $D249
+                  .ENDM                  
+EORGopNi          .MACRO          
+                  .BYTE $D649
+                  .ENDM
+EORGopOi          .MACRO
+                  .BYTE $DA49
+                  .ENDM
+EORGopQi          .MACRO
+                  .BYTE $DE49
+                  .ENDM
+                  
+EORHopAi          .MACRO
+                  .BYTE $1349
+                  .ENDM                
+EORHopBi          .MACRO          
+                  .BYTE $1749
+                  .ENDM
+EORHopCi          .MACRO
+                  .BYTE $1B49
+                  .ENDM
+EORHopDi          .MACRO
+                  .BYTE $1F49
+                  .ENDM
+EORHopEi          .MACRO          
+                  .BYTE $5349
+                  .ENDM
+EORHopFi          .MACRO
+                  .BYTE $5749
+                  .ENDM
+EORHopGi          .MACRO
+                  .BYTE $5B49
+                  .ENDM                  
+EORHopHi          .MACRO          
+                  .BYTE $5F49
+                  .ENDM
+EORHopIi          .MACRO
+                  .BYTE $9349
+                  .ENDM
+EORHopJi          .MACRO
+                  .BYTE $9749
+                  .ENDM
+EORHopKi          .MACRO          
+                  .BYTE $9B49
+                  .ENDM
+EORHopLi          .MACRO
+                  .BYTE $9F49
+                  .ENDM
+EORHopMi          .MACRO
+                  .BYTE $D349
+                  .ENDM                  
+EORHopNi          .MACRO          
+                  .BYTE $D749
+                  .ENDM
+EORHopOi          .MACRO
+                  .BYTE $DB49
+                  .ENDM
+EORHopQi          .MACRO
+                  .BYTE $DF49
+                  .ENDM
+                  
+EORIopAi          .MACRO
+                  .BYTE $2049
+                  .ENDM                
+EORIopBi          .MACRO          
+                  .BYTE $2449
+                  .ENDM
+EORIopCi          .MACRO
+                  .BYTE $2849
+                  .ENDM
+EORIopDi          .MACRO
+                  .BYTE $2C49
+                  .ENDM
+EORIopEi          .MACRO          
+                  .BYTE $6049
+                  .ENDM
+EORIopFi          .MACRO
+                  .BYTE $6449
+                  .ENDM
+EORIopGi          .MACRO
+                  .BYTE $6849
+                  .ENDM                  
+EORIopHi          .MACRO          
+                  .BYTE $6C49
+                  .ENDM
+EORIopIi          .MACRO
+                  .BYTE $A049
+                  .ENDM
+EORIopJi          .MACRO
+                  .BYTE $A449
+                  .ENDM
+EORIopKi          .MACRO          
+                  .BYTE $A849
+                  .ENDM
+EORIopLi          .MACRO
+                  .BYTE $AC49
+                  .ENDM
+EORIopMi          .MACRO
+                  .BYTE $E049
+                  .ENDM                  
+EORIopNi          .MACRO          
+                  .BYTE $E449
+                  .ENDM
+EORIopOi          .MACRO
+                  .BYTE $E849
+                  .ENDM
+EORIopQi          .MACRO
+                  .BYTE $EC49
+                  .ENDM
+                  
+EORJopAi          .MACRO
+                  .BYTE $2149
+                  .ENDM                
+EORJopBi          .MACRO          
+                  .BYTE $2549
+                  .ENDM
+EORJopCi          .MACRO
+                  .BYTE $2949
+                  .ENDM
+EORJopDi          .MACRO
+                  .BYTE $2D49
+                  .ENDM
+EORJopEi          .MACRO          
+                  .BYTE $6149
+                  .ENDM
+EORJopFi          .MACRO
+                  .BYTE $6549
+                  .ENDM
+EORJopGi          .MACRO
+                  .BYTE $4949
+                  .ENDM                  
+EORJopHi          .MACRO          
+                  .BYTE $6D49
+                  .ENDM
+EORJopIi          .MACRO
+                  .BYTE $A149
+                  .ENDM
+EORJopJi          .MACRO
+                  .BYTE $A549
+                  .ENDM
+EORJopKi          .MACRO          
+                  .BYTE $A949
+                  .ENDM
+EORJopLi          .MACRO
+                  .BYTE $AD49
+                  .ENDM
+EORJopMi          .MACRO
+                  .BYTE $E149
+                  .ENDM                  
+EORJopNi          .MACRO          
+                  .BYTE $E549
+                  .ENDM
+EORJopOi          .MACRO
+                  .BYTE $4949
+                  .ENDM
+EORJopQi          .MACRO
+                  .BYTE $ED49
+                  .ENDM
+                  
+EORKopAi          .MACRO
+                  .BYTE $2249
+                  .ENDM                
+EORKopBi          .MACRO          
+                  .BYTE $2649
+                  .ENDM
+EORKopCi          .MACRO
+                  .BYTE $2A49
+                  .ENDM
+EORKopDi          .MACRO
+                  .BYTE $2E49
+                  .ENDM
+EORKopEi          .MACRO          
+                  .BYTE $6249
+                  .ENDM
+EORKopFi          .MACRO
+                  .BYTE $6649
+                  .ENDM
+EORKopGi          .MACRO
+                  .BYTE $6A49
+                  .ENDM                  
+EORKopHi          .MACRO          
+                  .BYTE $6E49
+                  .ENDM
+EORKopIi          .MACRO
+                  .BYTE $A249
+                  .ENDM
+EORKopJi          .MACRO
+                  .BYTE $A649
+                  .ENDM
+EORKopKi          .MACRO          
+                  .BYTE $AA49
+                  .ENDM
+EORKopLi          .MACRO
+                  .BYTE $AE49
+                  .ENDM
+EORKopMi          .MACRO
+                  .BYTE $E249
+                  .ENDM                  
+EORKopNi          .MACRO          
+                  .BYTE $E649
+                  .ENDM
+EORKopOi          .MACRO
+                  .BYTE $EA49
+                  .ENDM
+EORKopQi          .MACRO
+                  .BYTE $EE49
+                  .ENDM
+                  
+EORLopAi          .MACRO
+                  .BYTE $2349
+                  .ENDM                
+EORLopBi          .MACRO          
+                  .BYTE $2749
+                  .ENDM
+EORLopCi          .MACRO
+                  .BYTE $2B49
+                  .ENDM
+EORLopDi          .MACRO
+                  .BYTE $2F49
+                  .ENDM
+EORLopEi          .MACRO          
+                  .BYTE $6349
+                  .ENDM
+EORLopFi          .MACRO
+                  .BYTE $6749
+                  .ENDM
+EORLopGi          .MACRO
+                  .BYTE $6B49
+                  .ENDM                  
+EORLopHi          .MACRO          
+                  .BYTE $6F49
+                  .ENDM
+EORLopIi          .MACRO
+                  .BYTE $A349
+                  .ENDM
+EORLopJi          .MACRO
+                  .BYTE $A749
+                  .ENDM
+EORLopKi          .MACRO          
+                  .BYTE $AB49
+                  .ENDM
+EORLopLi          .MACRO
+                  .BYTE $AF49
+                  .ENDM
+EORLopMi          .MACRO
+                  .BYTE $E349
+                  .ENDM                  
+EORLopNi          .MACRO          
+                  .BYTE $E749
+                  .ENDM
+EORLopOi          .MACRO
+                  .BYTE $EB49
+                  .ENDM
+EORLopQi          .MACRO
+                  .BYTE $EF49
+                  .ENDM
+                  
+EORMopAi          .MACRO
+                  .BYTE $3049
+                  .ENDM                
+EORMopBi          .MACRO          
+                  .BYTE $3449
+                  .ENDM
+EORMopCi          .MACRO
+                  .BYTE $3849
+                  .ENDM
+EORMopDi          .MACRO
+                  .BYTE $3C49
+                  .ENDM
+EORMopEi          .MACRO          
+                  .BYTE $7049
+                  .ENDM
+EORMopFi          .MACRO
+                  .BYTE $7449
+                  .ENDM
+EORMopGi          .MACRO
+                  .BYTE $7849
+                  .ENDM                  
+EORMopHi          .MACRO          
+                  .BYTE $7C49
+                  .ENDM
+EORMopIi          .MACRO
+                  .BYTE $B049
+                  .ENDM
+EORMopJi          .MACRO
+                  .BYTE $B449
+                  .ENDM
+EORMopKi          .MACRO          
+                  .BYTE $B849
+                  .ENDM
+EORMopLi          .MACRO
+                  .BYTE $BC49
+                  .ENDM
+EORMopMi          .MACRO
+                  .BYTE $F049
+                  .ENDM                  
+EORMopNi          .MACRO          
+                  .BYTE $F449
+                  .ENDM
+EORMopOi          .MACRO
+                  .BYTE $F849
+                  .ENDM
+EORMopQi          .MACRO
+                  .BYTE $FC49
+                  .ENDM
+                  
+EORNopAi          .MACRO
+                  .BYTE $3149
+                  .ENDM                
+EORNopBi          .MACRO          
+                  .BYTE $3549
+                  .ENDM
+EORNopCi          .MACRO
+                  .BYTE $3949
+                  .ENDM
+EORNopDi          .MACRO
+                  .BYTE $3D49
+                  .ENDM
+EORNopEi          .MACRO          
+                  .BYTE $7149
+                  .ENDM
+EORNopFi          .MACRO
+                  .BYTE $7549
+                  .ENDM
+EORNopGi          .MACRO
+                  .BYTE $7949
+                  .ENDM                  
+EORNopHi          .MACRO          
+                  .BYTE $7D49
+                  .ENDM
+EORNopIi          .MACRO
+                  .BYTE $B149
+                  .ENDM
+EORNopJi          .MACRO
+                  .BYTE $B549
+                  .ENDM
+EORNopKi          .MACRO          
+                  .BYTE $B949
+                  .ENDM
+EORNopLi          .MACRO
+                  .BYTE $BD49
+                  .ENDM
+EORNopMi          .MACRO
+                  .BYTE $F149
+                  .ENDM                  
+EORNopNi          .MACRO          
+                  .BYTE $F549
+                  .ENDM
+EORNopOi          .MACRO
+                  .BYTE $F949
+                  .ENDM
+EORNopQi          .MACRO
+                  .BYTE $FD49
+                  .ENDM
+            
+EOROopAi          .MACRO
+                  .BYTE $3249
+                  .ENDM                
+EOROopBi          .MACRO          
+                  .BYTE $3649
+                  .ENDM
+EOROopCi          .MACRO
+                  .BYTE $3A49
+                  .ENDM
+EOROopDi          .MACRO
+                  .BYTE $3E49
+                  .ENDM
+EOROopEi          .MACRO          
+                  .BYTE $7249
+                  .ENDM
+EOROopFi          .MACRO
+                  .BYTE $7649
+                  .ENDM
+EOROopGi          .MACRO
+                  .BYTE $7A49
+                  .ENDM                  
+EOROopHi          .MACRO          
+                  .BYTE $7E49
+                  .ENDM
+EOROopIi          .MACRO
+                  .BYTE $B249
+                  .ENDM
+EOROopJi          .MACRO
+                  .BYTE $B649
+                  .ENDM
+EOROopKi          .MACRO          
+                  .BYTE $BA49
+                  .ENDM
+EOROopLi          .MACRO
+                  .BYTE $BE49
+                  .ENDM
+EOROopMi          .MACRO
+                  .BYTE $F249
+                  .ENDM                  
+EOROopNi          .MACRO          
+                  .BYTE $F649
+                  .ENDM
+EOROopOi          .MACRO
+                  .BYTE $FA49
+                  .ENDM
+EOROopQi          .MACRO
+                  .BYTE $FE49
+                  .ENDM
+                  
+EORQopAi          .MACRO
+                  .BYTE $3349
+                  .ENDM                
+EORQopBi          .MACRO          
+                  .BYTE $3749
+                  .ENDM
+EORQopCi          .MACRO
+                  .BYTE $3B49
+                  .ENDM
+EORQopDi          .MACRO
+                  .BYTE $3F49
+                  .ENDM
+EORQopEi          .MACRO          
+                  .BYTE $7349
+                  .ENDM
+EORQopFi          .MACRO
+                  .BYTE $7749
+                  .ENDM
+EORQopGi          .MACRO
+                  .BYTE $7B49
+                  .ENDM                  
+EORQopHi          .MACRO          
+                  .BYTE $7F49
+                  .ENDM
+EORQopIi          .MACRO
+                  .BYTE $B349
+                  .ENDM
+EORQopJi          .MACRO
+                  .BYTE $B749
+                  .ENDM
+EORQopKi          .MACRO          
+                  .BYTE $BB49
+                  .ENDM
+EORQopLi          .MACRO
+                  .BYTE $BF49
+                  .ENDM
+EORQopMi          .MACRO
+                  .BYTE $F349
+                  .ENDM                  
+EORQopNi          .MACRO          
+                  .BYTE $F749
+                  .ENDM
+EORQopOi          .MACRO
+                  .BYTE $FB49
+                  .ENDM
+EORQopQi          .MACRO
+                  .BYTE $FF49
                   .ENDM
                   
 ;INCA             .BYTE $001A
