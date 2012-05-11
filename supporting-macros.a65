@@ -5802,6 +5802,422 @@ EORQopQi          .MACRO
                   .BYTE $FF49
                   .ENDM
                   
+ASLAopA4          .MACRO         ;ASL X4
+                  .BYTE $300A
+                  .ENDM
+ASLAopB4          .MACRO          
+                  .BYTE $310A
+                  .ENDM
+ASLAopC4          .MACRO
+                  .BYTE $320A
+                  .ENDM
+ASLAopD4          .MACRO
+                  .BYTE $330A
+                  .ENDM
+                                    
+ASLBopA4          .MACRO
+                  .BYTE $340A
+                  .ENDM                
+ASLBopB4          .MACRO          
+                  .BYTE $350A
+                  .ENDM
+ASLBopC4          .MACRO
+                  .BYTE $360A
+                  .ENDM
+ASLBopD4          .MACRO
+                  .BYTE $370A
+                  .ENDM
+                                    
+ASLCopA4          .MACRO
+                  .BYTE $380A
+                  .ENDM                
+ASLCopB4          .MACRO          
+                  .BYTE $390A
+                  .ENDM
+ASLCopC4          .MACRO
+                  .BYTE $3A0A
+                  .ENDM
+ASLCopD4          .MACRO
+                  .BYTE $3B0A
+                  .ENDM
+
+ASLDopA4          .MACRO
+                  .BYTE $3C0A
+                  .ENDM                
+ASLDopB4          .MACRO          
+                  .BYTE $3D0A
+                  .ENDM
+ASLDopC4          .MACRO
+                  .BYTE $3E0A
+                  .ENDM
+ASLDopD4          .MACRO
+                  .BYTE $3F0A
+                  .ENDM
+
+ASLAopA6          .MACRO         ;ASL X6
+                  .BYTE $500A
+                  .ENDM
+ASLAopB6          .MACRO          
+                  .BYTE $510A
+                  .ENDM
+ASLAopC6          .MACRO
+                  .BYTE $520A
+                  .ENDM
+ASLAopD6          .MACRO
+                  .BYTE $530A
+                  .ENDM
+                                    
+ASLBopA6          .MACRO
+                  .BYTE $540A
+                  .ENDM                
+ASLBopB6          .MACRO          
+                  .BYTE $550A
+                  .ENDM
+ASLBopC6          .MACRO
+                  .BYTE $560A
+                  .ENDM
+ASLBopD6          .MACRO
+                  .BYTE $570A
+                  .ENDM
+                                    
+ASLCopA6          .MACRO
+                  .BYTE $580A
+                  .ENDM                
+ASLCopB6          .MACRO          
+                  .BYTE $590A
+                  .ENDM
+ASLCopC6          .MACRO
+                  .BYTE $5A0A
+                  .ENDM
+ASLCopD6          .MACRO
+                  .BYTE $5B0A
+                  .ENDM
+
+ASLDopA6          .MACRO
+                  .BYTE $5C0A
+                  .ENDM                
+ASLDopB6          .MACRO          
+                  .BYTE $5D0A
+                  .ENDM
+ASLDopC6          .MACRO
+                  .BYTE $5E0A
+                  .ENDM
+ASLDopD6          .MACRO
+                  .BYTE $5F0A
+                  .ENDM
+                                    
+ASLAopA8          .MACRO         ;ASL X8
+                  .BYTE $700A
+                  .ENDM
+ASLAopB8          .MACRO          
+                  .BYTE $710A
+                  .ENDM
+ASLAopC8          .MACRO
+                  .BYTE $720A
+                  .ENDM
+ASLAopD8          .MACRO
+                  .BYTE $730A
+                  .ENDM
+ 
+ASLBopA8          .MACRO
+                  .BYTE $740A
+                  .ENDM                
+ASLBopB8          .MACRO          
+                  .BYTE $750A
+                  .ENDM
+ASLBopC8          .MACRO
+                  .BYTE $760A
+                  .ENDM
+ASLBopD8          .MACRO
+                  .BYTE $770A
+                  .ENDM
+                                    
+ASLCopA8          .MACRO
+                  .BYTE $780A
+                  .ENDM                
+ASLCopB8          .MACRO          
+                  .BYTE $790A
+                  .ENDM
+ASLCopC8          .MACRO
+                  .BYTE $7A0A
+                  .ENDM
+ASLCopD8          .MACRO
+                  .BYTE $7B0A
+                  .ENDM
+
+ASLDopA8          .MACRO
+                  .BYTE $7C0A
+                  .ENDM                
+ASLDopB8          .MACRO          
+                  .BYTE $7D0A
+                  .ENDM
+ASLDopC8          .MACRO
+                  .BYTE $7E0A
+                  .ENDM
+ASLDopD8          .MACRO
+                  .BYTE $7F0A
+                  .ENDM
+
+ASLAopA12         .MACRO         ;ASL X12
+                  .BYTE $B00A
+                  .ENDM
+ASLAopB12         .MACRO          
+                  .BYTE $B10A
+                  .ENDM
+ASLAopC12         .MACRO
+                  .BYTE $B20A
+                  .ENDM
+ASLAopD12         .MACRO
+                  .BYTE $B30A
+                  .ENDM
+                                    
+ASLBopA12         .MACRO
+                  .BYTE $B40A
+                  .ENDM                
+ASLBopB12         .MACRO          
+                  .BYTE $B50A
+                  .ENDM
+ASLBopC12         .MACRO
+                  .BYTE $B60A
+                  .ENDM
+ASLBopD12         .MACRO
+                  .BYTE $B70A
+                  .ENDM
+                                    
+ASLCopA12         .MACRO
+                  .BYTE $B80A
+                  .ENDM                
+ASLCopB12         .MACRO          
+                  .BYTE $B90A
+                  .ENDM
+ASLCopC12         .MACRO
+                  .BYTE $BA0A
+                  .ENDM
+ASLCopD12         .MACRO
+                  .BYTE $BB0A
+                  .ENDM
+
+ASLDopA12         .MACRO
+                  .BYTE $BC0A
+                  .ENDM                
+ASLDopB12         .MACRO          
+                  .BYTE $BD0A
+                  .ENDM
+ASLDopC12         .MACRO
+                  .BYTE $BE0A
+                  .ENDM
+ASLDopD12         .MACRO
+                  .BYTE $BF0A
+                  .ENDM
+                  
+LSRAopA4          .MACRO         ;LSR X4
+                  .BYTE $304A
+                  .ENDM
+LSRAopB4          .MACRO          
+                  .BYTE $314A
+                  .ENDM
+LSRAopC4          .MACRO
+                  .BYTE $324A
+                  .ENDM
+LSRAopD4          .MACRO
+                  .BYTE $334A
+                  .ENDM
+                                    
+LSRBopA4          .MACRO
+                  .BYTE $344A
+                  .ENDM                
+LSRBopB4          .MACRO          
+                  .BYTE $354A
+                  .ENDM
+LSRBopC4          .MACRO
+                  .BYTE $364A
+                  .ENDM
+LSRBopD4          .MACRO
+                  .BYTE $374A
+                  .ENDM
+                                    
+LSRCopA4          .MACRO
+                  .BYTE $384A
+                  .ENDM                
+LSRCopB4          .MACRO          
+                  .BYTE $394A
+                  .ENDM
+LSRCopC4          .MACRO
+                  .BYTE $3A4A
+                  .ENDM
+LSRCopD4          .MACRO
+                  .BYTE $3B4A
+                  .ENDM
+
+LSRDopA4          .MACRO
+                  .BYTE $3C4A
+                  .ENDM                
+LSRDopB4          .MACRO          
+                  .BYTE $3D4A
+                  .ENDM
+LSRDopC4          .MACRO
+                  .BYTE $3E4A
+                  .ENDM
+LSRDopD4          .MACRO
+                  .BYTE $3F4A
+                  .ENDM
+
+LSRAopA6          .MACRO         ;LSR X6
+                  .BYTE $504A
+                  .ENDM
+LSRAopB6          .MACRO          
+                  .BYTE $514A
+                  .ENDM
+LSRAopC6          .MACRO
+                  .BYTE $524A
+                  .ENDM
+LSRAopD6          .MACRO
+                  .BYTE $534A
+                  .ENDM
+                                    
+LSRBopA6          .MACRO
+                  .BYTE $544A
+                  .ENDM                
+LSRBopB6          .MACRO          
+                  .BYTE $554A
+                  .ENDM
+LSRBopC6          .MACRO
+                  .BYTE $564A
+                  .ENDM
+LSRBopD6          .MACRO
+                  .BYTE $574A
+                  .ENDM
+                                    
+LSRCopA6          .MACRO
+                  .BYTE $584A
+                  .ENDM                
+LSRCopB6          .MACRO          
+                  .BYTE $594A
+                  .ENDM
+LSRCopC6          .MACRO
+                  .BYTE $5A4A
+                  .ENDM
+LSRCopD6          .MACRO
+                  .BYTE $5B4A
+                  .ENDM
+
+LSRDopA6          .MACRO
+                  .BYTE $5C4A
+                  .ENDM                
+LSRDopB6          .MACRO          
+                  .BYTE $5D4A
+                  .ENDM
+LSRDopC6          .MACRO
+                  .BYTE $5E4A
+                  .ENDM
+LSRDopD6          .MACRO
+                  .BYTE $5F4A
+                  .ENDM
+                                    
+LSRAopA8          .MACRO         ;LSR X8
+                  .BYTE $704A
+                  .ENDM
+LSRAopB8          .MACRO          
+                  .BYTE $714A
+                  .ENDM
+LSRAopC8          .MACRO
+                  .BYTE $724A
+                  .ENDM
+LSRAopD8          .MACRO
+                  .BYTE $734A
+                  .ENDM
+ 
+LSRBopA8          .MACRO
+                  .BYTE $744A
+                  .ENDM                
+LSRBopB8          .MACRO          
+                  .BYTE $754A
+                  .ENDM
+LSRBopC8          .MACRO
+                  .BYTE $764A
+                  .ENDM
+LSRBopD8          .MACRO
+                  .BYTE $774A
+                  .ENDM
+                                    
+LSRCopA8          .MACRO
+                  .BYTE $784A
+                  .ENDM                
+LSRCopB8          .MACRO          
+                  .BYTE $794A
+                  .ENDM
+LSRCopC8          .MACRO
+                  .BYTE $7A4A
+                  .ENDM
+LSRCopD8          .MACRO
+                  .BYTE $7B4A
+                  .ENDM
+
+LSRDopA8          .MACRO
+                  .BYTE $7C4A
+                  .ENDM                
+LSRDopB8          .MACRO          
+                  .BYTE $7D4A
+                  .ENDM
+LSRDopC8          .MACRO
+                  .BYTE $7E4A
+                  .ENDM
+LSRDopD8          .MACRO
+                  .BYTE $7F4A
+                  .ENDM
+
+LSRAopA12         .MACRO         ;LSR X12
+                  .BYTE $B04A
+                  .ENDM
+LSRAopB12         .MACRO          
+                  .BYTE $B14A
+                  .ENDM
+LSRAopC12         .MACRO
+                  .BYTE $B24A
+                  .ENDM
+LSRAopD12         .MACRO
+                  .BYTE $B34A
+                  .ENDM
+                                    
+LSRBopA12         .MACRO
+                  .BYTE $B44A
+                  .ENDM                
+LSRBopB12         .MACRO          
+                  .BYTE $B54A
+                  .ENDM
+LSRBopC12         .MACRO
+                  .BYTE $B64A
+                  .ENDM
+LSRBopD12         .MACRO
+                  .BYTE $B74A
+                  .ENDM
+                                    
+LSRCopA12         .MACRO
+                  .BYTE $B84A
+                  .ENDM                
+LSRCopB12         .MACRO          
+                  .BYTE $B94A
+                  .ENDM
+LSRCopC12         .MACRO
+                  .BYTE $BA4A
+                  .ENDM
+LSRCopD12         .MACRO
+                  .BYTE $BB4A
+                  .ENDM
+
+LSRDopA12         .MACRO
+                  .BYTE $BC4A
+                  .ENDM                
+LSRDopB12         .MACRO          
+                  .BYTE $BD4A
+                  .ENDM
+LSRDopC12         .MACRO
+                  .BYTE $BE4A
+                  .ENDM
+LSRDopD12         .MACRO
+                  .BYTE $BF4A
+                  .ENDM
+                                    
 ;INCA             .BYTE $001A
 INCB              .MACRO
                   .BYTE $051A
