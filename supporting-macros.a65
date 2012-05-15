@@ -197,7 +197,8 @@ LDQzpx            .MACRO
                   .ENDM
 LDWzpx            .MACRO
                   .BYTE $00F4
-                  
+                  .ENDM
+
 ;LDA $xxxxxxxx,x        $00BD
 LDBax             .MACRO          
                   .BYTE $01BD
