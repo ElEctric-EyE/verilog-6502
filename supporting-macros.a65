@@ -1,4 +1,4 @@
-; NEW 65O16 OPCODES!   5/12/2012
+; NEW 65O16 OPCODES!   5/25/2012
 ;LDA #$xxxx             $00A9
 LDBi              .MACRO          ;LDB #$xxxx
                   .BYTE $01A9
@@ -198,7 +198,7 @@ LDQzpx            .MACRO
 LDWzpx            .MACRO
                   .BYTE $00F4
                   .ENDM
-
+                  
 ;LDA $xxxxxxxx,x        $00BD
 LDBax             .MACRO          
                   .BYTE $01BD
@@ -1893,7 +1893,7 @@ TQQ               .MACRO
                   .BYTE $FF8B
                   .ENDM                                                                                                                                                                                                      
                   
-;ADC #$                 $0069
+;ADC #$xxxx             $0069
 ADCAopBi          .MACRO          
                   .BYTE $0469
                   .ENDM
@@ -2675,7 +2675,7 @@ ADCQopQi          .MACRO
                   .BYTE $FF69
                   .ENDM
 
-;SBC #$                 $00E9
+;SBC #$xxxx             $00E9
 SBCAopBi          .MACRO          
                   .BYTE $04E9
                   .ENDM
@@ -3133,7 +3133,7 @@ SBCJopFi          .MACRO
                   .BYTE $65E9
                   .ENDM
 SBCJopGi          .MACRO
-                  .BYTE $E9E9
+                  .BYTE $69E9
                   .ENDM                  
 SBCJopHi          .MACRO          
                   .BYTE $6DE9
@@ -3457,7 +3457,7 @@ SBCQopQi          .MACRO
                   .BYTE $FFE9
                   .ENDM
                   
-;ORA #$                 $0009
+;ORA #$xxxx             $0009
 ORAAopBi          .MACRO          
                   .BYTE $0409
                   .ENDM
@@ -3915,7 +3915,7 @@ ORAJopFi          .MACRO
                   .BYTE $6509
                   .ENDM
 ORAJopGi          .MACRO
-                  .BYTE $0909
+                  .BYTE $6909
                   .ENDM                  
 ORAJopHi          .MACRO          
                   .BYTE $6D09
@@ -3939,7 +3939,7 @@ ORAJopNi          .MACRO
                   .BYTE $E509
                   .ENDM
 ORAJopOi          .MACRO
-                  .BYTE $0909
+                  .BYTE $E909
                   .ENDM
 ORAJopQi          .MACRO
                   .BYTE $ED09
@@ -4239,7 +4239,7 @@ ORAQopQi          .MACRO
                   .BYTE $FF09
                   .ENDM
                   
-;AND #$                 $0029
+;AND #$xxxx             $0029
 ANDAopBi          .MACRO          
                   .BYTE $0429
                   .ENDM
@@ -4697,7 +4697,7 @@ ANDJopFi          .MACRO
                   .BYTE $6529
                   .ENDM
 ANDJopGi          .MACRO
-                  .BYTE $2929
+                  .BYTE $6929
                   .ENDM                  
 ANDJopHi          .MACRO          
                   .BYTE $6D29
@@ -4721,7 +4721,7 @@ ANDJopNi          .MACRO
                   .BYTE $E529
                   .ENDM
 ANDJopOi          .MACRO
-                  .BYTE $2929
+                  .BYTE $E929
                   .ENDM
 ANDJopQi          .MACRO
                   .BYTE $ED29
@@ -5021,7 +5021,7 @@ ANDQopQi          .MACRO
                   .BYTE $FF29
                   .ENDM
                   
-;EOR #$                 $0049
+;EOR #$xxxx             $0049
 EORAopBi          .MACRO          
                   .BYTE $0449
                   .ENDM
@@ -5479,7 +5479,7 @@ EORJopFi          .MACRO
                   .BYTE $6549
                   .ENDM
 EORJopGi          .MACRO
-                  .BYTE $4949
+                  .BYTE $6949
                   .ENDM                  
 EORJopHi          .MACRO          
                   .BYTE $6D49
@@ -5503,7 +5503,7 @@ EORJopNi          .MACRO
                   .BYTE $E549
                   .ENDM
 EORJopOi          .MACRO
-                  .BYTE $4949
+                  .BYTE $E949
                   .ENDM
 EORJopQi          .MACRO
                   .BYTE $ED49
@@ -5801,6 +5801,3916 @@ EORQopOi          .MACRO
                   .ENDM
 EORQopQi          .MACRO
                   .BYTE $FF49
+                  .ENDM
+
+;ADC $xxxx              $0065
+ADCAopBzp          .MACRO          
+                  .BYTE $0465
+                  .ENDM
+ADCAopCzp          .MACRO
+                  .BYTE $0865
+                  .ENDM
+ADCAopDzp          .MACRO
+                  .BYTE $0C65
+                  .ENDM
+ADCAopEzp          .MACRO          
+                  .BYTE $4065
+                  .ENDM
+ADCAopFzp          .MACRO
+                  .BYTE $4465
+                  .ENDM
+ADCAopGzp          .MACRO
+                  .BYTE $4865
+                  .ENDM                  
+ADCAopHzp          .MACRO          
+                  .BYTE $4C65
+                  .ENDM
+ADCAopIzp          .MACRO
+                  .BYTE $8065
+                  .ENDM
+ADCAopJzp          .MACRO
+                  .BYTE $8465
+                  .ENDM
+ADCAopKzp          .MACRO          
+                  .BYTE $8865
+                  .ENDM
+ADCAopLzp          .MACRO
+                  .BYTE $8C65
+                  .ENDM
+ADCAopMzp          .MACRO
+                  .BYTE $C065
+                  .ENDM                  
+ADCAopNzp          .MACRO          
+                  .BYTE $C465
+                  .ENDM
+ADCAopOzp          .MACRO
+                  .BYTE $C865
+                  .ENDM
+ADCAopQzp          .MACRO
+                  .BYTE $CC65
+                  .ENDM
+                                    
+ADCBopAzp          .MACRO
+                  .BYTE $0165
+                  .ENDM                
+ADCBopBzp          .MACRO          
+                  .BYTE $0565
+                  .ENDM
+ADCBopCzp          .MACRO
+                  .BYTE $0965
+                  .ENDM
+ADCBopDzp          .MACRO
+                  .BYTE $0D65
+                  .ENDM
+ADCBopEzp          .MACRO          
+                  .BYTE $4165
+                  .ENDM
+ADCBopFzp          .MACRO
+                  .BYTE $4565
+                  .ENDM
+ADCBopGzp          .MACRO
+                  .BYTE $4965
+                  .ENDM                  
+ADCBopHzp          .MACRO          
+                  .BYTE $4D65
+                  .ENDM
+ADCBopIzp          .MACRO
+                  .BYTE $8165
+                  .ENDM
+ADCBopJzp          .MACRO
+                  .BYTE $8565
+                  .ENDM
+ADCBopKzp          .MACRO          
+                  .BYTE $8965
+                  .ENDM
+ADCBopLzp          .MACRO
+                  .BYTE $8D65
+                  .ENDM
+ADCBopMzp          .MACRO
+                  .BYTE $C165
+                  .ENDM                  
+ADCBopNzp          .MACRO          
+                  .BYTE $C565
+                  .ENDM
+ADCBopOzp          .MACRO
+                  .BYTE $C965
+                  .ENDM
+ADCBopQzp          .MACRO
+                  .BYTE $CD65
+                  .ENDM
+                                    
+ADCCopAzp          .MACRO
+                  .BYTE $0265
+                  .ENDM                
+ADCCopBzp          .MACRO          
+                  .BYTE $0665
+                  .ENDM
+ADCCopCzp          .MACRO
+                  .BYTE $0A65
+                  .ENDM
+ADCCopDzp          .MACRO
+                  .BYTE $0E65
+                  .ENDM
+ADCCopEzp          .MACRO          
+                  .BYTE $4265
+                  .ENDM
+ADCCopFzp          .MACRO
+                  .BYTE $4665
+                  .ENDM
+ADCCopGzp          .MACRO
+                  .BYTE $4A65
+                  .ENDM                  
+ADCCopHzp          .MACRO          
+                  .BYTE $4E65
+                  .ENDM
+ADCCopIzp          .MACRO
+                  .BYTE $8265
+                  .ENDM
+ADCCopJzp          .MACRO
+                  .BYTE $8665
+                  .ENDM
+ADCCopKzp          .MACRO          
+                  .BYTE $8A65
+                  .ENDM
+ADCCopLzp          .MACRO
+                  .BYTE $8E65
+                  .ENDM
+ADCCopMzp          .MACRO
+                  .BYTE $C265
+                  .ENDM                  
+ADCCopNzp          .MACRO          
+                  .BYTE $C665
+                  .ENDM
+ADCCopOzp          .MACRO
+                  .BYTE $CA65
+                  .ENDM
+ADCCopQzp          .MACRO
+                  .BYTE $CE65
+                  .ENDM
+
+ADCDopAzp          .MACRO
+                  .BYTE $0365
+                  .ENDM                
+ADCDopBzp          .MACRO          
+                  .BYTE $0765
+                  .ENDM
+ADCDopCzp          .MACRO
+                  .BYTE $0B65
+                  .ENDM
+ADCDopDzp          .MACRO
+                  .BYTE $0F65
+                  .ENDM
+ADCDopEzp          .MACRO          
+                  .BYTE $4365
+                  .ENDM
+ADCDopFzp          .MACRO
+                  .BYTE $4765
+                  .ENDM
+ADCDopGzp          .MACRO
+                  .BYTE $4B65
+                  .ENDM                  
+ADCDopHzp          .MACRO          
+                  .BYTE $4F65
+                  .ENDM
+ADCDopIzp          .MACRO
+                  .BYTE $8365
+                  .ENDM
+ADCDopJzp          .MACRO
+                  .BYTE $8765
+                  .ENDM
+ADCDopKzp          .MACRO          
+                  .BYTE $8B65
+                  .ENDM
+ADCDopLzp          .MACRO
+                  .BYTE $8F65
+                  .ENDM
+ADCDopMzp          .MACRO
+                  .BYTE $C365
+                  .ENDM                  
+ADCDopNzp          .MACRO          
+                  .BYTE $C765
+                  .ENDM
+ADCDopOzp          .MACRO
+                  .BYTE $CB65
+                  .ENDM
+ADCDopQzp          .MACRO
+                  .BYTE $CF65
+                  .ENDM                  
+
+ADCEopAzp          .MACRO
+                  .BYTE $1065
+                  .ENDM                
+ADCEopBzp          .MACRO          
+                  .BYTE $1465
+                  .ENDM
+ADCEopCzp          .MACRO
+                  .BYTE $1865
+                  .ENDM
+ADCEopDzp          .MACRO
+                  .BYTE $1C65
+                  .ENDM
+ADCEopEzp          .MACRO          
+                  .BYTE $5065
+                  .ENDM
+ADCEopFzp          .MACRO
+                  .BYTE $5465
+                  .ENDM
+ADCEopGzp          .MACRO
+                  .BYTE $5865
+                  .ENDM                  
+ADCEopHzp          .MACRO          
+                  .BYTE $5C65
+                  .ENDM
+ADCEopIzp          .MACRO
+                  .BYTE $9065
+                  .ENDM
+ADCEopJzp          .MACRO
+                  .BYTE $9465
+                  .ENDM
+ADCEopKzp          .MACRO          
+                  .BYTE $9865
+                  .ENDM
+ADCEopLzp          .MACRO
+                  .BYTE $9C65
+                  .ENDM
+ADCEopMzp          .MACRO
+                  .BYTE $D065
+                  .ENDM                  
+ADCEopNzp          .MACRO          
+                  .BYTE $D465
+                  .ENDM
+ADCEopOzp          .MACRO
+                  .BYTE $D865
+                  .ENDM
+ADCEopQzp          .MACRO
+                  .BYTE $DC65
+                  .ENDM
+                  
+ADCFopAzp          .MACRO
+                  .BYTE $1165
+                  .ENDM                
+ADCFopBzp          .MACRO          
+                  .BYTE $1565
+                  .ENDM
+ADCFopCzp          .MACRO
+                  .BYTE $1965
+                  .ENDM
+ADCFopDzp          .MACRO
+                  .BYTE $1D65
+                  .ENDM
+ADCFopEzp          .MACRO          
+                  .BYTE $5165
+                  .ENDM
+ADCFopFzp          .MACRO
+                  .BYTE $5565
+                  .ENDM
+ADCFopGzp          .MACRO
+                  .BYTE $5965
+                  .ENDM                  
+ADCFopHzp          .MACRO          
+                  .BYTE $5D65
+                  .ENDM
+ADCFopIzp          .MACRO
+                  .BYTE $9165
+                  .ENDM
+ADCFopJzp          .MACRO
+                  .BYTE $9565
+                  .ENDM
+ADCFopKzp          .MACRO          
+                  .BYTE $9965
+                  .ENDM
+ADCFopLzp          .MACRO
+                  .BYTE $9D65
+                  .ENDM
+ADCFopMzp          .MACRO
+                  .BYTE $D165
+                  .ENDM                  
+ADCFopNzp          .MACRO          
+                  .BYTE $D565
+                  .ENDM
+ADCFopOzp          .MACRO
+                  .BYTE $D965
+                  .ENDM
+ADCFopQzp          .MACRO
+                  .BYTE $DD65
+                  .ENDM                  
+                           
+ADCGopAzp          .MACRO
+                  .BYTE $1265
+                  .ENDM                
+ADCGopBzp          .MACRO          
+                  .BYTE $1665
+                  .ENDM
+ADCGopCzp          .MACRO
+                  .BYTE $1A65
+                  .ENDM
+ADCGopDzp          .MACRO
+                  .BYTE $1E65
+                  .ENDM
+ADCGopEzp          .MACRO          
+                  .BYTE $5265
+                  .ENDM
+ADCGopFzp          .MACRO
+                  .BYTE $5665
+                  .ENDM
+ADCGopGzp          .MACRO
+                  .BYTE $5A65
+                  .ENDM                  
+ADCGopHzp          .MACRO          
+                  .BYTE $5E65
+                  .ENDM
+ADCGopIzp          .MACRO
+                  .BYTE $9265
+                  .ENDM
+ADCGopJzp          .MACRO
+                  .BYTE $9665
+                  .ENDM
+ADCGopKzp          .MACRO          
+                  .BYTE $9A65
+                  .ENDM
+ADCGopLzp          .MACRO
+                  .BYTE $9E65
+                  .ENDM
+ADCGopMzp          .MACRO
+                  .BYTE $D265
+                  .ENDM                  
+ADCGopNzp          .MACRO          
+                  .BYTE $D665
+                  .ENDM
+ADCGopOzp          .MACRO
+                  .BYTE $DA65
+                  .ENDM
+ADCGopQzp          .MACRO
+                  .BYTE $DE65
+                  .ENDM
+                  
+ADCHopAzp          .MACRO
+                  .BYTE $1365
+                  .ENDM                
+ADCHopBzp          .MACRO          
+                  .BYTE $1765
+                  .ENDM
+ADCHopCzp          .MACRO
+                  .BYTE $1B65
+                  .ENDM
+ADCHopDzp          .MACRO
+                  .BYTE $1F65
+                  .ENDM
+ADCHopEzp          .MACRO          
+                  .BYTE $5365
+                  .ENDM
+ADCHopFzp          .MACRO
+                  .BYTE $5765
+                  .ENDM
+ADCHopGzp          .MACRO
+                  .BYTE $5B65
+                  .ENDM                  
+ADCHopHzp          .MACRO          
+                  .BYTE $5F65
+                  .ENDM
+ADCHopIzp          .MACRO
+                  .BYTE $9365
+                  .ENDM
+ADCHopJzp          .MACRO
+                  .BYTE $9765
+                  .ENDM
+ADCHopKzp          .MACRO          
+                  .BYTE $9B65
+                  .ENDM
+ADCHopLzp          .MACRO
+                  .BYTE $9F65
+                  .ENDM
+ADCHopMzp          .MACRO
+                  .BYTE $D365
+                  .ENDM                  
+ADCHopNzp          .MACRO          
+                  .BYTE $D765
+                  .ENDM
+ADCHopOzp          .MACRO
+                  .BYTE $DB65
+                  .ENDM
+ADCHopQzp          .MACRO
+                  .BYTE $DF65
+                  .ENDM
+                  
+ADCIopAzp          .MACRO
+                  .BYTE $2065
+                  .ENDM                
+ADCIopBzp          .MACRO          
+                  .BYTE $2465
+                  .ENDM
+ADCIopCzp          .MACRO
+                  .BYTE $2865
+                  .ENDM
+ADCIopDzp          .MACRO
+                  .BYTE $2C65
+                  .ENDM
+ADCIopEzp          .MACRO          
+                  .BYTE $6065
+                  .ENDM
+ADCIopFzp          .MACRO
+                  .BYTE $6465
+                  .ENDM
+ADCIopGzp          .MACRO
+                  .BYTE $6865
+                  .ENDM                  
+ADCIopHzp          .MACRO          
+                  .BYTE $6C65
+                  .ENDM
+ADCIopIzp          .MACRO
+                  .BYTE $A065
+                  .ENDM
+ADCIopJzp          .MACRO
+                  .BYTE $A465
+                  .ENDM
+ADCIopKzp          .MACRO          
+                  .BYTE $A865
+                  .ENDM
+ADCIopLzp          .MACRO
+                  .BYTE $AC65
+                  .ENDM
+ADCIopMzp          .MACRO
+                  .BYTE $E065
+                  .ENDM                  
+ADCIopNzp          .MACRO          
+                  .BYTE $E465
+                  .ENDM
+ADCIopOzp          .MACRO
+                  .BYTE $E865
+                  .ENDM
+ADCIopQzp          .MACRO
+                  .BYTE $EC65
+                  .ENDM
+                  
+ADCJopAzp          .MACRO
+                  .BYTE $2165
+                  .ENDM                
+ADCJopBzp          .MACRO          
+                  .BYTE $2565
+                  .ENDM
+ADCJopCzp          .MACRO
+                  .BYTE $2965
+                  .ENDM
+ADCJopDzp          .MACRO
+                  .BYTE $2D65
+                  .ENDM
+ADCJopEzp          .MACRO          
+                  .BYTE $6165
+                  .ENDM
+ADCJopFzp          .MACRO
+                  .BYTE $6565
+                  .ENDM
+ADCJopGzp          .MACRO
+                  .BYTE $6965
+                  .ENDM                  
+ADCJopHzp          .MACRO          
+                  .BYTE $6D65
+                  .ENDM
+ADCJopIzp          .MACRO
+                  .BYTE $A165
+                  .ENDM
+ADCJopJzp          .MACRO
+                  .BYTE $A565
+                  .ENDM
+ADCJopKzp          .MACRO          
+                  .BYTE $A965
+                  .ENDM
+ADCJopLzp          .MACRO
+                  .BYTE $AD65
+                  .ENDM
+ADCJopMzp          .MACRO
+                  .BYTE $E165
+                  .ENDM                  
+ADCJopNzp          .MACRO          
+                  .BYTE $E565
+                  .ENDM
+ADCJopOzp          .MACRO
+                  .BYTE $E965
+                  .ENDM
+ADCJopQzp          .MACRO
+                  .BYTE $ED65
+                  .ENDM
+                  
+ADCKopAzp          .MACRO
+                  .BYTE $2265
+                  .ENDM                
+ADCKopBzp          .MACRO          
+                  .BYTE $2665
+                  .ENDM
+ADCKopCzp          .MACRO
+                  .BYTE $2A65
+                  .ENDM
+ADCKopDzp          .MACRO
+                  .BYTE $2E65
+                  .ENDM
+ADCKopEzp          .MACRO          
+                  .BYTE $6265
+                  .ENDM
+ADCKopFzp          .MACRO
+                  .BYTE $6665
+                  .ENDM
+ADCKopGzp          .MACRO
+                  .BYTE $6A65
+                  .ENDM                  
+ADCKopHzp          .MACRO          
+                  .BYTE $6E65
+                  .ENDM
+ADCKopIzp          .MACRO
+                  .BYTE $A265
+                  .ENDM
+ADCKopJzp          .MACRO
+                  .BYTE $A665
+                  .ENDM
+ADCKopKzp          .MACRO          
+                  .BYTE $AA65
+                  .ENDM
+ADCKopLzp          .MACRO
+                  .BYTE $AE65
+                  .ENDM
+ADCKopMzp          .MACRO
+                  .BYTE $E265
+                  .ENDM                  
+ADCKopNzp          .MACRO          
+                  .BYTE $E665
+                  .ENDM
+ADCKopOzp          .MACRO
+                  .BYTE $EA65
+                  .ENDM
+ADCKopQzp          .MACRO
+                  .BYTE $EE65
+                  .ENDM
+                  
+ADCLopAzp          .MACRO
+                  .BYTE $2365
+                  .ENDM                
+ADCLopBzp          .MACRO          
+                  .BYTE $2765
+                  .ENDM
+ADCLopCzp          .MACRO
+                  .BYTE $2B65
+                  .ENDM
+ADCLopDzp          .MACRO
+                  .BYTE $2F65
+                  .ENDM
+ADCLopEzp          .MACRO          
+                  .BYTE $6365
+                  .ENDM
+ADCLopFzp          .MACRO
+                  .BYTE $6765
+                  .ENDM
+ADCLopGzp          .MACRO
+                  .BYTE $6B65
+                  .ENDM                  
+ADCLopHzp          .MACRO          
+                  .BYTE $6F65
+                  .ENDM
+ADCLopIzp          .MACRO
+                  .BYTE $A365
+                  .ENDM
+ADCLopJzp          .MACRO
+                  .BYTE $A765
+                  .ENDM
+ADCLopKzp          .MACRO          
+                  .BYTE $AB65
+                  .ENDM
+ADCLopLzp          .MACRO
+                  .BYTE $AF65
+                  .ENDM
+ADCLopMzp          .MACRO
+                  .BYTE $E365
+                  .ENDM                  
+ADCLopNzp          .MACRO          
+                  .BYTE $E765
+                  .ENDM
+ADCLopOzp          .MACRO
+                  .BYTE $EB65
+                  .ENDM
+ADCLopQzp          .MACRO
+                  .BYTE $EF65
+                  .ENDM
+                  
+ADCMopAzp          .MACRO
+                  .BYTE $3065
+                  .ENDM                
+ADCMopBzp          .MACRO          
+                  .BYTE $3465
+                  .ENDM
+ADCMopCzp          .MACRO
+                  .BYTE $3865
+                  .ENDM
+ADCMopDzp          .MACRO
+                  .BYTE $3C65
+                  .ENDM
+ADCMopEzp          .MACRO          
+                  .BYTE $7065
+                  .ENDM
+ADCMopFzp          .MACRO
+                  .BYTE $7465
+                  .ENDM
+ADCMopGzp          .MACRO
+                  .BYTE $7865
+                  .ENDM                  
+ADCMopHzp          .MACRO          
+                  .BYTE $7C65
+                  .ENDM
+ADCMopIzp          .MACRO
+                  .BYTE $B065
+                  .ENDM
+ADCMopJzp          .MACRO
+                  .BYTE $B465
+                  .ENDM
+ADCMopKzp          .MACRO          
+                  .BYTE $B865
+                  .ENDM
+ADCMopLzp          .MACRO
+                  .BYTE $BC65
+                  .ENDM
+ADCMopMzp          .MACRO
+                  .BYTE $F065
+                  .ENDM                  
+ADCMopNzp          .MACRO          
+                  .BYTE $F465
+                  .ENDM
+ADCMopOzp          .MACRO
+                  .BYTE $F865
+                  .ENDM
+ADCMopQzp          .MACRO
+                  .BYTE $FC65
+                  .ENDM
+                  
+ADCNopAzp          .MACRO
+                  .BYTE $3165
+                  .ENDM                
+ADCNopBzp          .MACRO          
+                  .BYTE $3565
+                  .ENDM
+ADCNopCzp          .MACRO
+                  .BYTE $3965
+                  .ENDM
+ADCNopDzp          .MACRO
+                  .BYTE $3D65
+                  .ENDM
+ADCNopEzp          .MACRO          
+                  .BYTE $7165
+                  .ENDM
+ADCNopFzp          .MACRO
+                  .BYTE $7565
+                  .ENDM
+ADCNopGzp          .MACRO
+                  .BYTE $7965
+                  .ENDM                  
+ADCNopHzp          .MACRO          
+                  .BYTE $7D65
+                  .ENDM
+ADCNopIzp          .MACRO
+                  .BYTE $B165
+                  .ENDM
+ADCNopJzp          .MACRO
+                  .BYTE $B565
+                  .ENDM
+ADCNopKzp          .MACRO          
+                  .BYTE $B965
+                  .ENDM
+ADCNopLzp          .MACRO
+                  .BYTE $BD65
+                  .ENDM
+ADCNopMzp          .MACRO
+                  .BYTE $F165
+                  .ENDM                  
+ADCNopNzp          .MACRO          
+                  .BYTE $F565
+                  .ENDM
+ADCNopOzp          .MACRO
+                  .BYTE $F965
+                  .ENDM
+ADCNopQzp          .MACRO
+                  .BYTE $FD65
+                  .ENDM
+            
+ADCOopAzp          .MACRO
+                  .BYTE $3265
+                  .ENDM                
+ADCOopBzp          .MACRO          
+                  .BYTE $3665
+                  .ENDM
+ADCOopCzp          .MACRO
+                  .BYTE $3A65
+                  .ENDM
+ADCOopDzp          .MACRO
+                  .BYTE $3E65
+                  .ENDM
+ADCOopEzp          .MACRO          
+                  .BYTE $7265
+                  .ENDM
+ADCOopFzp          .MACRO
+                  .BYTE $7665
+                  .ENDM
+ADCOopGzp          .MACRO
+                  .BYTE $7A65
+                  .ENDM                  
+ADCOopHzp          .MACRO          
+                  .BYTE $7E65
+                  .ENDM
+ADCOopIzp          .MACRO
+                  .BYTE $B265
+                  .ENDM
+ADCOopJzp          .MACRO
+                  .BYTE $B665
+                  .ENDM
+ADCOopKzp          .MACRO          
+                  .BYTE $BA65
+                  .ENDM
+ADCOopLzp          .MACRO
+                  .BYTE $BE65
+                  .ENDM
+ADCOopMzp          .MACRO
+                  .BYTE $F265
+                  .ENDM                  
+ADCOopNzp          .MACRO          
+                  .BYTE $F665
+                  .ENDM
+ADCOopOzp          .MACRO
+                  .BYTE $FA65
+                  .ENDM
+ADCOopQzp          .MACRO
+                  .BYTE $FE65
+                  .ENDM
+                  
+ADCQopAzp          .MACRO
+                  .BYTE $3365
+                  .ENDM                
+ADCQopBzp          .MACRO          
+                  .BYTE $3765
+                  .ENDM
+ADCQopCzp          .MACRO
+                  .BYTE $3B65
+                  .ENDM
+ADCQopDzp          .MACRO
+                  .BYTE $3F65
+                  .ENDM
+ADCQopEzp          .MACRO          
+                  .BYTE $7365
+                  .ENDM
+ADCQopFzp          .MACRO
+                  .BYTE $7765
+                  .ENDM
+ADCQopGzp          .MACRO
+                  .BYTE $7B65
+                  .ENDM                  
+ADCQopHzp          .MACRO          
+                  .BYTE $7F65
+                  .ENDM
+ADCQopIzp          .MACRO
+                  .BYTE $B365
+                  .ENDM
+ADCQopJzp          .MACRO
+                  .BYTE $B765
+                  .ENDM
+ADCQopKzp          .MACRO          
+                  .BYTE $BB65
+                  .ENDM
+ADCQopLzp          .MACRO
+                  .BYTE $BF65
+                  .ENDM
+ADCQopMzp          .MACRO
+                  .BYTE $F365
+                  .ENDM                  
+ADCQopNzp          .MACRO          
+                  .BYTE $F765
+                  .ENDM
+ADCQopOzp          .MACRO
+                  .BYTE $FB65
+                  .ENDM
+ADCQopQzp          .MACRO
+                  .BYTE $FF65
+                  .ENDM
+
+;SBC $xxxx              $00E5
+SBCAopBzp          .MACRO          
+                  .BYTE $04E5
+                  .ENDM
+SBCAopCzp          .MACRO
+                  .BYTE $08E5
+                  .ENDM
+SBCAopDzp          .MACRO
+                  .BYTE $0CE5
+                  .ENDM
+SBCAopEzp          .MACRO          
+                  .BYTE $40E5
+                  .ENDM
+SBCAopFzp          .MACRO
+                  .BYTE $44E5
+                  .ENDM
+SBCAopGzp          .MACRO
+                  .BYTE $48E5
+                  .ENDM                  
+SBCAopHzp          .MACRO          
+                  .BYTE $4CE5
+                  .ENDM
+SBCAopIzp          .MACRO
+                  .BYTE $80E5
+                  .ENDM
+SBCAopJzp          .MACRO
+                  .BYTE $84E5
+                  .ENDM
+SBCAopKzp          .MACRO          
+                  .BYTE $88E5
+                  .ENDM
+SBCAopLzp          .MACRO
+                  .BYTE $8CE5
+                  .ENDM
+SBCAopMzp          .MACRO
+                  .BYTE $C0E5
+                  .ENDM                  
+SBCAopNzp          .MACRO          
+                  .BYTE $C4E5
+                  .ENDM
+SBCAopOzp          .MACRO
+                  .BYTE $C8E5
+                  .ENDM
+SBCAopQzp          .MACRO
+                  .BYTE $CCE5
+                  .ENDM
+                                    
+SBCBopAzp          .MACRO
+                  .BYTE $01E5
+                  .ENDM                
+SBCBopBzp          .MACRO          
+                  .BYTE $05E5
+                  .ENDM
+SBCBopCzp          .MACRO
+                  .BYTE $09E5
+                  .ENDM
+SBCBopDzp          .MACRO
+                  .BYTE $0DE5
+                  .ENDM
+SBCBopEzp          .MACRO          
+                  .BYTE $41E5
+                  .ENDM
+SBCBopFzp          .MACRO
+                  .BYTE $45E5
+                  .ENDM
+SBCBopGzp          .MACRO
+                  .BYTE $49E5
+                  .ENDM                  
+SBCBopHzp          .MACRO          
+                  .BYTE $4DE5
+                  .ENDM
+SBCBopIzp          .MACRO
+                  .BYTE $81E5
+                  .ENDM
+SBCBopJzp          .MACRO
+                  .BYTE $85E5
+                  .ENDM
+SBCBopKzp          .MACRO          
+                  .BYTE $89E5
+                  .ENDM
+SBCBopLzp          .MACRO
+                  .BYTE $8DE5
+                  .ENDM
+SBCBopMzp          .MACRO
+                  .BYTE $C1E5
+                  .ENDM                  
+SBCBopNzp          .MACRO          
+                  .BYTE $C5E5
+                  .ENDM
+SBCBopOzp          .MACRO
+                  .BYTE $C9E5
+                  .ENDM
+SBCBopQzp          .MACRO
+                  .BYTE $CDE5
+                  .ENDM
+                                    
+SBCCopAzp          .MACRO
+                  .BYTE $02E5
+                  .ENDM                
+SBCCopBzp          .MACRO          
+                  .BYTE $06E5
+                  .ENDM
+SBCCopCzp          .MACRO
+                  .BYTE $0AE5
+                  .ENDM
+SBCCopDzp          .MACRO
+                  .BYTE $0EE5
+                  .ENDM
+SBCCopEzp          .MACRO          
+                  .BYTE $42E5
+                  .ENDM
+SBCCopFzp          .MACRO
+                  .BYTE $46E5
+                  .ENDM
+SBCCopGzp          .MACRO
+                  .BYTE $4AE5
+                  .ENDM                  
+SBCCopHzp          .MACRO          
+                  .BYTE $4EE5
+                  .ENDM
+SBCCopIzp          .MACRO
+                  .BYTE $82E5
+                  .ENDM
+SBCCopJzp          .MACRO
+                  .BYTE $86E5
+                  .ENDM
+SBCCopKzp          .MACRO          
+                  .BYTE $8AE5
+                  .ENDM
+SBCCopLzp          .MACRO
+                  .BYTE $8EE5
+                  .ENDM
+SBCCopMzp          .MACRO
+                  .BYTE $C2E5
+                  .ENDM                  
+SBCCopNzp          .MACRO          
+                  .BYTE $C6E5
+                  .ENDM
+SBCCopOzp          .MACRO
+                  .BYTE $CAE5
+                  .ENDM
+SBCCopQzp          .MACRO
+                  .BYTE $CEE5
+                  .ENDM
+
+SBCDopAzp          .MACRO
+                  .BYTE $03E5
+                  .ENDM                
+SBCDopBzp          .MACRO          
+                  .BYTE $07E5
+                  .ENDM
+SBCDopCzp          .MACRO
+                  .BYTE $0BE5
+                  .ENDM
+SBCDopDzp          .MACRO
+                  .BYTE $0FE5
+                  .ENDM
+SBCDopEzp          .MACRO          
+                  .BYTE $43E5
+                  .ENDM
+SBCDopFzp          .MACRO
+                  .BYTE $47E5
+                  .ENDM
+SBCDopGzp          .MACRO
+                  .BYTE $4BE5
+                  .ENDM                  
+SBCDopHzp          .MACRO          
+                  .BYTE $4FE5
+                  .ENDM
+SBCDopIzp          .MACRO
+                  .BYTE $83E5
+                  .ENDM
+SBCDopJzp          .MACRO
+                  .BYTE $87E5
+                  .ENDM
+SBCDopKzp          .MACRO          
+                  .BYTE $8BE5
+                  .ENDM
+SBCDopLzp          .MACRO
+                  .BYTE $8FE5
+                  .ENDM
+SBCDopMzp          .MACRO
+                  .BYTE $C3E5
+                  .ENDM                  
+SBCDopNzp          .MACRO          
+                  .BYTE $C7E5
+                  .ENDM
+SBCDopOzp          .MACRO
+                  .BYTE $CBE5
+                  .ENDM
+SBCDopQzp          .MACRO
+                  .BYTE $CFE5
+                  .ENDM                  
+
+SBCEopAzp          .MACRO
+                  .BYTE $10E5
+                  .ENDM                
+SBCEopBzp          .MACRO          
+                  .BYTE $14E5
+                  .ENDM
+SBCEopCzp          .MACRO
+                  .BYTE $18E5
+                  .ENDM
+SBCEopDzp          .MACRO
+                  .BYTE $1CE5
+                  .ENDM
+SBCEopEzp          .MACRO          
+                  .BYTE $50E5
+                  .ENDM
+SBCEopFzp          .MACRO
+                  .BYTE $54E5
+                  .ENDM
+SBCEopGzp          .MACRO
+                  .BYTE $58E5
+                  .ENDM                  
+SBCEopHzp          .MACRO          
+                  .BYTE $5CE5
+                  .ENDM
+SBCEopIzp          .MACRO
+                  .BYTE $90E5
+                  .ENDM
+SBCEopJzp          .MACRO
+                  .BYTE $94E5
+                  .ENDM
+SBCEopKzp          .MACRO          
+                  .BYTE $98E5
+                  .ENDM
+SBCEopLzp          .MACRO
+                  .BYTE $9CE5
+                  .ENDM
+SBCEopMzp          .MACRO
+                  .BYTE $D0E5
+                  .ENDM                  
+SBCEopNzp          .MACRO          
+                  .BYTE $D4E5
+                  .ENDM
+SBCEopOzp          .MACRO
+                  .BYTE $D8E5
+                  .ENDM
+SBCEopQzp          .MACRO
+                  .BYTE $DCE5
+                  .ENDM
+                  
+SBCFopAzp          .MACRO
+                  .BYTE $11E5
+                  .ENDM                
+SBCFopBzp          .MACRO          
+                  .BYTE $15E5
+                  .ENDM
+SBCFopCzp          .MACRO
+                  .BYTE $19E5
+                  .ENDM
+SBCFopDzp          .MACRO
+                  .BYTE $1DE5
+                  .ENDM
+SBCFopEzp          .MACRO          
+                  .BYTE $51E5
+                  .ENDM
+SBCFopFzp          .MACRO
+                  .BYTE $55E5
+                  .ENDM
+SBCFopGzp          .MACRO
+                  .BYTE $59E5
+                  .ENDM                  
+SBCFopHzp          .MACRO          
+                  .BYTE $5DE5
+                  .ENDM
+SBCFopIzp          .MACRO
+                  .BYTE $91E5
+                  .ENDM
+SBCFopJzp          .MACRO
+                  .BYTE $95E5
+                  .ENDM
+SBCFopKzp          .MACRO          
+                  .BYTE $99E5
+                  .ENDM
+SBCFopLzp          .MACRO
+                  .BYTE $9DE5
+                  .ENDM
+SBCFopMzp          .MACRO
+                  .BYTE $D1E5
+                  .ENDM                  
+SBCFopNzp          .MACRO          
+                  .BYTE $D5E5
+                  .ENDM
+SBCFopOzp          .MACRO
+                  .BYTE $D9E5
+                  .ENDM
+SBCFopQzp          .MACRO
+                  .BYTE $DDE5
+                  .ENDM                  
+                           
+SBCGopAzp          .MACRO
+                  .BYTE $12E5
+                  .ENDM                
+SBCGopBzp          .MACRO          
+                  .BYTE $16E5
+                  .ENDM
+SBCGopCzp          .MACRO
+                  .BYTE $1AE5
+                  .ENDM
+SBCGopDzp          .MACRO
+                  .BYTE $1EE5
+                  .ENDM
+SBCGopEzp          .MACRO          
+                  .BYTE $52E5
+                  .ENDM
+SBCGopFzp          .MACRO
+                  .BYTE $56E5
+                  .ENDM
+SBCGopGzp          .MACRO
+                  .BYTE $5AE5
+                  .ENDM                  
+SBCGopHzp          .MACRO          
+                  .BYTE $5EE5
+                  .ENDM
+SBCGopIzp          .MACRO
+                  .BYTE $92E5
+                  .ENDM
+SBCGopJzp          .MACRO
+                  .BYTE $96E5
+                  .ENDM
+SBCGopKzp          .MACRO          
+                  .BYTE $9AE5
+                  .ENDM
+SBCGopLzp          .MACRO
+                  .BYTE $9EE5
+                  .ENDM
+SBCGopMzp          .MACRO
+                  .BYTE $D2E5
+                  .ENDM                  
+SBCGopNzp          .MACRO          
+                  .BYTE $D6E5
+                  .ENDM
+SBCGopOzp          .MACRO
+                  .BYTE $DAE5
+                  .ENDM
+SBCGopQzp          .MACRO
+                  .BYTE $DEE5
+                  .ENDM
+                  
+SBCHopAzp          .MACRO
+                  .BYTE $13E5
+                  .ENDM                
+SBCHopBzp          .MACRO          
+                  .BYTE $17E5
+                  .ENDM
+SBCHopCzp          .MACRO
+                  .BYTE $1BE5
+                  .ENDM
+SBCHopDzp          .MACRO
+                  .BYTE $1FE5
+                  .ENDM
+SBCHopEzp          .MACRO          
+                  .BYTE $53E5
+                  .ENDM
+SBCHopFzp          .MACRO
+                  .BYTE $57E5
+                  .ENDM
+SBCHopGzp          .MACRO
+                  .BYTE $5BE5
+                  .ENDM                  
+SBCHopHzp          .MACRO          
+                  .BYTE $5FE5
+                  .ENDM
+SBCHopIzp          .MACRO
+                  .BYTE $93E5
+                  .ENDM
+SBCHopJzp          .MACRO
+                  .BYTE $97E5
+                  .ENDM
+SBCHopKzp          .MACRO          
+                  .BYTE $9BE5
+                  .ENDM
+SBCHopLzp          .MACRO
+                  .BYTE $9FE5
+                  .ENDM
+SBCHopMzp          .MACRO
+                  .BYTE $D3E5
+                  .ENDM                  
+SBCHopNzp          .MACRO          
+                  .BYTE $D7E5
+                  .ENDM
+SBCHopOzp          .MACRO
+                  .BYTE $DBE5
+                  .ENDM
+SBCHopQzp          .MACRO
+                  .BYTE $DFE5
+                  .ENDM
+                  
+SBCIopAzp          .MACRO
+                  .BYTE $20E5
+                  .ENDM                
+SBCIopBzp          .MACRO          
+                  .BYTE $24E5
+                  .ENDM
+SBCIopCzp          .MACRO
+                  .BYTE $28E5
+                  .ENDM
+SBCIopDzp          .MACRO
+                  .BYTE $2CE5
+                  .ENDM
+SBCIopEzp          .MACRO          
+                  .BYTE $60E5
+                  .ENDM
+SBCIopFzp          .MACRO
+                  .BYTE $64E5
+                  .ENDM
+SBCIopGzp          .MACRO
+                  .BYTE $68E5
+                  .ENDM                  
+SBCIopHzp          .MACRO          
+                  .BYTE $6CE5
+                  .ENDM
+SBCIopIzp          .MACRO
+                  .BYTE $A0E5
+                  .ENDM
+SBCIopJzp          .MACRO
+                  .BYTE $A4E5
+                  .ENDM
+SBCIopKzp          .MACRO          
+                  .BYTE $A8E5
+                  .ENDM
+SBCIopLzp          .MACRO
+                  .BYTE $ACE5
+                  .ENDM
+SBCIopMzp          .MACRO
+                  .BYTE $E0E5
+                  .ENDM                  
+SBCIopNzp          .MACRO          
+                  .BYTE $E4E5
+                  .ENDM
+SBCIopOzp          .MACRO
+                  .BYTE $E8E5
+                  .ENDM
+SBCIopQzp          .MACRO
+                  .BYTE $ECE5
+                  .ENDM
+                  
+SBCJopAzp          .MACRO
+                  .BYTE $21E5
+                  .ENDM                
+SBCJopBzp          .MACRO          
+                  .BYTE $25E5
+                  .ENDM
+SBCJopCzp          .MACRO
+                  .BYTE $29E5
+                  .ENDM
+SBCJopDzp          .MACRO
+                  .BYTE $2DE5
+                  .ENDM
+SBCJopEzp          .MACRO          
+                  .BYTE $61E5
+                  .ENDM
+SBCJopFzp          .MACRO
+                  .BYTE $65E5
+                  .ENDM
+SBCJopGzp          .MACRO
+                  .BYTE $69E5
+                  .ENDM                  
+SBCJopHzp          .MACRO          
+                  .BYTE $6DE5
+                  .ENDM
+SBCJopIzp          .MACRO
+                  .BYTE $A1E5
+                  .ENDM
+SBCJopJzp          .MACRO
+                  .BYTE $A5E5
+                  .ENDM
+SBCJopKzp          .MACRO          
+                  .BYTE $A9E5
+                  .ENDM
+SBCJopLzp          .MACRO
+                  .BYTE $ADE5
+                  .ENDM
+SBCJopMzp          .MACRO
+                  .BYTE $E1E5
+                  .ENDM                  
+SBCJopNzp          .MACRO          
+                  .BYTE $E5E5
+                  .ENDM
+SBCJopOzp          .MACRO
+                  .BYTE $E9E5
+                  .ENDM
+SBCJopQzp          .MACRO
+                  .BYTE $EDE5
+                  .ENDM
+                  
+SBCKopAzp          .MACRO
+                  .BYTE $22E5
+                  .ENDM                
+SBCKopBzp          .MACRO          
+                  .BYTE $26E5
+                  .ENDM
+SBCKopCzp          .MACRO
+                  .BYTE $2AE5
+                  .ENDM
+SBCKopDzp          .MACRO
+                  .BYTE $2EE5
+                  .ENDM
+SBCKopEzp          .MACRO          
+                  .BYTE $62E5
+                  .ENDM
+SBCKopFzp          .MACRO
+                  .BYTE $66E5
+                  .ENDM
+SBCKopGzp          .MACRO
+                  .BYTE $6AE5
+                  .ENDM                  
+SBCKopHzp          .MACRO          
+                  .BYTE $6EE5
+                  .ENDM
+SBCKopIzp          .MACRO
+                  .BYTE $A2E5
+                  .ENDM
+SBCKopJzp          .MACRO
+                  .BYTE $A6E5
+                  .ENDM
+SBCKopKzp          .MACRO          
+                  .BYTE $AAE5
+                  .ENDM
+SBCKopLzp          .MACRO
+                  .BYTE $AEE5
+                  .ENDM
+SBCKopMzp          .MACRO
+                  .BYTE $E2E5
+                  .ENDM                  
+SBCKopNzp          .MACRO          
+                  .BYTE $E6E5
+                  .ENDM
+SBCKopOzp          .MACRO
+                  .BYTE $EAE5
+                  .ENDM
+SBCKopQzp          .MACRO
+                  .BYTE $EEE5
+                  .ENDM
+                  
+SBCLopAzp          .MACRO
+                  .BYTE $23E5
+                  .ENDM                
+SBCLopBzp          .MACRO          
+                  .BYTE $27E5
+                  .ENDM
+SBCLopCzp          .MACRO
+                  .BYTE $2BE5
+                  .ENDM
+SBCLopDzp          .MACRO
+                  .BYTE $2FE5
+                  .ENDM
+SBCLopEzp          .MACRO          
+                  .BYTE $63E5
+                  .ENDM
+SBCLopFzp          .MACRO
+                  .BYTE $67E5
+                  .ENDM
+SBCLopGzp          .MACRO
+                  .BYTE $6BE5
+                  .ENDM                  
+SBCLopHzp          .MACRO          
+                  .BYTE $6FE5
+                  .ENDM
+SBCLopIzp          .MACRO
+                  .BYTE $A3E5
+                  .ENDM
+SBCLopJzp          .MACRO
+                  .BYTE $A7E5
+                  .ENDM
+SBCLopKzp          .MACRO          
+                  .BYTE $ABE5
+                  .ENDM
+SBCLopLzp          .MACRO
+                  .BYTE $AFE5
+                  .ENDM
+SBCLopMzp          .MACRO
+                  .BYTE $E3E5
+                  .ENDM                  
+SBCLopNzp          .MACRO          
+                  .BYTE $E7E5
+                  .ENDM
+SBCLopOzp          .MACRO
+                  .BYTE $EBE5
+                  .ENDM
+SBCLopQzp          .MACRO
+                  .BYTE $EFE5
+                  .ENDM
+                  
+SBCMopAzp          .MACRO
+                  .BYTE $30E5
+                  .ENDM                
+SBCMopBzp          .MACRO          
+                  .BYTE $34E5
+                  .ENDM
+SBCMopCzp          .MACRO
+                  .BYTE $38E5
+                  .ENDM
+SBCMopDzp          .MACRO
+                  .BYTE $3CE5
+                  .ENDM
+SBCMopEzp          .MACRO          
+                  .BYTE $70E5
+                  .ENDM
+SBCMopFzp          .MACRO
+                  .BYTE $74E5
+                  .ENDM
+SBCMopGzp          .MACRO
+                  .BYTE $78E5
+                  .ENDM                  
+SBCMopHzp          .MACRO          
+                  .BYTE $7CE5
+                  .ENDM
+SBCMopIzp          .MACRO
+                  .BYTE $B0E5
+                  .ENDM
+SBCMopJzp          .MACRO
+                  .BYTE $B4E5
+                  .ENDM
+SBCMopKzp          .MACRO          
+                  .BYTE $B8E5
+                  .ENDM
+SBCMopLzp          .MACRO
+                  .BYTE $BCE5
+                  .ENDM
+SBCMopMzp          .MACRO
+                  .BYTE $F0E5
+                  .ENDM                  
+SBCMopNzp          .MACRO          
+                  .BYTE $F4E5
+                  .ENDM
+SBCMopOzp          .MACRO
+                  .BYTE $F8E5
+                  .ENDM
+SBCMopQzp          .MACRO
+                  .BYTE $FCE5
+                  .ENDM
+                  
+SBCNopAzp          .MACRO
+                  .BYTE $31E5
+                  .ENDM                
+SBCNopBzp          .MACRO          
+                  .BYTE $35E5
+                  .ENDM
+SBCNopCzp          .MACRO
+                  .BYTE $39E5
+                  .ENDM
+SBCNopDzp          .MACRO
+                  .BYTE $3DE5
+                  .ENDM
+SBCNopEzp          .MACRO          
+                  .BYTE $71E5
+                  .ENDM
+SBCNopFzp          .MACRO
+                  .BYTE $75E5
+                  .ENDM
+SBCNopGzp          .MACRO
+                  .BYTE $79E5
+                  .ENDM                  
+SBCNopHzp          .MACRO          
+                  .BYTE $7DE5
+                  .ENDM
+SBCNopIzp          .MACRO
+                  .BYTE $B1E5
+                  .ENDM
+SBCNopJzp          .MACRO
+                  .BYTE $B5E5
+                  .ENDM
+SBCNopKzp          .MACRO          
+                  .BYTE $B9E5
+                  .ENDM
+SBCNopLzp          .MACRO
+                  .BYTE $BDE5
+                  .ENDM
+SBCNopMzp          .MACRO
+                  .BYTE $F1E5
+                  .ENDM                  
+SBCNopNzp          .MACRO          
+                  .BYTE $F5E5
+                  .ENDM
+SBCNopOzp          .MACRO
+                  .BYTE $F9E5
+                  .ENDM
+SBCNopQzp          .MACRO
+                  .BYTE $FDE5
+                  .ENDM
+            
+SBCOopAzp          .MACRO
+                  .BYTE $32E5
+                  .ENDM                
+SBCOopBzp          .MACRO          
+                  .BYTE $36E5
+                  .ENDM
+SBCOopCzp          .MACRO
+                  .BYTE $3AE5
+                  .ENDM
+SBCOopDzp          .MACRO
+                  .BYTE $3EE5
+                  .ENDM
+SBCOopEzp          .MACRO          
+                  .BYTE $72E5
+                  .ENDM
+SBCOopFzp          .MACRO
+                  .BYTE $76E5
+                  .ENDM
+SBCOopGzp          .MACRO
+                  .BYTE $7AE5
+                  .ENDM                  
+SBCOopHzp          .MACRO          
+                  .BYTE $7EE5
+                  .ENDM
+SBCOopIzp          .MACRO
+                  .BYTE $B2E5
+                  .ENDM
+SBCOopJzp          .MACRO
+                  .BYTE $B6E5
+                  .ENDM
+SBCOopKzp          .MACRO          
+                  .BYTE $BAE5
+                  .ENDM
+SBCOopLzp          .MACRO
+                  .BYTE $BEE5
+                  .ENDM
+SBCOopMzp          .MACRO
+                  .BYTE $F2E5
+                  .ENDM                  
+SBCOopNzp          .MACRO          
+                  .BYTE $F6E5
+                  .ENDM
+SBCOopOzp          .MACRO
+                  .BYTE $FAE5
+                  .ENDM
+SBCOopQzp          .MACRO
+                  .BYTE $FEE5
+                  .ENDM
+                  
+SBCQopAzp          .MACRO
+                  .BYTE $33E5
+                  .ENDM                
+SBCQopBzp          .MACRO          
+                  .BYTE $37E5
+                  .ENDM
+SBCQopCzp          .MACRO
+                  .BYTE $3BE5
+                  .ENDM
+SBCQopDzp          .MACRO
+                  .BYTE $3FE5
+                  .ENDM
+SBCQopEzp          .MACRO          
+                  .BYTE $73E5
+                  .ENDM
+SBCQopFzp          .MACRO
+                  .BYTE $77E5
+                  .ENDM
+SBCQopGzp          .MACRO
+                  .BYTE $7BE5
+                  .ENDM                  
+SBCQopHzp          .MACRO          
+                  .BYTE $7FE5
+                  .ENDM
+SBCQopIzp          .MACRO
+                  .BYTE $B3E5
+                  .ENDM
+SBCQopJzp          .MACRO
+                  .BYTE $B7E5
+                  .ENDM
+SBCQopKzp          .MACRO          
+                  .BYTE $BBE5
+                  .ENDM
+SBCQopLzp          .MACRO
+                  .BYTE $BFE5
+                  .ENDM
+SBCQopMzp          .MACRO
+                  .BYTE $F3E5
+                  .ENDM                  
+SBCQopNzp          .MACRO          
+                  .BYTE $F7E5
+                  .ENDM
+SBCQopOzp          .MACRO
+                  .BYTE $FBE5
+                  .ENDM
+SBCQopQzp          .MACRO
+                  .BYTE $FFE5
+                  .ENDM
+                  
+;ORA $xxxx              $0005
+ORAAopBzp          .MACRO          
+                  .BYTE $0405
+                  .ENDM
+ORAAopCzp          .MACRO
+                  .BYTE $0805
+                  .ENDM
+ORAAopDzp          .MACRO
+                  .BYTE $0C05
+                  .ENDM
+ORAAopEzp          .MACRO          
+                  .BYTE $4005
+                  .ENDM
+ORAAopFzp          .MACRO
+                  .BYTE $4405
+                  .ENDM
+ORAAopGzp          .MACRO
+                  .BYTE $4805
+                  .ENDM                  
+ORAAopHzp          .MACRO          
+                  .BYTE $4C05
+                  .ENDM
+ORAAopIzp          .MACRO
+                  .BYTE $8005
+                  .ENDM
+ORAAopJzp          .MACRO
+                  .BYTE $8405
+                  .ENDM
+ORAAopKzp          .MACRO          
+                  .BYTE $8805
+                  .ENDM
+ORAAopLzp          .MACRO
+                  .BYTE $8C05
+                  .ENDM
+ORAAopMzp          .MACRO
+                  .BYTE $C005
+                  .ENDM                  
+ORAAopNzp          .MACRO          
+                  .BYTE $C405
+                  .ENDM
+ORAAopOzp          .MACRO
+                  .BYTE $C805
+                  .ENDM
+ORAAopQzp          .MACRO
+                  .BYTE $CC05
+                  .ENDM
+                                    
+ORABopAzp          .MACRO
+                  .BYTE $0105
+                  .ENDM                
+ORABopBzp          .MACRO          
+                  .BYTE $0505
+                  .ENDM
+ORABopCzp          .MACRO
+                  .BYTE $0905
+                  .ENDM
+ORABopDzp          .MACRO
+                  .BYTE $0D05
+                  .ENDM
+ORABopEzp          .MACRO          
+                  .BYTE $4105
+                  .ENDM
+ORABopFzp          .MACRO
+                  .BYTE $4505
+                  .ENDM
+ORABopGzp          .MACRO
+                  .BYTE $4905
+                  .ENDM                  
+ORABopHzp          .MACRO          
+                  .BYTE $4D05
+                  .ENDM
+ORABopIzp          .MACRO
+                  .BYTE $8105
+                  .ENDM
+ORABopJzp          .MACRO
+                  .BYTE $8505
+                  .ENDM
+ORABopKzp          .MACRO          
+                  .BYTE $8905
+                  .ENDM
+ORABopLzp          .MACRO
+                  .BYTE $8D05
+                  .ENDM
+ORABopMzp          .MACRO
+                  .BYTE $C105
+                  .ENDM                  
+ORABopNzp          .MACRO          
+                  .BYTE $C505
+                  .ENDM
+ORABopOzp          .MACRO
+                  .BYTE $C905
+                  .ENDM
+ORABopQzp          .MACRO
+                  .BYTE $CD05
+                  .ENDM
+                                    
+ORACopAzp          .MACRO
+                  .BYTE $0205
+                  .ENDM                
+ORACopBzp          .MACRO          
+                  .BYTE $0605
+                  .ENDM
+ORACopCzp          .MACRO
+                  .BYTE $0A05
+                  .ENDM
+ORACopDzp          .MACRO
+                  .BYTE $0E05
+                  .ENDM
+ORACopEzp          .MACRO          
+                  .BYTE $4205
+                  .ENDM
+ORACopFzp          .MACRO
+                  .BYTE $4605
+                  .ENDM
+ORACopGzp          .MACRO
+                  .BYTE $4A05
+                  .ENDM                  
+ORACopHzp          .MACRO          
+                  .BYTE $4E05
+                  .ENDM
+ORACopIzp          .MACRO
+                  .BYTE $8205
+                  .ENDM
+ORACopJzp          .MACRO
+                  .BYTE $8605
+                  .ENDM
+ORACopKzp          .MACRO          
+                  .BYTE $8A05
+                  .ENDM
+ORACopLzp          .MACRO
+                  .BYTE $8E05
+                  .ENDM
+ORACopMzp          .MACRO
+                  .BYTE $C205
+                  .ENDM                  
+ORACopNzp          .MACRO          
+                  .BYTE $C605
+                  .ENDM
+ORACopOzp          .MACRO
+                  .BYTE $CA05
+                  .ENDM
+ORACopQzp          .MACRO
+                  .BYTE $CE05
+                  .ENDM
+
+ORADopAzp          .MACRO
+                  .BYTE $0305
+                  .ENDM                
+ORADopBzp          .MACRO          
+                  .BYTE $0705
+                  .ENDM
+ORADopCzp          .MACRO
+                  .BYTE $0B05
+                  .ENDM
+ORADopDzp          .MACRO
+                  .BYTE $0F05
+                  .ENDM
+ORADopEzp          .MACRO          
+                  .BYTE $4305
+                  .ENDM
+ORADopFzp          .MACRO
+                  .BYTE $4705
+                  .ENDM
+ORADopGzp          .MACRO
+                  .BYTE $4B05
+                  .ENDM                  
+ORADopHzp          .MACRO          
+                  .BYTE $4F05
+                  .ENDM
+ORADopIzp          .MACRO
+                  .BYTE $8305
+                  .ENDM
+ORADopJzp          .MACRO
+                  .BYTE $8705
+                  .ENDM
+ORADopKzp          .MACRO          
+                  .BYTE $8B05
+                  .ENDM
+ORADopLzp          .MACRO
+                  .BYTE $8F05
+                  .ENDM
+ORADopMzp          .MACRO
+                  .BYTE $C305
+                  .ENDM                  
+ORADopNzp          .MACRO          
+                  .BYTE $C705
+                  .ENDM
+ORADopOzp          .MACRO
+                  .BYTE $CB05
+                  .ENDM
+ORADopQzp          .MACRO
+                  .BYTE $CF05
+                  .ENDM                  
+
+ORAEopAzp          .MACRO
+                  .BYTE $1005
+                  .ENDM                
+ORAEopBzp          .MACRO          
+                  .BYTE $1405
+                  .ENDM
+ORAEopCzp          .MACRO
+                  .BYTE $1805
+                  .ENDM
+ORAEopDzp          .MACRO
+                  .BYTE $1C05
+                  .ENDM
+ORAEopEzp          .MACRO          
+                  .BYTE $5005
+                  .ENDM
+ORAEopFzp          .MACRO
+                  .BYTE $5405
+                  .ENDM
+ORAEopGzp          .MACRO
+                  .BYTE $5805
+                  .ENDM                  
+ORAEopHzp          .MACRO          
+                  .BYTE $5C05
+                  .ENDM
+ORAEopIzp          .MACRO
+                  .BYTE $9005
+                  .ENDM
+ORAEopJzp          .MACRO
+                  .BYTE $9405
+                  .ENDM
+ORAEopKzp          .MACRO          
+                  .BYTE $9805
+                  .ENDM
+ORAEopLzp          .MACRO
+                  .BYTE $9C05
+                  .ENDM
+ORAEopMzp          .MACRO
+                  .BYTE $D005
+                  .ENDM                  
+ORAEopNzp          .MACRO          
+                  .BYTE $D405
+                  .ENDM
+ORAEopOzp          .MACRO
+                  .BYTE $D805
+                  .ENDM
+ORAEopQzp          .MACRO
+                  .BYTE $DC05
+                  .ENDM
+                  
+ORAFopAzp          .MACRO
+                  .BYTE $1105
+                  .ENDM                
+ORAFopBzp          .MACRO          
+                  .BYTE $1505
+                  .ENDM
+ORAFopCzp          .MACRO
+                  .BYTE $1905
+                  .ENDM
+ORAFopDzp          .MACRO
+                  .BYTE $1D05
+                  .ENDM
+ORAFopEzp          .MACRO          
+                  .BYTE $5105
+                  .ENDM
+ORAFopFzp          .MACRO
+                  .BYTE $5505
+                  .ENDM
+ORAFopGzp          .MACRO
+                  .BYTE $5905
+                  .ENDM                  
+ORAFopHzp          .MACRO          
+                  .BYTE $5D05
+                  .ENDM
+ORAFopIzp          .MACRO
+                  .BYTE $9105
+                  .ENDM
+ORAFopJzp          .MACRO
+                  .BYTE $9505
+                  .ENDM
+ORAFopKzp          .MACRO          
+                  .BYTE $9905
+                  .ENDM
+ORAFopLzp          .MACRO
+                  .BYTE $9D05
+                  .ENDM
+ORAFopMzp          .MACRO
+                  .BYTE $D105
+                  .ENDM                  
+ORAFopNzp          .MACRO          
+                  .BYTE $D505
+                  .ENDM
+ORAFopOzp          .MACRO
+                  .BYTE $D905
+                  .ENDM
+ORAFopQzp          .MACRO
+                  .BYTE $DD05
+                  .ENDM                  
+                           
+ORAGopAzp          .MACRO
+                  .BYTE $1205
+                  .ENDM                
+ORAGopBzp          .MACRO          
+                  .BYTE $1605
+                  .ENDM
+ORAGopCzp          .MACRO
+                  .BYTE $1A05
+                  .ENDM
+ORAGopDzp          .MACRO
+                  .BYTE $1E05
+                  .ENDM
+ORAGopEzp          .MACRO          
+                  .BYTE $5205
+                  .ENDM
+ORAGopFzp          .MACRO
+                  .BYTE $5605
+                  .ENDM
+ORAGopGzp          .MACRO
+                  .BYTE $5A05
+                  .ENDM                  
+ORAGopHzp          .MACRO          
+                  .BYTE $5E05
+                  .ENDM
+ORAGopIzp          .MACRO
+                  .BYTE $9205
+                  .ENDM
+ORAGopJzp          .MACRO
+                  .BYTE $9605
+                  .ENDM
+ORAGopKzp          .MACRO          
+                  .BYTE $9A05
+                  .ENDM
+ORAGopLzp          .MACRO
+                  .BYTE $9E05
+                  .ENDM
+ORAGopMzp          .MACRO
+                  .BYTE $D205
+                  .ENDM                  
+ORAGopNzp          .MACRO          
+                  .BYTE $D605
+                  .ENDM
+ORAGopOzp          .MACRO
+                  .BYTE $DA05
+                  .ENDM
+ORAGopQzp          .MACRO
+                  .BYTE $DE05
+                  .ENDM
+                  
+ORAHopAzp          .MACRO
+                  .BYTE $1305
+                  .ENDM                
+ORAHopBzp          .MACRO          
+                  .BYTE $1705
+                  .ENDM
+ORAHopCzp          .MACRO
+                  .BYTE $1B05
+                  .ENDM
+ORAHopDzp          .MACRO
+                  .BYTE $1F05
+                  .ENDM
+ORAHopEzp          .MACRO          
+                  .BYTE $5305
+                  .ENDM
+ORAHopFzp          .MACRO
+                  .BYTE $5705
+                  .ENDM
+ORAHopGzp          .MACRO
+                  .BYTE $5B05
+                  .ENDM                  
+ORAHopHzp          .MACRO          
+                  .BYTE $5F05
+                  .ENDM
+ORAHopIzp          .MACRO
+                  .BYTE $9305
+                  .ENDM
+ORAHopJzp          .MACRO
+                  .BYTE $9705
+                  .ENDM
+ORAHopKzp          .MACRO          
+                  .BYTE $9B05
+                  .ENDM
+ORAHopLzp          .MACRO
+                  .BYTE $9F05
+                  .ENDM
+ORAHopMzp          .MACRO
+                  .BYTE $D305
+                  .ENDM                  
+ORAHopNzp          .MACRO          
+                  .BYTE $D705
+                  .ENDM
+ORAHopOzp          .MACRO
+                  .BYTE $DB05
+                  .ENDM
+ORAHopQzp          .MACRO
+                  .BYTE $DF05
+                  .ENDM
+                  
+ORAIopAzp          .MACRO
+                  .BYTE $2005
+                  .ENDM                
+ORAIopBzp          .MACRO          
+                  .BYTE $2405
+                  .ENDM
+ORAIopCzp          .MACRO
+                  .BYTE $2805
+                  .ENDM
+ORAIopDzp          .MACRO
+                  .BYTE $2C05
+                  .ENDM
+ORAIopEzp          .MACRO          
+                  .BYTE $6005
+                  .ENDM
+ORAIopFzp          .MACRO
+                  .BYTE $6405
+                  .ENDM
+ORAIopGzp          .MACRO
+                  .BYTE $6805
+                  .ENDM                  
+ORAIopHzp          .MACRO          
+                  .BYTE $6C05
+                  .ENDM
+ORAIopIzp          .MACRO
+                  .BYTE $A005
+                  .ENDM
+ORAIopJzp          .MACRO
+                  .BYTE $A405
+                  .ENDM
+ORAIopKzp          .MACRO          
+                  .BYTE $A805
+                  .ENDM
+ORAIopLzp          .MACRO
+                  .BYTE $AC05
+                  .ENDM
+ORAIopMzp          .MACRO
+                  .BYTE $E005
+                  .ENDM                  
+ORAIopNzp          .MACRO          
+                  .BYTE $E405
+                  .ENDM
+ORAIopOzp          .MACRO
+                  .BYTE $E805
+                  .ENDM
+ORAIopQzp          .MACRO
+                  .BYTE $EC05
+                  .ENDM
+                  
+ORAJopAzp          .MACRO
+                  .BYTE $2105
+                  .ENDM                
+ORAJopBzp          .MACRO          
+                  .BYTE $2505
+                  .ENDM
+ORAJopCzp          .MACRO
+                  .BYTE $2905
+                  .ENDM
+ORAJopDzp          .MACRO
+                  .BYTE $2D05
+                  .ENDM
+ORAJopEzp          .MACRO          
+                  .BYTE $6105
+                  .ENDM
+ORAJopFzp          .MACRO
+                  .BYTE $6505
+                  .ENDM
+ORAJopGzp          .MACRO
+                  .BYTE $0905
+                  .ENDM                  
+ORAJopHzp          .MACRO          
+                  .BYTE $6D05
+                  .ENDM
+ORAJopIzp          .MACRO
+                  .BYTE $A105
+                  .ENDM
+ORAJopJzp          .MACRO
+                  .BYTE $A505
+                  .ENDM
+ORAJopKzp          .MACRO          
+                  .BYTE $A905
+                  .ENDM
+ORAJopLzp          .MACRO
+                  .BYTE $AD05
+                  .ENDM
+ORAJopMzp          .MACRO
+                  .BYTE $E105
+                  .ENDM                  
+ORAJopNzp          .MACRO          
+                  .BYTE $E505
+                  .ENDM
+ORAJopOzp          .MACRO
+                  .BYTE $E905
+                  .ENDM
+ORAJopQzp          .MACRO
+                  .BYTE $ED05
+                  .ENDM
+                  
+ORAKopAzp          .MACRO
+                  .BYTE $2205
+                  .ENDM                
+ORAKopBzp          .MACRO          
+                  .BYTE $2605
+                  .ENDM
+ORAKopCzp          .MACRO
+                  .BYTE $2A05
+                  .ENDM
+ORAKopDzp          .MACRO
+                  .BYTE $2E05
+                  .ENDM
+ORAKopEzp          .MACRO          
+                  .BYTE $6205
+                  .ENDM
+ORAKopFzp          .MACRO
+                  .BYTE $6605
+                  .ENDM
+ORAKopGzp          .MACRO
+                  .BYTE $6A05
+                  .ENDM                  
+ORAKopHzp          .MACRO          
+                  .BYTE $6E05
+                  .ENDM
+ORAKopIzp          .MACRO
+                  .BYTE $A205
+                  .ENDM
+ORAKopJzp          .MACRO
+                  .BYTE $A605
+                  .ENDM
+ORAKopKzp          .MACRO          
+                  .BYTE $AA05
+                  .ENDM
+ORAKopLzp          .MACRO
+                  .BYTE $AE05
+                  .ENDM
+ORAKopMzp          .MACRO
+                  .BYTE $E205
+                  .ENDM                  
+ORAKopNzp          .MACRO          
+                  .BYTE $E605
+                  .ENDM
+ORAKopOzp          .MACRO
+                  .BYTE $EA05
+                  .ENDM
+ORAKopQzp          .MACRO
+                  .BYTE $EE05
+                  .ENDM
+                  
+ORALopAzp          .MACRO
+                  .BYTE $2305
+                  .ENDM                
+ORALopBzp          .MACRO          
+                  .BYTE $2705
+                  .ENDM
+ORALopCzp          .MACRO
+                  .BYTE $2B05
+                  .ENDM
+ORALopDzp          .MACRO
+                  .BYTE $2F05
+                  .ENDM
+ORALopEzp          .MACRO          
+                  .BYTE $6305
+                  .ENDM
+ORALopFzp          .MACRO
+                  .BYTE $6705
+                  .ENDM
+ORALopGzp          .MACRO
+                  .BYTE $6B05
+                  .ENDM                  
+ORALopHzp          .MACRO          
+                  .BYTE $6F05
+                  .ENDM
+ORALopIzp          .MACRO
+                  .BYTE $A305
+                  .ENDM
+ORALopJzp          .MACRO
+                  .BYTE $A705
+                  .ENDM
+ORALopKzp          .MACRO          
+                  .BYTE $AB05
+                  .ENDM
+ORALopLzp          .MACRO
+                  .BYTE $AF05
+                  .ENDM
+ORALopMzp          .MACRO
+                  .BYTE $E305
+                  .ENDM                  
+ORALopNzp          .MACRO          
+                  .BYTE $E705
+                  .ENDM
+ORALopOzp          .MACRO
+                  .BYTE $EB05
+                  .ENDM
+ORALopQzp          .MACRO
+                  .BYTE $EF05
+                  .ENDM
+                  
+ORAMopAzp          .MACRO
+                  .BYTE $3005
+                  .ENDM                
+ORAMopBzp          .MACRO          
+                  .BYTE $3405
+                  .ENDM
+ORAMopCzp          .MACRO
+                  .BYTE $3805
+                  .ENDM
+ORAMopDzp          .MACRO
+                  .BYTE $3C05
+                  .ENDM
+ORAMopEzp          .MACRO          
+                  .BYTE $7005
+                  .ENDM
+ORAMopFzp          .MACRO
+                  .BYTE $7405
+                  .ENDM
+ORAMopGzp          .MACRO
+                  .BYTE $7805
+                  .ENDM                  
+ORAMopHzp          .MACRO          
+                  .BYTE $7C05
+                  .ENDM
+ORAMopIzp          .MACRO
+                  .BYTE $B005
+                  .ENDM
+ORAMopJzp          .MACRO
+                  .BYTE $B405
+                  .ENDM
+ORAMopKzp          .MACRO          
+                  .BYTE $B805
+                  .ENDM
+ORAMopLzp          .MACRO
+                  .BYTE $BC05
+                  .ENDM
+ORAMopMzp          .MACRO
+                  .BYTE $F005
+                  .ENDM                  
+ORAMopNzp          .MACRO          
+                  .BYTE $F405
+                  .ENDM
+ORAMopOzp          .MACRO
+                  .BYTE $F805
+                  .ENDM
+ORAMopQzp          .MACRO
+                  .BYTE $FC05
+                  .ENDM
+                  
+ORANopAzp          .MACRO
+                  .BYTE $3105
+                  .ENDM                
+ORANopBzp          .MACRO          
+                  .BYTE $3505
+                  .ENDM
+ORANopCzp          .MACRO
+                  .BYTE $3905
+                  .ENDM
+ORANopDzp          .MACRO
+                  .BYTE $3D05
+                  .ENDM
+ORANopEzp          .MACRO          
+                  .BYTE $7105
+                  .ENDM
+ORANopFzp          .MACRO
+                  .BYTE $7505
+                  .ENDM
+ORANopGzp          .MACRO
+                  .BYTE $7905
+                  .ENDM                  
+ORANopHzp          .MACRO          
+                  .BYTE $7D05
+                  .ENDM
+ORANopIzp          .MACRO
+                  .BYTE $B105
+                  .ENDM
+ORANopJzp          .MACRO
+                  .BYTE $B505
+                  .ENDM
+ORANopKzp          .MACRO          
+                  .BYTE $B905
+                  .ENDM
+ORANopLzp          .MACRO
+                  .BYTE $BD05
+                  .ENDM
+ORANopMzp          .MACRO
+                  .BYTE $F105
+                  .ENDM                  
+ORANopNzp          .MACRO          
+                  .BYTE $F505
+                  .ENDM
+ORANopOzp          .MACRO
+                  .BYTE $F905
+                  .ENDM
+ORANopQzp          .MACRO
+                  .BYTE $FD05
+                  .ENDM
+            
+ORAOopAzp          .MACRO
+                  .BYTE $3205
+                  .ENDM                
+ORAOopBzp          .MACRO          
+                  .BYTE $3605
+                  .ENDM
+ORAOopCzp          .MACRO
+                  .BYTE $3A05
+                  .ENDM
+ORAOopDzp          .MACRO
+                  .BYTE $3E05
+                  .ENDM
+ORAOopEzp          .MACRO          
+                  .BYTE $7205
+                  .ENDM
+ORAOopFzp          .MACRO
+                  .BYTE $7605
+                  .ENDM
+ORAOopGzp          .MACRO
+                  .BYTE $7A05
+                  .ENDM                  
+ORAOopHzp          .MACRO          
+                  .BYTE $7E05
+                  .ENDM
+ORAOopIzp          .MACRO
+                  .BYTE $B205
+                  .ENDM
+ORAOopJzp          .MACRO
+                  .BYTE $B605
+                  .ENDM
+ORAOopKzp          .MACRO          
+                  .BYTE $BA05
+                  .ENDM
+ORAOopLzp          .MACRO
+                  .BYTE $BE05
+                  .ENDM
+ORAOopMzp          .MACRO
+                  .BYTE $F205
+                  .ENDM                  
+ORAOopNzp          .MACRO          
+                  .BYTE $F605
+                  .ENDM
+ORAOopOzp          .MACRO
+                  .BYTE $FA05
+                  .ENDM
+ORAOopQzp          .MACRO
+                  .BYTE $FE05
+                  .ENDM
+                  
+ORAQopAzp          .MACRO
+                  .BYTE $3305
+                  .ENDM                
+ORAQopBzp          .MACRO          
+                  .BYTE $3705
+                  .ENDM
+ORAQopCzp          .MACRO
+                  .BYTE $3B05
+                  .ENDM
+ORAQopDzp          .MACRO
+                  .BYTE $3F05
+                  .ENDM
+ORAQopEzp          .MACRO          
+                  .BYTE $7305
+                  .ENDM
+ORAQopFzp          .MACRO
+                  .BYTE $7705
+                  .ENDM
+ORAQopGzp          .MACRO
+                  .BYTE $7B05
+                  .ENDM                  
+ORAQopHzp          .MACRO          
+                  .BYTE $7F05
+                  .ENDM
+ORAQopIzp          .MACRO
+                  .BYTE $B305
+                  .ENDM
+ORAQopJzp          .MACRO
+                  .BYTE $B705
+                  .ENDM
+ORAQopKzp          .MACRO          
+                  .BYTE $BB05
+                  .ENDM
+ORAQopLzp          .MACRO
+                  .BYTE $BF05
+                  .ENDM
+ORAQopMzp          .MACRO
+                  .BYTE $F305
+                  .ENDM                  
+ORAQopNzp          .MACRO          
+                  .BYTE $F705
+                  .ENDM
+ORAQopOzp          .MACRO
+                  .BYTE $FB05
+                  .ENDM
+ORAQopQzp          .MACRO
+                  .BYTE $FF05
+                  .ENDM
+                  
+;AND $xxxx              $0025
+ANDAopBzp          .MACRO          
+                  .BYTE $0425
+                  .ENDM
+ANDAopCzp          .MACRO
+                  .BYTE $0825
+                  .ENDM
+ANDAopDzp          .MACRO
+                  .BYTE $0C25
+                  .ENDM
+ANDAopEzp          .MACRO          
+                  .BYTE $4025
+                  .ENDM
+ANDAopFzp          .MACRO
+                  .BYTE $4425
+                  .ENDM
+ANDAopGzp          .MACRO
+                  .BYTE $4825
+                  .ENDM                  
+ANDAopHzp          .MACRO          
+                  .BYTE $4C25
+                  .ENDM
+ANDAopIzp          .MACRO
+                  .BYTE $8025
+                  .ENDM
+ANDAopJzp          .MACRO
+                  .BYTE $8425
+                  .ENDM
+ANDAopKzp          .MACRO          
+                  .BYTE $8825
+                  .ENDM
+ANDAopLzp          .MACRO
+                  .BYTE $8C25
+                  .ENDM
+ANDAopMzp          .MACRO
+                  .BYTE $C025
+                  .ENDM                  
+ANDAopNzp          .MACRO          
+                  .BYTE $C425
+                  .ENDM
+ANDAopOzp          .MACRO
+                  .BYTE $C825
+                  .ENDM
+ANDAopQzp          .MACRO
+                  .BYTE $CC25
+                  .ENDM
+                                    
+ANDBopAzp          .MACRO
+                  .BYTE $0125
+                  .ENDM                
+ANDBopBzp          .MACRO          
+                  .BYTE $0525
+                  .ENDM
+ANDBopCzp          .MACRO
+                  .BYTE $0925
+                  .ENDM
+ANDBopDzp          .MACRO
+                  .BYTE $0D25
+                  .ENDM
+ANDBopEzp          .MACRO          
+                  .BYTE $4125
+                  .ENDM
+ANDBopFzp          .MACRO
+                  .BYTE $4525
+                  .ENDM
+ANDBopGzp          .MACRO
+                  .BYTE $4925
+                  .ENDM                  
+ANDBopHzp          .MACRO          
+                  .BYTE $4D25
+                  .ENDM
+ANDBopIzp          .MACRO
+                  .BYTE $8125
+                  .ENDM
+ANDBopJzp          .MACRO
+                  .BYTE $8525
+                  .ENDM
+ANDBopKzp          .MACRO          
+                  .BYTE $8925
+                  .ENDM
+ANDBopLzp          .MACRO
+                  .BYTE $8D25
+                  .ENDM
+ANDBopMzp          .MACRO
+                  .BYTE $C125
+                  .ENDM                  
+ANDBopNzp          .MACRO          
+                  .BYTE $C525
+                  .ENDM
+ANDBopOzp          .MACRO
+                  .BYTE $C925
+                  .ENDM
+ANDBopQzp          .MACRO
+                  .BYTE $CD25
+                  .ENDM
+                                    
+ANDCopAzp          .MACRO
+                  .BYTE $0225
+                  .ENDM                
+ANDCopBzp          .MACRO          
+                  .BYTE $0625
+                  .ENDM
+ANDCopCzp          .MACRO
+                  .BYTE $0A25
+                  .ENDM
+ANDCopDzp          .MACRO
+                  .BYTE $0E25
+                  .ENDM
+ANDCopEzp          .MACRO          
+                  .BYTE $4225
+                  .ENDM
+ANDCopFzp          .MACRO
+                  .BYTE $4625
+                  .ENDM
+ANDCopGzp          .MACRO
+                  .BYTE $4A25
+                  .ENDM                  
+ANDCopHzp          .MACRO          
+                  .BYTE $4E25
+                  .ENDM
+ANDCopIzp          .MACRO
+                  .BYTE $8225
+                  .ENDM
+ANDCopJzp          .MACRO
+                  .BYTE $8625
+                  .ENDM
+ANDCopKzp          .MACRO          
+                  .BYTE $8A25
+                  .ENDM
+ANDCopLzp          .MACRO
+                  .BYTE $8E25
+                  .ENDM
+ANDCopMzp          .MACRO
+                  .BYTE $C225
+                  .ENDM                  
+ANDCopNzp          .MACRO          
+                  .BYTE $C625
+                  .ENDM
+ANDCopOzp          .MACRO
+                  .BYTE $CA25
+                  .ENDM
+ANDCopQzp          .MACRO
+                  .BYTE $CE25
+                  .ENDM
+
+ANDDopAzp          .MACRO
+                  .BYTE $0325
+                  .ENDM                
+ANDDopBzp          .MACRO          
+                  .BYTE $0725
+                  .ENDM
+ANDDopCzp          .MACRO
+                  .BYTE $0B25
+                  .ENDM
+ANDDopDzp          .MACRO
+                  .BYTE $0F25
+                  .ENDM
+ANDDopEzp          .MACRO          
+                  .BYTE $4325
+                  .ENDM
+ANDDopFzp          .MACRO
+                  .BYTE $4725
+                  .ENDM
+ANDDopGzp          .MACRO
+                  .BYTE $4B25
+                  .ENDM                  
+ANDDopHzp          .MACRO          
+                  .BYTE $4F25
+                  .ENDM
+ANDDopIzp          .MACRO
+                  .BYTE $8325
+                  .ENDM
+ANDDopJzp          .MACRO
+                  .BYTE $8725
+                  .ENDM
+ANDDopKzp          .MACRO          
+                  .BYTE $8B25
+                  .ENDM
+ANDDopLzp          .MACRO
+                  .BYTE $8F25
+                  .ENDM
+ANDDopMzp          .MACRO
+                  .BYTE $C325
+                  .ENDM                  
+ANDDopNzp          .MACRO          
+                  .BYTE $C725
+                  .ENDM
+ANDDopOzp          .MACRO
+                  .BYTE $CB25
+                  .ENDM
+ANDDopQzp          .MACRO
+                  .BYTE $CF25
+                  .ENDM                  
+
+ANDEopAzp          .MACRO
+                  .BYTE $1025
+                  .ENDM                
+ANDEopBzp          .MACRO          
+                  .BYTE $1425
+                  .ENDM
+ANDEopCzp          .MACRO
+                  .BYTE $1825
+                  .ENDM
+ANDEopDzp          .MACRO
+                  .BYTE $1C25
+                  .ENDM
+ANDEopEzp          .MACRO          
+                  .BYTE $5025
+                  .ENDM
+ANDEopFzp          .MACRO
+                  .BYTE $5425
+                  .ENDM
+ANDEopGzp          .MACRO
+                  .BYTE $5825
+                  .ENDM                  
+ANDEopHzp          .MACRO          
+                  .BYTE $5C25
+                  .ENDM
+ANDEopIzp          .MACRO
+                  .BYTE $9025
+                  .ENDM
+ANDEopJzp          .MACRO
+                  .BYTE $9425
+                  .ENDM
+ANDEopKzp          .MACRO          
+                  .BYTE $9825
+                  .ENDM
+ANDEopLzp          .MACRO
+                  .BYTE $9C25
+                  .ENDM
+ANDEopMzp          .MACRO
+                  .BYTE $D025
+                  .ENDM                  
+ANDEopNzp          .MACRO          
+                  .BYTE $D425
+                  .ENDM
+ANDEopOzp          .MACRO
+                  .BYTE $D825
+                  .ENDM
+ANDEopQzp          .MACRO
+                  .BYTE $DC25
+                  .ENDM
+                  
+ANDFopAzp          .MACRO
+                  .BYTE $1125
+                  .ENDM                
+ANDFopBzp          .MACRO          
+                  .BYTE $1525
+                  .ENDM
+ANDFopCzp          .MACRO
+                  .BYTE $1925
+                  .ENDM
+ANDFopDzp          .MACRO
+                  .BYTE $1D25
+                  .ENDM
+ANDFopEzp          .MACRO          
+                  .BYTE $5125
+                  .ENDM
+ANDFopFzp          .MACRO
+                  .BYTE $5525
+                  .ENDM
+ANDFopGzp          .MACRO
+                  .BYTE $5925
+                  .ENDM                  
+ANDFopHzp          .MACRO          
+                  .BYTE $5D25
+                  .ENDM
+ANDFopIzp          .MACRO
+                  .BYTE $9125
+                  .ENDM
+ANDFopJzp          .MACRO
+                  .BYTE $9525
+                  .ENDM
+ANDFopKzp          .MACRO          
+                  .BYTE $9925
+                  .ENDM
+ANDFopLzp          .MACRO
+                  .BYTE $9D25
+                  .ENDM
+ANDFopMzp          .MACRO
+                  .BYTE $D125
+                  .ENDM                  
+ANDFopNzp          .MACRO          
+                  .BYTE $D525
+                  .ENDM
+ANDFopOzp          .MACRO
+                  .BYTE $D925
+                  .ENDM
+ANDFopQzp          .MACRO
+                  .BYTE $DD25
+                  .ENDM                  
+                           
+ANDGopAzp          .MACRO
+                  .BYTE $1225
+                  .ENDM                
+ANDGopBzp          .MACRO          
+                  .BYTE $1625
+                  .ENDM
+ANDGopCzp          .MACRO
+                  .BYTE $1A25
+                  .ENDM
+ANDGopDzp          .MACRO
+                  .BYTE $1E25
+                  .ENDM
+ANDGopEzp          .MACRO          
+                  .BYTE $5225
+                  .ENDM
+ANDGopFzp          .MACRO
+                  .BYTE $5625
+                  .ENDM
+ANDGopGzp          .MACRO
+                  .BYTE $5A25
+                  .ENDM                  
+ANDGopHzp          .MACRO          
+                  .BYTE $5E25
+                  .ENDM
+ANDGopIzp          .MACRO
+                  .BYTE $9225
+                  .ENDM
+ANDGopJzp          .MACRO
+                  .BYTE $9625
+                  .ENDM
+ANDGopKzp          .MACRO          
+                  .BYTE $9A25
+                  .ENDM
+ANDGopLzp          .MACRO
+                  .BYTE $9E25
+                  .ENDM
+ANDGopMzp          .MACRO
+                  .BYTE $D225
+                  .ENDM                  
+ANDGopNzp          .MACRO          
+                  .BYTE $D625
+                  .ENDM
+ANDGopOzp          .MACRO
+                  .BYTE $DA25
+                  .ENDM
+ANDGopQzp          .MACRO
+                  .BYTE $DE25
+                  .ENDM
+                  
+ANDHopAzp          .MACRO
+                  .BYTE $1325
+                  .ENDM                
+ANDHopBzp          .MACRO          
+                  .BYTE $1725
+                  .ENDM
+ANDHopCzp          .MACRO
+                  .BYTE $1B25
+                  .ENDM
+ANDHopDzp          .MACRO
+                  .BYTE $1F25
+                  .ENDM
+ANDHopEzp          .MACRO          
+                  .BYTE $5325
+                  .ENDM
+ANDHopFzp          .MACRO
+                  .BYTE $5725
+                  .ENDM
+ANDHopGzp          .MACRO
+                  .BYTE $5B25
+                  .ENDM                  
+ANDHopHzp          .MACRO          
+                  .BYTE $5F25
+                  .ENDM
+ANDHopIzp          .MACRO
+                  .BYTE $9325
+                  .ENDM
+ANDHopJzp          .MACRO
+                  .BYTE $9725
+                  .ENDM
+ANDHopKzp          .MACRO          
+                  .BYTE $9B25
+                  .ENDM
+ANDHopLzp          .MACRO
+                  .BYTE $9F25
+                  .ENDM
+ANDHopMzp          .MACRO
+                  .BYTE $D325
+                  .ENDM                  
+ANDHopNzp          .MACRO          
+                  .BYTE $D725
+                  .ENDM
+ANDHopOzp          .MACRO
+                  .BYTE $DB25
+                  .ENDM
+ANDHopQzp          .MACRO
+                  .BYTE $DF25
+                  .ENDM
+                  
+ANDIopAzp          .MACRO
+                  .BYTE $2025
+                  .ENDM                
+ANDIopBzp          .MACRO          
+                  .BYTE $2425
+                  .ENDM
+ANDIopCzp          .MACRO
+                  .BYTE $2825
+                  .ENDM
+ANDIopDzp          .MACRO
+                  .BYTE $2C25
+                  .ENDM
+ANDIopEzp          .MACRO          
+                  .BYTE $6025
+                  .ENDM
+ANDIopFzp          .MACRO
+                  .BYTE $6425
+                  .ENDM
+ANDIopGzp          .MACRO
+                  .BYTE $6825
+                  .ENDM                  
+ANDIopHzp          .MACRO          
+                  .BYTE $6C25
+                  .ENDM
+ANDIopIzp          .MACRO
+                  .BYTE $A025
+                  .ENDM
+ANDIopJzp          .MACRO
+                  .BYTE $A425
+                  .ENDM
+ANDIopKzp          .MACRO          
+                  .BYTE $A825
+                  .ENDM
+ANDIopLzp          .MACRO
+                  .BYTE $AC25
+                  .ENDM
+ANDIopMzp          .MACRO
+                  .BYTE $E025
+                  .ENDM                  
+ANDIopNzp          .MACRO          
+                  .BYTE $E425
+                  .ENDM
+ANDIopOzp          .MACRO
+                  .BYTE $E825
+                  .ENDM
+ANDIopQzp          .MACRO
+                  .BYTE $EC25
+                  .ENDM
+                  
+ANDJopAzp          .MACRO
+                  .BYTE $2125
+                  .ENDM                
+ANDJopBzp          .MACRO          
+                  .BYTE $2525
+                  .ENDM
+ANDJopCzp          .MACRO
+                  .BYTE $2925
+                  .ENDM
+ANDJopDzp          .MACRO
+                  .BYTE $2D25
+                  .ENDM
+ANDJopEzp          .MACRO          
+                  .BYTE $6125
+                  .ENDM
+ANDJopFzp          .MACRO
+                  .BYTE $6525
+                  .ENDM
+ANDJopGzp          .MACRO
+                  .BYTE $6925
+                  .ENDM                  
+ANDJopHzp          .MACRO          
+                  .BYTE $6D25
+                  .ENDM
+ANDJopIzp          .MACRO
+                  .BYTE $A125
+                  .ENDM
+ANDJopJzp          .MACRO
+                  .BYTE $A525
+                  .ENDM
+ANDJopKzp          .MACRO          
+                  .BYTE $A925
+                  .ENDM
+ANDJopLzp          .MACRO
+                  .BYTE $AD25
+                  .ENDM
+ANDJopMzp          .MACRO
+                  .BYTE $E125
+                  .ENDM                  
+ANDJopNzp          .MACRO          
+                  .BYTE $E525
+                  .ENDM
+ANDJopOzp          .MACRO
+                  .BYTE $E925
+                  .ENDM
+ANDJopQzp          .MACRO
+                  .BYTE $ED25
+                  .ENDM
+                  
+ANDKopAzp          .MACRO
+                  .BYTE $2225
+                  .ENDM                
+ANDKopBzp          .MACRO          
+                  .BYTE $2625
+                  .ENDM
+ANDKopCzp          .MACRO
+                  .BYTE $2A25
+                  .ENDM
+ANDKopDzp          .MACRO
+                  .BYTE $2E25
+                  .ENDM
+ANDKopEzp          .MACRO          
+                  .BYTE $6225
+                  .ENDM
+ANDKopFzp          .MACRO
+                  .BYTE $6625
+                  .ENDM
+ANDKopGzp          .MACRO
+                  .BYTE $6A25
+                  .ENDM                  
+ANDKopHzp          .MACRO          
+                  .BYTE $6E25
+                  .ENDM
+ANDKopIzp          .MACRO
+                  .BYTE $A225
+                  .ENDM
+ANDKopJzp          .MACRO
+                  .BYTE $A625
+                  .ENDM
+ANDKopKzp          .MACRO          
+                  .BYTE $AA25
+                  .ENDM
+ANDKopLzp          .MACRO
+                  .BYTE $AE25
+                  .ENDM
+ANDKopMzp          .MACRO
+                  .BYTE $E225
+                  .ENDM                  
+ANDKopNzp          .MACRO          
+                  .BYTE $E625
+                  .ENDM
+ANDKopOzp          .MACRO
+                  .BYTE $EA25
+                  .ENDM
+ANDKopQzp          .MACRO
+                  .BYTE $EE25
+                  .ENDM
+                  
+ANDLopAzp          .MACRO
+                  .BYTE $2325
+                  .ENDM                
+ANDLopBzp          .MACRO          
+                  .BYTE $2725
+                  .ENDM
+ANDLopCzp          .MACRO
+                  .BYTE $2B25
+                  .ENDM
+ANDLopDzp          .MACRO
+                  .BYTE $2F25
+                  .ENDM
+ANDLopEzp          .MACRO          
+                  .BYTE $6325
+                  .ENDM
+ANDLopFzp          .MACRO
+                  .BYTE $6725
+                  .ENDM
+ANDLopGzp          .MACRO
+                  .BYTE $6B25
+                  .ENDM                  
+ANDLopHzp          .MACRO          
+                  .BYTE $6F25
+                  .ENDM
+ANDLopIzp          .MACRO
+                  .BYTE $A325
+                  .ENDM
+ANDLopJzp          .MACRO
+                  .BYTE $A725
+                  .ENDM
+ANDLopKzp          .MACRO          
+                  .BYTE $AB25
+                  .ENDM
+ANDLopLzp          .MACRO
+                  .BYTE $AF25
+                  .ENDM
+ANDLopMzp          .MACRO
+                  .BYTE $E325
+                  .ENDM                  
+ANDLopNzp          .MACRO          
+                  .BYTE $E725
+                  .ENDM
+ANDLopOzp          .MACRO
+                  .BYTE $EB25
+                  .ENDM
+ANDLopQzp          .MACRO
+                  .BYTE $EF25
+                  .ENDM
+                  
+ANDMopAzp          .MACRO
+                  .BYTE $3025
+                  .ENDM                
+ANDMopBzp          .MACRO          
+                  .BYTE $3425
+                  .ENDM
+ANDMopCzp          .MACRO
+                  .BYTE $3825
+                  .ENDM
+ANDMopDzp          .MACRO
+                  .BYTE $3C25
+                  .ENDM
+ANDMopEzp          .MACRO          
+                  .BYTE $7025
+                  .ENDM
+ANDMopFzp          .MACRO
+                  .BYTE $7425
+                  .ENDM
+ANDMopGzp          .MACRO
+                  .BYTE $7825
+                  .ENDM                  
+ANDMopHzp          .MACRO          
+                  .BYTE $7C25
+                  .ENDM
+ANDMopIzp          .MACRO
+                  .BYTE $B025
+                  .ENDM
+ANDMopJzp          .MACRO
+                  .BYTE $B425
+                  .ENDM
+ANDMopKzp          .MACRO          
+                  .BYTE $B825
+                  .ENDM
+ANDMopLzp          .MACRO
+                  .BYTE $BC25
+                  .ENDM
+ANDMopMzp          .MACRO
+                  .BYTE $F025
+                  .ENDM                  
+ANDMopNzp          .MACRO          
+                  .BYTE $F425
+                  .ENDM
+ANDMopOzp          .MACRO
+                  .BYTE $F825
+                  .ENDM
+ANDMopQzp          .MACRO
+                  .BYTE $FC25
+                  .ENDM
+                  
+ANDNopAzp          .MACRO
+                  .BYTE $3125
+                  .ENDM                
+ANDNopBzp          .MACRO          
+                  .BYTE $3525
+                  .ENDM
+ANDNopCzp          .MACRO
+                  .BYTE $3925
+                  .ENDM
+ANDNopDzp          .MACRO
+                  .BYTE $3D25
+                  .ENDM
+ANDNopEzp          .MACRO          
+                  .BYTE $7125
+                  .ENDM
+ANDNopFzp          .MACRO
+                  .BYTE $7525
+                  .ENDM
+ANDNopGzp          .MACRO
+                  .BYTE $7925
+                  .ENDM                  
+ANDNopHzp          .MACRO          
+                  .BYTE $7D25
+                  .ENDM
+ANDNopIzp          .MACRO
+                  .BYTE $B125
+                  .ENDM
+ANDNopJzp          .MACRO
+                  .BYTE $B525
+                  .ENDM
+ANDNopKzp          .MACRO          
+                  .BYTE $B925
+                  .ENDM
+ANDNopLzp          .MACRO
+                  .BYTE $BD25
+                  .ENDM
+ANDNopMzp          .MACRO
+                  .BYTE $F125
+                  .ENDM                  
+ANDNopNzp          .MACRO          
+                  .BYTE $F525
+                  .ENDM
+ANDNopOzp          .MACRO
+                  .BYTE $F925
+                  .ENDM
+ANDNopQzp          .MACRO
+                  .BYTE $FD25
+                  .ENDM
+            
+ANDOopAzp          .MACRO
+                  .BYTE $3225
+                  .ENDM                
+ANDOopBzp          .MACRO          
+                  .BYTE $3625
+                  .ENDM
+ANDOopCzp          .MACRO
+                  .BYTE $3A25
+                  .ENDM
+ANDOopDzp          .MACRO
+                  .BYTE $3E25
+                  .ENDM
+ANDOopEzp          .MACRO          
+                  .BYTE $7225
+                  .ENDM
+ANDOopFzp          .MACRO
+                  .BYTE $7625
+                  .ENDM
+ANDOopGzp          .MACRO
+                  .BYTE $7A25
+                  .ENDM                  
+ANDOopHzp          .MACRO          
+                  .BYTE $7E25
+                  .ENDM
+ANDOopIzp          .MACRO
+                  .BYTE $B225
+                  .ENDM
+ANDOopJzp          .MACRO
+                  .BYTE $B625
+                  .ENDM
+ANDOopKzp          .MACRO          
+                  .BYTE $BA25
+                  .ENDM
+ANDOopLzp          .MACRO
+                  .BYTE $BE25
+                  .ENDM
+ANDOopMzp          .MACRO
+                  .BYTE $F225
+                  .ENDM                  
+ANDOopNzp          .MACRO          
+                  .BYTE $F625
+                  .ENDM
+ANDOopOzp          .MACRO
+                  .BYTE $FA25
+                  .ENDM
+ANDOopQzp          .MACRO
+                  .BYTE $FE25
+                  .ENDM
+                  
+ANDQopAzp          .MACRO
+                  .BYTE $3325
+                  .ENDM                
+ANDQopBzp          .MACRO          
+                  .BYTE $3725
+                  .ENDM
+ANDQopCzp          .MACRO
+                  .BYTE $3B25
+                  .ENDM
+ANDQopDzp          .MACRO
+                  .BYTE $3F25
+                  .ENDM
+ANDQopEzp          .MACRO          
+                  .BYTE $7325
+                  .ENDM
+ANDQopFzp          .MACRO
+                  .BYTE $7725
+                  .ENDM
+ANDQopGzp          .MACRO
+                  .BYTE $7B25
+                  .ENDM                  
+ANDQopHzp          .MACRO          
+                  .BYTE $7F25
+                  .ENDM
+ANDQopIzp          .MACRO
+                  .BYTE $B325
+                  .ENDM
+ANDQopJzp          .MACRO
+                  .BYTE $B725
+                  .ENDM
+ANDQopKzp          .MACRO          
+                  .BYTE $BB25
+                  .ENDM
+ANDQopLzp          .MACRO
+                  .BYTE $BF25
+                  .ENDM
+ANDQopMzp          .MACRO
+                  .BYTE $F325
+                  .ENDM                  
+ANDQopNzp          .MACRO          
+                  .BYTE $F725
+                  .ENDM
+ANDQopOzp          .MACRO
+                  .BYTE $FB25
+                  .ENDM
+ANDQopQzp          .MACRO
+                  .BYTE $FF25
+                  .ENDM
+                  
+;EOR $xxxx              $0045
+EORAopBzp          .MACRO          
+                  .BYTE $0445
+                  .ENDM
+EORAopCzp          .MACRO
+                  .BYTE $0845
+                  .ENDM
+EORAopDzp          .MACRO
+                  .BYTE $0C45
+                  .ENDM
+EORAopEzp          .MACRO          
+                  .BYTE $4045
+                  .ENDM
+EORAopFzp          .MACRO
+                  .BYTE $4445
+                  .ENDM
+EORAopGzp          .MACRO
+                  .BYTE $4845
+                  .ENDM                  
+EORAopHzp          .MACRO          
+                  .BYTE $4C45
+                  .ENDM
+EORAopIzp          .MACRO
+                  .BYTE $8045
+                  .ENDM
+EORAopJzp          .MACRO
+                  .BYTE $8445
+                  .ENDM
+EORAopKzp          .MACRO          
+                  .BYTE $8845
+                  .ENDM
+EORAopLzp          .MACRO
+                  .BYTE $8C45
+                  .ENDM
+EORAopMzp          .MACRO
+                  .BYTE $C045
+                  .ENDM                  
+EORAopNzp          .MACRO          
+                  .BYTE $C445
+                  .ENDM
+EORAopOzp          .MACRO
+                  .BYTE $C845
+                  .ENDM
+EORAopQzp          .MACRO
+                  .BYTE $CC45
+                  .ENDM
+                                    
+EORBopAzp          .MACRO
+                  .BYTE $0145
+                  .ENDM                
+EORBopBzp          .MACRO          
+                  .BYTE $0545
+                  .ENDM
+EORBopCzp          .MACRO
+                  .BYTE $0945
+                  .ENDM
+EORBopDzp          .MACRO
+                  .BYTE $0D45
+                  .ENDM
+EORBopEzp          .MACRO          
+                  .BYTE $4145
+                  .ENDM
+EORBopFzp          .MACRO
+                  .BYTE $4545
+                  .ENDM
+EORBopGzp          .MACRO
+                  .BYTE $4945
+                  .ENDM                  
+EORBopHzp          .MACRO          
+                  .BYTE $4D45
+                  .ENDM
+EORBopIzp          .MACRO
+                  .BYTE $8145
+                  .ENDM
+EORBopJzp          .MACRO
+                  .BYTE $8545
+                  .ENDM
+EORBopKzp          .MACRO          
+                  .BYTE $8945
+                  .ENDM
+EORBopLzp          .MACRO
+                  .BYTE $8D45
+                  .ENDM
+EORBopMzp          .MACRO
+                  .BYTE $C145
+                  .ENDM                  
+EORBopNzp          .MACRO          
+                  .BYTE $C545
+                  .ENDM
+EORBopOzp          .MACRO
+                  .BYTE $C945
+                  .ENDM
+EORBopQzp          .MACRO
+                  .BYTE $CD45
+                  .ENDM
+                                    
+EORCopAzp          .MACRO
+                  .BYTE $0245
+                  .ENDM                
+EORCopBzp          .MACRO          
+                  .BYTE $0645
+                  .ENDM
+EORCopCzp          .MACRO
+                  .BYTE $0A45
+                  .ENDM
+EORCopDzp          .MACRO
+                  .BYTE $0E45
+                  .ENDM
+EORCopEzp          .MACRO          
+                  .BYTE $4245
+                  .ENDM
+EORCopFzp          .MACRO
+                  .BYTE $4645
+                  .ENDM
+EORCopGzp          .MACRO
+                  .BYTE $4A45
+                  .ENDM                  
+EORCopHzp          .MACRO          
+                  .BYTE $4E45
+                  .ENDM
+EORCopIzp          .MACRO
+                  .BYTE $8245
+                  .ENDM
+EORCopJzp          .MACRO
+                  .BYTE $8645
+                  .ENDM
+EORCopKzp          .MACRO          
+                  .BYTE $8A45
+                  .ENDM
+EORCopLzp          .MACRO
+                  .BYTE $8E45
+                  .ENDM
+EORCopMzp          .MACRO
+                  .BYTE $C245
+                  .ENDM                  
+EORCopNzp          .MACRO          
+                  .BYTE $C645
+                  .ENDM
+EORCopOzp          .MACRO
+                  .BYTE $CA45
+                  .ENDM
+EORCopQzp          .MACRO
+                  .BYTE $CE45
+                  .ENDM
+
+EORDopAzp          .MACRO
+                  .BYTE $0345
+                  .ENDM                
+EORDopBzp          .MACRO          
+                  .BYTE $0745
+                  .ENDM
+EORDopCzp          .MACRO
+                  .BYTE $0B45
+                  .ENDM
+EORDopDzp          .MACRO
+                  .BYTE $0F45
+                  .ENDM
+EORDopEzp          .MACRO          
+                  .BYTE $4345
+                  .ENDM
+EORDopFzp          .MACRO
+                  .BYTE $4745
+                  .ENDM
+EORDopGzp          .MACRO
+                  .BYTE $4B45
+                  .ENDM                  
+EORDopHzp          .MACRO          
+                  .BYTE $4F45
+                  .ENDM
+EORDopIzp          .MACRO
+                  .BYTE $8345
+                  .ENDM
+EORDopJzp          .MACRO
+                  .BYTE $8745
+                  .ENDM
+EORDopKzp          .MACRO          
+                  .BYTE $8B45
+                  .ENDM
+EORDopLzp          .MACRO
+                  .BYTE $8F45
+                  .ENDM
+EORDopMzp          .MACRO
+                  .BYTE $C345
+                  .ENDM                  
+EORDopNzp          .MACRO          
+                  .BYTE $C745
+                  .ENDM
+EORDopOzp          .MACRO
+                  .BYTE $CB45
+                  .ENDM
+EORDopQzp          .MACRO
+                  .BYTE $CF45
+                  .ENDM                  
+
+EOREopAzp          .MACRO
+                  .BYTE $1045
+                  .ENDM                
+EOREopBzp          .MACRO          
+                  .BYTE $1445
+                  .ENDM
+EOREopCzp          .MACRO
+                  .BYTE $1845
+                  .ENDM
+EOREopDzp          .MACRO
+                  .BYTE $1C45
+                  .ENDM
+EOREopEzp          .MACRO          
+                  .BYTE $5045
+                  .ENDM
+EOREopFzp          .MACRO
+                  .BYTE $5445
+                  .ENDM
+EOREopGzp          .MACRO
+                  .BYTE $5845
+                  .ENDM                  
+EOREopHzp          .MACRO          
+                  .BYTE $5C45
+                  .ENDM
+EOREopIzp          .MACRO
+                  .BYTE $9045
+                  .ENDM
+EOREopJzp          .MACRO
+                  .BYTE $9445
+                  .ENDM
+EOREopKzp          .MACRO          
+                  .BYTE $9845
+                  .ENDM
+EOREopLzp          .MACRO
+                  .BYTE $9C45
+                  .ENDM
+EOREopMzp          .MACRO
+                  .BYTE $D045
+                  .ENDM                  
+EOREopNzp          .MACRO          
+                  .BYTE $D445
+                  .ENDM
+EOREopOzp          .MACRO
+                  .BYTE $D845
+                  .ENDM
+EOREopQzp          .MACRO
+                  .BYTE $DC45
+                  .ENDM
+                  
+EORFopAzp          .MACRO
+                  .BYTE $1145
+                  .ENDM                
+EORFopBzp          .MACRO          
+                  .BYTE $1545
+                  .ENDM
+EORFopCzp          .MACRO
+                  .BYTE $1945
+                  .ENDM
+EORFopDzp          .MACRO
+                  .BYTE $1D45
+                  .ENDM
+EORFopEzp          .MACRO          
+                  .BYTE $5145
+                  .ENDM
+EORFopFzp          .MACRO
+                  .BYTE $5545
+                  .ENDM
+EORFopGzp          .MACRO
+                  .BYTE $5945
+                  .ENDM                  
+EORFopHzp          .MACRO          
+                  .BYTE $5D45
+                  .ENDM
+EORFopIzp          .MACRO
+                  .BYTE $9145
+                  .ENDM
+EORFopJzp          .MACRO
+                  .BYTE $9545
+                  .ENDM
+EORFopKzp          .MACRO          
+                  .BYTE $9945
+                  .ENDM
+EORFopLzp          .MACRO
+                  .BYTE $9D45
+                  .ENDM
+EORFopMzp          .MACRO
+                  .BYTE $D145
+                  .ENDM                  
+EORFopNzp          .MACRO          
+                  .BYTE $D545
+                  .ENDM
+EORFopOzp          .MACRO
+                  .BYTE $D945
+                  .ENDM
+EORFopQzp          .MACRO
+                  .BYTE $DD45
+                  .ENDM                  
+                           
+EORGopAzp          .MACRO
+                  .BYTE $1245
+                  .ENDM                
+EORGopBzp          .MACRO          
+                  .BYTE $1645
+                  .ENDM
+EORGopCzp          .MACRO
+                  .BYTE $1A45
+                  .ENDM
+EORGopDzp          .MACRO
+                  .BYTE $1E45
+                  .ENDM
+EORGopEzp          .MACRO          
+                  .BYTE $5245
+                  .ENDM
+EORGopFzp          .MACRO
+                  .BYTE $5645
+                  .ENDM
+EORGopGzp          .MACRO
+                  .BYTE $5A45
+                  .ENDM                  
+EORGopHzp          .MACRO          
+                  .BYTE $5E45
+                  .ENDM
+EORGopIzp          .MACRO
+                  .BYTE $9245
+                  .ENDM
+EORGopJzp          .MACRO
+                  .BYTE $9645
+                  .ENDM
+EORGopKzp          .MACRO          
+                  .BYTE $9A45
+                  .ENDM
+EORGopLzp          .MACRO
+                  .BYTE $9E45
+                  .ENDM
+EORGopMzp          .MACRO
+                  .BYTE $D245
+                  .ENDM                  
+EORGopNzp          .MACRO          
+                  .BYTE $D645
+                  .ENDM
+EORGopOzp          .MACRO
+                  .BYTE $DA45
+                  .ENDM
+EORGopQzp          .MACRO
+                  .BYTE $DE45
+                  .ENDM
+                  
+EORHopAzp          .MACRO
+                  .BYTE $1345
+                  .ENDM                
+EORHopBzp          .MACRO          
+                  .BYTE $1745
+                  .ENDM
+EORHopCzp          .MACRO
+                  .BYTE $1B45
+                  .ENDM
+EORHopDzp          .MACRO
+                  .BYTE $1F45
+                  .ENDM
+EORHopEzp          .MACRO          
+                  .BYTE $5345
+                  .ENDM
+EORHopFzp          .MACRO
+                  .BYTE $5745
+                  .ENDM
+EORHopGzp          .MACRO
+                  .BYTE $5B45
+                  .ENDM                  
+EORHopHzp          .MACRO          
+                  .BYTE $5F45
+                  .ENDM
+EORHopIzp          .MACRO
+                  .BYTE $9345
+                  .ENDM
+EORHopJzp          .MACRO
+                  .BYTE $9745
+                  .ENDM
+EORHopKzp          .MACRO          
+                  .BYTE $9B45
+                  .ENDM
+EORHopLzp          .MACRO
+                  .BYTE $9F45
+                  .ENDM
+EORHopMzp          .MACRO
+                  .BYTE $D345
+                  .ENDM                  
+EORHopNzp          .MACRO          
+                  .BYTE $D745
+                  .ENDM
+EORHopOzp          .MACRO
+                  .BYTE $DB45
+                  .ENDM
+EORHopQzp          .MACRO
+                  .BYTE $DF45
+                  .ENDM
+                  
+EORIopAzp          .MACRO
+                  .BYTE $2045
+                  .ENDM                
+EORIopBzp          .MACRO          
+                  .BYTE $2445
+                  .ENDM
+EORIopCzp          .MACRO
+                  .BYTE $2845
+                  .ENDM
+EORIopDzp          .MACRO
+                  .BYTE $2C45
+                  .ENDM
+EORIopEzp          .MACRO          
+                  .BYTE $6045
+                  .ENDM
+EORIopFzp          .MACRO
+                  .BYTE $6445
+                  .ENDM
+EORIopGzp          .MACRO
+                  .BYTE $6845
+                  .ENDM                  
+EORIopHzp          .MACRO          
+                  .BYTE $6C45
+                  .ENDM
+EORIopIzp          .MACRO
+                  .BYTE $A045
+                  .ENDM
+EORIopJzp          .MACRO
+                  .BYTE $A445
+                  .ENDM
+EORIopKzp          .MACRO          
+                  .BYTE $A845
+                  .ENDM
+EORIopLzp          .MACRO
+                  .BYTE $AC45
+                  .ENDM
+EORIopMzp          .MACRO
+                  .BYTE $E045
+                  .ENDM                  
+EORIopNzp          .MACRO          
+                  .BYTE $E445
+                  .ENDM
+EORIopOzp          .MACRO
+                  .BYTE $E845
+                  .ENDM
+EORIopQzp          .MACRO
+                  .BYTE $EC45
+                  .ENDM
+                  
+EORJopAzp          .MACRO
+                  .BYTE $2145
+                  .ENDM                
+EORJopBzp          .MACRO          
+                  .BYTE $2545
+                  .ENDM
+EORJopCzp          .MACRO
+                  .BYTE $2945
+                  .ENDM
+EORJopDzp          .MACRO
+                  .BYTE $2D45
+                  .ENDM
+EORJopEzp          .MACRO          
+                  .BYTE $6145
+                  .ENDM
+EORJopFzp          .MACRO
+                  .BYTE $6545
+                  .ENDM
+EORJopGzp          .MACRO
+                  .BYTE $6945
+                  .ENDM                  
+EORJopHzp          .MACRO          
+                  .BYTE $6D45
+                  .ENDM
+EORJopIzp          .MACRO
+                  .BYTE $A145
+                  .ENDM
+EORJopJzp          .MACRO
+                  .BYTE $A545
+                  .ENDM
+EORJopKzp          .MACRO          
+                  .BYTE $A945
+                  .ENDM
+EORJopLzp          .MACRO
+                  .BYTE $AD45
+                  .ENDM
+EORJopMzp          .MACRO
+                  .BYTE $E145
+                  .ENDM                  
+EORJopNzp          .MACRO          
+                  .BYTE $E545
+                  .ENDM
+EORJopOzp          .MACRO
+                  .BYTE $E945
+                  .ENDM
+EORJopQzp          .MACRO
+                  .BYTE $ED45
+                  .ENDM
+                  
+EORKopAzp          .MACRO
+                  .BYTE $2245
+                  .ENDM                
+EORKopBzp          .MACRO          
+                  .BYTE $2645
+                  .ENDM
+EORKopCzp          .MACRO
+                  .BYTE $2A45
+                  .ENDM
+EORKopDzp          .MACRO
+                  .BYTE $2E45
+                  .ENDM
+EORKopEzp          .MACRO          
+                  .BYTE $6245
+                  .ENDM
+EORKopFzp          .MACRO
+                  .BYTE $6645
+                  .ENDM
+EORKopGzp          .MACRO
+                  .BYTE $6A45
+                  .ENDM                  
+EORKopHzp          .MACRO          
+                  .BYTE $6E45
+                  .ENDM
+EORKopIzp          .MACRO
+                  .BYTE $A245
+                  .ENDM
+EORKopJzp          .MACRO
+                  .BYTE $A645
+                  .ENDM
+EORKopKzp          .MACRO          
+                  .BYTE $AA45
+                  .ENDM
+EORKopLzp          .MACRO
+                  .BYTE $AE45
+                  .ENDM
+EORKopMzp          .MACRO
+                  .BYTE $E245
+                  .ENDM                  
+EORKopNzp          .MACRO          
+                  .BYTE $E645
+                  .ENDM
+EORKopOzp          .MACRO
+                  .BYTE $EA45
+                  .ENDM
+EORKopQzp          .MACRO
+                  .BYTE $EE45
+                  .ENDM
+                  
+EORLopAzp          .MACRO
+                  .BYTE $2345
+                  .ENDM                
+EORLopBzp          .MACRO          
+                  .BYTE $2745
+                  .ENDM
+EORLopCzp          .MACRO
+                  .BYTE $2B45
+                  .ENDM
+EORLopDzp          .MACRO
+                  .BYTE $2F45
+                  .ENDM
+EORLopEzp          .MACRO          
+                  .BYTE $6345
+                  .ENDM
+EORLopFzp          .MACRO
+                  .BYTE $6745
+                  .ENDM
+EORLopGzp          .MACRO
+                  .BYTE $6B45
+                  .ENDM                  
+EORLopHzp          .MACRO          
+                  .BYTE $6F45
+                  .ENDM
+EORLopIzp          .MACRO
+                  .BYTE $A345
+                  .ENDM
+EORLopJzp          .MACRO
+                  .BYTE $A745
+                  .ENDM
+EORLopKzp          .MACRO          
+                  .BYTE $AB45
+                  .ENDM
+EORLopLzp          .MACRO
+                  .BYTE $AF45
+                  .ENDM
+EORLopMzp          .MACRO
+                  .BYTE $E345
+                  .ENDM                  
+EORLopNzp          .MACRO          
+                  .BYTE $E745
+                  .ENDM
+EORLopOzp          .MACRO
+                  .BYTE $EB45
+                  .ENDM
+EORLopQzp          .MACRO
+                  .BYTE $EF45
+                  .ENDM
+                  
+EORMopAzp          .MACRO
+                  .BYTE $3045
+                  .ENDM                
+EORMopBzp          .MACRO          
+                  .BYTE $3445
+                  .ENDM
+EORMopCzp          .MACRO
+                  .BYTE $3845
+                  .ENDM
+EORMopDzp          .MACRO
+                  .BYTE $3C45
+                  .ENDM
+EORMopEzp          .MACRO          
+                  .BYTE $7045
+                  .ENDM
+EORMopFzp          .MACRO
+                  .BYTE $7445
+                  .ENDM
+EORMopGzp          .MACRO
+                  .BYTE $7845
+                  .ENDM                  
+EORMopHzp          .MACRO          
+                  .BYTE $7C45
+                  .ENDM
+EORMopIzp          .MACRO
+                  .BYTE $B045
+                  .ENDM
+EORMopJzp          .MACRO
+                  .BYTE $B445
+                  .ENDM
+EORMopKzp          .MACRO          
+                  .BYTE $B845
+                  .ENDM
+EORMopLzp          .MACRO
+                  .BYTE $BC45
+                  .ENDM
+EORMopMzp          .MACRO
+                  .BYTE $F045
+                  .ENDM                  
+EORMopNzp          .MACRO          
+                  .BYTE $F445
+                  .ENDM
+EORMopOzp          .MACRO
+                  .BYTE $F845
+                  .ENDM
+EORMopQzp          .MACRO
+                  .BYTE $FC45
+                  .ENDM
+                  
+EORNopAzp          .MACRO
+                  .BYTE $3145
+                  .ENDM                
+EORNopBzp          .MACRO          
+                  .BYTE $3545
+                  .ENDM
+EORNopCzp          .MACRO
+                  .BYTE $3945
+                  .ENDM
+EORNopDzp          .MACRO
+                  .BYTE $3D45
+                  .ENDM
+EORNopEzp          .MACRO          
+                  .BYTE $7145
+                  .ENDM
+EORNopFzp          .MACRO
+                  .BYTE $7545
+                  .ENDM
+EORNopGzp          .MACRO
+                  .BYTE $7945
+                  .ENDM                  
+EORNopHzp          .MACRO          
+                  .BYTE $7D45
+                  .ENDM
+EORNopIzp          .MACRO
+                  .BYTE $B145
+                  .ENDM
+EORNopJzp          .MACRO
+                  .BYTE $B545
+                  .ENDM
+EORNopKzp          .MACRO          
+                  .BYTE $B945
+                  .ENDM
+EORNopLzp          .MACRO
+                  .BYTE $BD45
+                  .ENDM
+EORNopMzp          .MACRO
+                  .BYTE $F145
+                  .ENDM                  
+EORNopNzp          .MACRO          
+                  .BYTE $F545
+                  .ENDM
+EORNopOzp          .MACRO
+                  .BYTE $F945
+                  .ENDM
+EORNopQzp          .MACRO
+                  .BYTE $FD45
+                  .ENDM
+            
+EOROopAzp          .MACRO
+                  .BYTE $3245
+                  .ENDM                
+EOROopBzp          .MACRO          
+                  .BYTE $3645
+                  .ENDM
+EOROopCzp          .MACRO
+                  .BYTE $3A45
+                  .ENDM
+EOROopDzp          .MACRO
+                  .BYTE $3E45
+                  .ENDM
+EOROopEzp          .MACRO          
+                  .BYTE $7245
+                  .ENDM
+EOROopFzp          .MACRO
+                  .BYTE $7645
+                  .ENDM
+EOROopGzp          .MACRO
+                  .BYTE $7A45
+                  .ENDM                  
+EOROopHzp          .MACRO          
+                  .BYTE $7E45
+                  .ENDM
+EOROopIzp          .MACRO
+                  .BYTE $B245
+                  .ENDM
+EOROopJzp          .MACRO
+                  .BYTE $B645
+                  .ENDM
+EOROopKzp          .MACRO          
+                  .BYTE $BA45
+                  .ENDM
+EOROopLzp          .MACRO
+                  .BYTE $BE45
+                  .ENDM
+EOROopMzp          .MACRO
+                  .BYTE $F245
+                  .ENDM                  
+EOROopNzp          .MACRO          
+                  .BYTE $F645
+                  .ENDM
+EOROopOzp          .MACRO
+                  .BYTE $FA45
+                  .ENDM
+EOROopQzp          .MACRO
+                  .BYTE $FE45
+                  .ENDM
+                  
+EORQopAzp          .MACRO
+                  .BYTE $3345
+                  .ENDM                
+EORQopBzp          .MACRO          
+                  .BYTE $3745
+                  .ENDM
+EORQopCzp          .MACRO
+                  .BYTE $3B45
+                  .ENDM
+EORQopDzp          .MACRO
+                  .BYTE $3F45
+                  .ENDM
+EORQopEzp          .MACRO          
+                  .BYTE $7345
+                  .ENDM
+EORQopFzp          .MACRO
+                  .BYTE $7745
+                  .ENDM
+EORQopGzp          .MACRO
+                  .BYTE $7B45
+                  .ENDM                  
+EORQopHzp          .MACRO          
+                  .BYTE $7F45
+                  .ENDM
+EORQopIzp          .MACRO
+                  .BYTE $B345
+                  .ENDM
+EORQopJzp          .MACRO
+                  .BYTE $B745
+                  .ENDM
+EORQopKzp          .MACRO          
+                  .BYTE $BB45
+                  .ENDM
+EORQopLzp          .MACRO
+                  .BYTE $BF45
+                  .ENDM
+EORQopMzp          .MACRO
+                  .BYTE $F345
+                  .ENDM                  
+EORQopNzp          .MACRO          
+                  .BYTE $F745
+                  .ENDM
+EORQopOzp          .MACRO
+                  .BYTE $FB45
+                  .ENDM
+EORQopQzp          .MACRO
+                  .BYTE $FF45
                   .ENDM
                   
 ASLAopA4          .MACRO         ;ASL X4
