@@ -1,4 +1,4 @@
-; NEW 65O16 OPCODES!   5/29/2012
+; NEW 65O16 OPCODES!   5/31/2012
 ;LDA #$xxxx             $00A9
 LDBi              .MACRO          ;LDB #$xxxx
                   .BYTE $01A9
@@ -344,49 +344,49 @@ LDQaw             .MACRO
                   
 ;STA $xxxx              $0085
 STBzp             .MACRO          ;STB $xxxx
-                  .BYTE $0185
+                  .BYTE $0485
                   .ENDM
 STCzp             .MACRO          ;STC $xxxx
-                  .BYTE $0285
+                  .BYTE $0885
                   .ENDM
 STDzp             .MACRO          ;STD $xxxx
-                  .BYTE $0385
+                  .BYTE $0C85
                   .ENDM
 STEzp             .MACRO          ;STE $xxxx
-                  .BYTE $1085
+                  .BYTE $4085
                   .ENDM
 STFzp             .MACRO          ;STF $xxxx
-                  .BYTE $1185
+                  .BYTE $4485
                   .ENDM
 STGzp             .MACRO          ;STG $xxxx
-                  .BYTE $1285
+                  .BYTE $4885
                   .ENDM
 STHzp             .MACRO          ;STH $xxxx
-                  .BYTE $1385
+                  .BYTE $4C85
                   .ENDM
 STIzp             .MACRO          ;STI $xxxx
-                  .BYTE $2085
+                  .BYTE $8085
                   .ENDM
 STJzp             .MACRO          ;STJ $xxxx
-                  .BYTE $2185
+                  .BYTE $8485
                   .ENDM
 STKzp             .MACRO          ;STK $xxxx
-                  .BYTE $2285
+                  .BYTE $8885
                   .ENDM
 STLzp             .MACRO          ;STL $xxxx
-                  .BYTE $2385
+                  .BYTE $8C85
                   .ENDM
 STMzp             .MACRO          ;STM $xxxx
-                  .BYTE $3085
+                  .BYTE $C085
                   .ENDM
 STNzp             .MACRO          ;STN $xxxx
-                  .BYTE $3185
+                  .BYTE $C485
                   .ENDM
 STOzp             .MACRO          ;STO $xxxx
-                  .BYTE $3285
+                  .BYTE $C885
                   .ENDM
 STQzp             .MACRO          ;STQ $xxxx
-                  .BYTE $3385
+                  .BYTE $CC85
                   .ENDM
 STWzp             .MACRO
                   .BYTE $0087
@@ -444,49 +444,49 @@ STWa              .MACRO
                   
 ;STA $xxxx,x            $0095
 STBzpx            .MACRO          ;STB $xxxx,x
-                  .BYTE $0195
+                  .BYTE $0495
                   .ENDM
 STCzpx            .MACRO          ;STC $xxxx,x
-                  .BYTE $0295
+                  .BYTE $0895
                   .ENDM
 STDzpx            .MACRO          ;STD $xxxx,x
-                  .BYTE $0395
+                  .BYTE $0C95
                   .ENDM
 STEzpx            .MACRO          ;STE $xxxx,x
-                  .BYTE $1095
+                  .BYTE $4095
                   .ENDM
 STFzpx            .MACRO          ;STF $xxxx,x
-                  .BYTE $1195
+                  .BYTE $4495
                   .ENDM
 STGzpx            .MACRO          ;STG $xxxx,x
-                  .BYTE $1295
+                  .BYTE $4895
                   .ENDM
 STHzpx            .MACRO          ;STH $xxxx,x
-                  .BYTE $1395
+                  .BYTE $4C95
                   .ENDM
 STIzpx            .MACRO          ;STI $xxxx,x
-                  .BYTE $2095
+                  .BYTE $8095
                   .ENDM
 STJzpx            .MACRO          ;STJ $xxxx,x
-                  .BYTE $2195
+                  .BYTE $8495
                   .ENDM
 STKzpx            .MACRO          ;STK $xxxx,x
-                  .BYTE $2295
+                  .BYTE $8895
                   .ENDM
 STLzpx            .MACRO          ;STL $xxxx,x
-                  .BYTE $2395
+                  .BYTE $8C95
                   .ENDM
 STMzpx            .MACRO          ;STM $xxxx,x
-                  .BYTE $3095
+                  .BYTE $C095
                   .ENDM
 STNzpx            .MACRO          ;STN $xxxx,x
-                  .BYTE $3195
+                  .BYTE $C495
                   .ENDM
 STOzpx            .MACRO          ;STO $xxxx,x
-                  .BYTE $3295
+                  .BYTE $C895
                   .ENDM
 STQzpx            .MACRO          ;STQ $xxxx,x
-                  .BYTE $3395
+                  .BYTE $CC95
                   .ENDM
 STWzpx            .MACRO
                   .BYTE $0074
@@ -494,49 +494,49 @@ STWzpx            .MACRO
                   
 ;STA $xxxxxxxx,x        $009D
 STBax             .MACRO          ;STB $xxxxxxxx,x
-                  .BYTE $019D
+                  .BYTE $049D
                   .ENDM
 STCax             .MACRO          ;STC $xxxxxxxx,x
-                  .BYTE $029D
+                  .BYTE $089D
                   .ENDM
 STDax             .MACRO          ;STD $xxxxxxxx,x
-                  .BYTE $039D
+                  .BYTE $0C9D
                   .ENDM
 STEax             .MACRO          ;STE $xxxxxxxx,x
-                  .BYTE $109D
+                  .BYTE $409D
                   .ENDM
 STFax             .MACRO          ;STF $xxxxxxxx,x
-                  .BYTE $119D
+                  .BYTE $449D
                   .ENDM
 STGax             .MACRO          ;STG $xxxxxxxx,x
-                  .BYTE $129D
+                  .BYTE $489D
                   .ENDM
 STHax             .MACRO          ;STH $xxxxxxxx,x
-                  .BYTE $139D
+                  .BYTE $4C9D
                   .ENDM
 STIax             .MACRO          ;STI $xxxxxxxx,x
-                  .BYTE $209D
+                  .BYTE $809D
                   .ENDM
 STJax             .MACRO          ;STJ $xxxxxxxx,x
-                  .BYTE $219D
+                  .BYTE $849D
                   .ENDM
 STKax             .MACRO          ;STK $xxxxxxxx,x
-                  .BYTE $229D
+                  .BYTE $889D
                   .ENDM
 STLax             .MACRO          ;STL $xxxxxxxx,x
-                  .BYTE $239D
+                  .BYTE $8C9D
                   .ENDM
 STMax             .MACRO          ;STM $xxxxxxxx,x
-                  .BYTE $309D
+                  .BYTE $C09D
                   .ENDM
 STNax             .MACRO          ;STN $xxxxxxxx,x
-                  .BYTE $319D
+                  .BYTE $C49D
                   .ENDM
 STOax             .MACRO          ;STO $xxxxxxxx,x
-                  .BYTE $329D
+                  .BYTE $C89D
                   .ENDM
 STQax             .MACRO          ;STQ $xxxxxxxx,x
-                  .BYTE $339D
+                  .BYTE $CC9D
                   .ENDM
 STWax             .MACRO
                   .BYTE $0087
@@ -544,98 +544,98 @@ STWax             .MACRO
 
 ;STA $xxxxxxxx,y        $0099
 STBay             .MACRO          ;STB $xxxxxxxx,y
-                  .BYTE $0199
+                  .BYTE $0499
                   .ENDM
 STCay             .MACRO          ;STC $xxxxxxxx,y
-                  .BYTE $0299
+                  .BYTE $0899
                   .ENDM
 STDay             .MACRO          ;STD $xxxxxxxx,y
-                  .BYTE $0399
+                  .BYTE $0C99
                   .ENDM
 STEay             .MACRO          ;STE $xxxxxxxx,y
-                  .BYTE $1099
+                  .BYTE $4099
                   .ENDM
 STFay             .MACRO          ;STF $xxxxxxxx,y
-                  .BYTE $1199
+                  .BYTE $4499
                   .ENDM
 STGay             .MACRO          ;STG $xxxxxxxx,y
-                  .BYTE $1299
+                  .BYTE $4899
                   .ENDM
 STHay             .MACRO          ;STH $xxxxxxxx,y
-                  .BYTE $1399
+                  .BYTE $4C99
                   .ENDM
 STIay             .MACRO          ;STI $xxxxxxxx,y
-                  .BYTE $2099
+                  .BYTE $8099
                   .ENDM
 STJay             .MACRO          ;STJ $xxxxxxxx,y
-                  .BYTE $2199
+                  .BYTE $8499
                   .ENDM
 STKay             .MACRO          ;STK $xxxxxxxx,y
-                  .BYTE $2299
+                  .BYTE $8899
                   .ENDM
 STLay             .MACRO          ;STL $xxxxxxxx,y
-                  .BYTE $2399
+                  .BYTE $8C99
                   .ENDM
 STMay             .MACRO          ;STM $xxxxxxxx,y
-                  .BYTE $3099
+                  .BYTE $C099
                   .ENDM
 STNay             .MACRO          ;STN $xxxxxxxx,y
-                  .BYTE $3199
+                  .BYTE $C499
                   .ENDM
 STOay             .MACRO          ;STO $xxxxxxxx,y
-                  .BYTE $3299
+                  .BYTE $C899
                   .ENDM
 STQay             .MACRO          ;STQ $xxxxxxxx,y
-                  .BYTE $3399
+                  .BYTE $CC99
                   .ENDM
 
 STAaw             .MACRO          ;STA $xxxxxxxx,w
                   .BYTE $009B
                   .ENDM
 STBaw             .MACRO          ;STB $xxxxxxxx,w
-                  .BYTE $019B
+                  .BYTE $049B
                   .ENDM
 STCaw             .MACRO          ;STC $xxxxxxxx,w
-                  .BYTE $029B
+                  .BYTE $089B
                   .ENDM
 STDaw             .MACRO          ;STD $xxxxxxxx,w
-                  .BYTE $039B
+                  .BYTE $0C9B
                   .ENDM
 STEaw             .MACRO          ;STE $xxxxxxxx,w
-                  .BYTE $109B
+                  .BYTE $409B
                   .ENDM
 STFaw             .MACRO          ;STF $xxxxxxxx,w
-                  .BYTE $119B
+                  .BYTE $449B
                   .ENDM
 STGaw             .MACRO          ;STG $xxxxxxxx,w
-                  .BYTE $129B
+                  .BYTE $489B
                   .ENDM
 STHaw             .MACRO          ;STH $xxxxxxxx,w
-                  .BYTE $139B
+                  .BYTE $4C9B
                   .ENDM
 STIaw             .MACRO          ;STI $xxxxxxxx,w
-                  .BYTE $209B
+                  .BYTE $809B
                   .ENDM
 STJaw             .MACRO          ;STJ $xxxxxxxx,w
-                  .BYTE $219B
+                  .BYTE $849B
                   .ENDM
 STKaw             .MACRO          ;STK $xxxxxxxx,w
-                  .BYTE $229B
+                  .BYTE $889B
                   .ENDM
 STLaw             .MACRO          ;STL $xxxxxxxx,w
-                  .BYTE $239B
+                  .BYTE $8C9B
                   .ENDM
 STMaw             .MACRO          ;STM $xxxxxxxx,w
-                  .BYTE $309B
+                  .BYTE $C09B
                   .ENDM
 STNaw             .MACRO          ;STN $xxxxxxxx,w
-                  .BYTE $319B
+                  .BYTE $C49B
                   .ENDM
 STOaw             .MACRO          ;STO $xxxxxxxx,w
-                  .BYTE $329B
+                  .BYTE $C89B
                   .ENDM
 STQaw             .MACRO          ;STQ $xxxxxxxx,w
-                  .BYTE $339B
+                  .BYTE $CC9B
                   .ENDM
 
 ;CMPAi                  $00C9                  
