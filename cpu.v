@@ -1,29 +1,23 @@
-/*FILE: /relocatable stack and zero page/cpu.v DATE:05/09/2012
--- remember to uncomment 2 'ifdef SIM','endif' statements when not running simulation. --
- *
- * verilog-6502 project: verilog model of 6502 and 65Org16.x CPU core
+/*FILE: /relocatable stack and zero page/cpu.v DATE:02/12/2013 -- remember to uncomment 4 'ifdef/endif SIM' statements when not running simulation. --
+ * verilog-6502 project: verilog model of 6502 and 65OrgXX.x CPU cores
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  * (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
- * (C) 2012 Sam Gaskill, <sammy.gasket@gmail.com>
+ * (C) 2012,2013 Sam Gaskill, <sammy.gasket@gmail.com> 
+ *			Removed BCD mode & SED,CLD opcodes
+ *			Added full 16-bit IR decoding
+ *		 	Added Arlet's updates
+ *			Added B thru Q accumulators
+ *			Added full accumulator to accumulator transfer opcodes
+ *			Added BigEd's 16-bit barrel shifter logic to A thru D Acc's
+ *			Added compatible WDC65C02 PHX,PHY,PLX,PLY opcodes
+ *			Added compatible WDC65C02 INC[A], DEC[A] opcodes, also INC[B..Q], DEC[B..Q]
+ *			Added W index register with same addressing modes as Y register
+ *			Added relocatable stack and zero page registers
+ *			Added transfer opcodes for stack and zero pages registers
+ *			Added transfer opcodes for index register W
+ *			That's it for .b CORE!
  *
- ******************************************************************************
- *
- *  stripped BCD,
- *  removed SED,CLD opcodes,
- *  added full 16-bit IR decoding,
- *  added Arlet's updates from 5 months ago
- *  added B thru Q accumulators
- *  added full accumulator to accumulator transfer opcodes
- *  added BigEd's 16-bit barrel shifter logic to A thru D Acc's
- *  added WDC65C02 PHX, PHY, PLX, PLY opcodes
- *  added WDC65C02 INC[A], DEC[A] opcodes, also INC[B..Q], DEC[B..Q]
- *  added W index register with same addressing modes as Y
- *  added relocatable stack and zero pages
- *  added Transfer opcodes for stack and zero pages pointers
- *  added index transfer opcodes for W. That's it for .b CORE!
- *  added QAWXYS Register I/O Bus thanks to Michael A. Morris
- ******************************************************************************
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License version 2.1 as published by the Free Software Foundation.
@@ -36,7 +30,8 @@
  *  
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
  *
  * Note that not all 6502 interface signals are supported (yet).  The goal
  * is to create an Acorn Atom model, and the Atom didn't use all signals on
@@ -46,67 +41,64 @@
  * on the output pads if external memory is required.
  */
 
-module cpu( clk, reset, AB, DI, DO, WE, IRQ, NMI, RDY );
-
-parameter dw = 16;      // data width (8 for 6502, 16 for 65Org16)
-parameter aw = 32;      // address width (16 for 6502, 32 for 65Org16)
-parameter pQAWXYS_INIT = "REGFILE_INIT.COE";    // Register file initialization
-
-input clk;		        // CPU clock 
-input reset;		    // reset signal
-output reg [aw-1:0] AB;	// address bus
-input [dw-1:0] DI;	    // data in, read bus
-output [dw-1:0] DO; 	// data out, write bus
-output WE;		        // write enable
-input IRQ;		        // interrupt request
-input NMI;		        // non-maskable interrupt request
-input RDY;		        // Ready signal. Pauses CPU when RDY=0 
+module cpu( input clk,					// CPU clock 
+				input reset,				// reset signal
+				output reg [aw-1:0] AB,	// address bus
+				input [dw-1:0] DI,		// data in, read bus
+				output [dw-1:0] DO, 		// data out, write bus
+				output WE,					// write enable
+				input IRQ,					// interrupt request
+				input NMI,					// non-maskable interrupt request
+				input RDY					// Ready signal. Pauses CPU when RDY=0  );
+				);
+				
+parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
+parameter aw = 32; // address width (16 for 6502, 32 for 65Org16)
 
 /*
  * internal signals
  */
  
-reg  [aw-1:0] PC;	    // Program Counter 
-reg  [dw-1:0] ABL;	    // Address Bus Register LSB
-reg  [dw-1:0] ABH;	    // Address Bus Register MSB
-wire [dw-1:0] ADD;	    // Adder Hold Register (registered in ALU)
+reg  [aw-1:0] PC;			// Program Counter 
+reg  [dw-1:0] ABL;		// Address Bus Register LSB
+reg  [dw-1:0] ABH;		// Address Bus Register MSB
+wire [dw-1:0] ADD;		// Adder Hold Register (registered in ALU)
 
 reg  [dw-1:0] DIHOLD;	// Hold for Data In
-reg  DIHOLD_valid; 	    //
-wire [dw-1:0] DIMUX;	//
+reg  DIHOLD_valid; 		//
+wire [dw-1:0] DIMUX;		//
 
 reg  [dw-1:0] IRHOLD;	// Hold for Instruction register 
-reg  IRHOLD_valid;	    // Valid instruction in IRHOLD
+reg  IRHOLD_valid;		// Valid instruction in IRHOLD
 
-//  Define register file components: address, RAM, data input/output busses
+reg  C = 0;					// carry flag (init at zero to avoid X's in ALU sim)
+reg  Z = 0;					// zero flag
+reg  I = 0;					// interrupt flag
+reg  V = 0;					// overflow flag
+reg  N = 0;					// negative flag
+wire AZ;						// ALU Zero flag
+wire AV;						// ALU overflow flag
+wire AN;						// ALU negative flag
 
-reg  [4:0] regsel;	            // Select A thru Q, W, X, Y, S, SPP, ZPP register
-reg  [dw-1:0] QAWXYS[31:0]; 	// A thru Q, W, X, Y, Z and S register file
-wire [dw-1:0] reg_di, reg_do;	// Register file input/output data busses
-
-reg  C = 0;		        // carry flag (init at zero to avoid X's in ALU sim)
-reg  Z = 0;		        // zero flag
-reg  I = 0;		        // interrupt flag
-reg  V = 0;		        // overflow flag
-reg  N = 0;		        // negative flag
-wire AZ;		        // ALU Zero flag
-wire AV;		        // ALU overflow flag
-wire AN;		        // ALU negative flag
-
-reg  [dw-1:0] AI;	    // ALU Input A
-reg  [dw-1:0] BI;  	    // ALU Input B
-reg  [3:0] E_Reg;       // Shift Distance Register
-wire [dw-1:0] DI;	    // Data In
-wire [dw-1:0] IR;	    // Instruction register
-reg  [dw-1:0] DO;	    // Data Out 
-reg  WE;		        // Write Enable
-reg  CI;		        // Carry In
-wire CO;		        // Carry Out
- 
+reg  [dw-1:0] AI;			// ALU Input A
+reg  [dw-1:0] BI;  		// ALU Input B
+reg  [3:0] E_Reg; 		// Shift Distance Register
+wire [dw-1:0] DI;			// Data In
+wire [dw-1:0] IR;			// Instruction register
+reg  [dw-1:0] DO;			// Data Out 
+reg  WE;						// Write Enable
+reg  CI;						// Carry In
+wire CO;						// Carry Out 
 wire [dw-1:0] PCH = PC[aw-1:dw];
 wire [dw-1:0] PCL = PC[dw-1:0];
 
-reg  NMI_edge = 0;	    // captured NMI edge
+reg NMI_edge = 0;			// captured NMI edge
+
+//  Define register file components: address, RAM, data input/output busses
+
+reg [dw-1:0] QAWXYS[31:0]; 					// A thru Q, W, X, Y, Z, S, SPP, ZPP register file
+reg [4:0] regsel;									// A thru Q, W, X, Y, Z, S, SPP, ZPP register select
+wire [dw-1:0] regfile = QAWXYS[regsel];	// Selected register output
 
 parameter
 	SEL_A    = 5'd0,
@@ -132,11 +124,39 @@ parameter
 	SEL_ZPP	= 5'd20,
 	SEL_SPP	= 5'd21;
 
+initial
+	begin
+		QAWXYS[SEL_Q] = 0;
+		QAWXYS[SEL_O] = 0;
+		QAWXYS[SEL_N] = 0;
+		QAWXYS[SEL_M] = 0;
+		QAWXYS[SEL_L] = 0;
+		QAWXYS[SEL_K] = 0;
+		QAWXYS[SEL_J] = 0;
+		QAWXYS[SEL_I] = 0;
+		QAWXYS[SEL_H] = 0;
+		QAWXYS[SEL_G] = 0;
+		QAWXYS[SEL_F] = 0;
+		QAWXYS[SEL_E] = 0;
+		QAWXYS[SEL_D] = 0;
+		QAWXYS[SEL_C] = 0;
+		QAWXYS[SEL_B] = 0;
+		QAWXYS[SEL_A] = 0;
+		QAWXYS[SEL_X] = 0;
+		QAWXYS[SEL_Y] = 0;
+		QAWXYS[SEL_W] = 0;
+		QAWXYS[SEL_S] = 0; 	//init stack 
+		QAWXYS[SEL_ZPP] = 0;
+		QAWXYS[SEL_SPP] = 1; //init stack pointer to same as zero page, set to 1 for 'original' stack decoding @ $0001_0000-$0001_FFFF
+		zp_reg = 0;
+		sp_reg = 1; 			//shoud be same value as QAWXYS[SEL_SPP] for proper simulation
+	end
+
 /*
  * define some signals for watching in simulator output
  */
 
-`ifdef SIM
+//`ifdef SIM
 wire [dw-1:0]   Qacc = QAWXYS[SEL_Q];	// Accumulator
 wire [dw-1:0]   Oacc = QAWXYS[SEL_O];	// Accumulator
 wire [dw-1:0]   Nacc = QAWXYS[SEL_N];	// Accumulator
@@ -153,15 +173,15 @@ wire [dw-1:0]   Dacc = QAWXYS[SEL_D];	// Accumulator
 wire [dw-1:0]   Cacc = QAWXYS[SEL_C];	// Accumulator
 wire [dw-1:0]   Bacc = QAWXYS[SEL_B];	// Accumulator
 wire [dw-1:0]   Aacc = QAWXYS[SEL_A];	// Accumulator
-wire [dw-1:0]   X    = QAWXYS[SEL_X];	// X register
-wire [dw-1:0]   Y    = QAWXYS[SEL_Y];	// Y register
-wire [dw-1:0]   W    = QAWXYS[SEL_W];	// W register 
-wire [dw-1:0]   S    = QAWXYS[SEL_S];	// Stack pointer
+wire [dw-1:0]   X = QAWXYS[SEL_X];		// X register
+wire [dw-1:0]   Y = QAWXYS[SEL_Y];		// Y register
+wire [dw-1:0]   W = QAWXYS[SEL_W];		// W register 
+wire [dw-1:0]   S = QAWXYS[SEL_S];		// Stack pointer
 wire [dw-1:0]	ZPP = QAWXYS[SEL_ZPP];	// Zero Page Pointer
 wire [dw-1:0]	STP = QAWXYS[SEL_SPP];	// Stack Page Pointer
-`endif
+//`endif
 
-wire [dw-1:0] P = { 8'b0, N, V, 3'b0, I, Z, C };
+wire [dw-1:0] P = { 8'b0, N, V, 3'b110, I, Z, C };
 
 /*
  * instruction decoder/sequencer
@@ -173,38 +193,32 @@ reg [5:0] state;
  * control signals
  */
 
-reg PC_inc;		        // Increment PC
+reg PC_inc;					// Increment PC
 reg [aw-1:0] PC_temp; 	// intermediate value of PC 
 
-reg [4:0] src_reg;	    // source register index
-reg [4:0] dst_reg;	    // destination register index
-reg [dw-1:0] zp_reg;	// shadow ZPP write register
-reg [dw-1:0] sp_reg;	// shadow SPP write register
-reg index_y;		    // if set, then Y is index reg
-reg index_w;            // if set, then W is index reg, otherwise X is index reg
-reg load_reg;		    // loading a register (A thru Q, W, X, Y, S) in this instruction
-reg inc;		        // increment
-reg write_back;		    // set if memory is read/modified/written 
-reg load_only;		    // LD[A..Q]/LDW/LDX/LDY instruction
-reg store;		        // doing store (ST[A..Q]/STW/STX/STY)
-reg adc_sbc;		    // doing ADC/SBC
-reg compare;		    // doing CMP/CPY/CPX/CPW
-reg shift;		        // doing shift/rotate instruction
-reg rotate;		        // doing rotate (no shift)
-reg backwards;		    // backwards branch
-reg cond_true;		    // branch condition is true
-reg [2:0] cond_code;	// condition code bits from instruction
-reg shift_right;	    // Instruction ALU shift/rotate right 
-reg alu_shift_right;	// Current cycle shift right enable
-reg [3:0] op;		    // Main ALU operation for instruction
-reg [3:0] alu_op;	    // Current cycle ALU operation 
+reg [4:0] src_reg;		// source register index
+reg [4:0] dst_reg;		// destination register index
+reg [dw-1:0] zp_reg;		// shadow ZPP write register
+reg [dw-1:0] sp_reg;		// shadow SPP write register
+reg index_y;				// if set, then Y is index reg
+reg index_w;				// if set, then W is index reg, otherwise X is index reg
+reg load_reg;				// loading a register (A thru Q, W, X, Y, S) in this instruction
+reg inc;						// increment
+reg write_back;			// set if memory is read/modified/written 
+reg load_only;				// LD[A..Q]/LDW/LDX/LDY instruction
+reg store;					// doing store (ST[A..Q]/STW/STX/STY)
+reg adc_sbc;				// doing ADC/SBC
+reg compare;				// doing CMP/CPY/CPX/CPW
+reg shift;					// doing shift/rotate instruction
+reg rotate;					// doing rotate (no shift)
+reg backwards;				// backwards branch
+reg cond_true;				// branch condition is true
+reg [2:0] cond_code;		// condition code bits from instruction
+reg shift_right;			// Instruction ALU shift/rotate right 
+reg alu_shift_right;		// Current cycle shift right enable
+reg [3:0] op;				// Main ALU operation for instruction
+reg [3:0] alu_op;			// Current cycle ALU operation 
 
-initial
-	begin
-		zp_reg = 0;
-		sp_reg = 0; //shoud be same value as QAWXYS[SEL_SPP] for proper simulation
-	end
-	
 /* 
  * some flip flops to remember we're doing special instructions. These
  * get loaded at the DECODE state, and used later
@@ -226,7 +240,7 @@ reg res;		// in reset
  * ALU operations
  */
 
-localparam
+parameter
 	OP_OR  = 4'b1100,
 	OP_AND = 4'b1101,
 	OP_EOR = 4'b1110,
@@ -242,7 +256,7 @@ localparam
  * kept in separate flops. 
  */
 
-localparam
+parameter 
     ABS0   = 6'd0,  // ABS     - fetch LSB	
     ABS1   = 6'd1,  // ABS     - fetch MSB
     ABSX0  = 6'd2,  // ABS, X  - fetch LSB and send to ALU (+X)
@@ -294,7 +308,7 @@ localparam
     ZPX0   = 6'd48, // ZP, X   - fetch ZP, and send to ALU (+X)
     ZPX1   = 6'd49; // ZP, X   - load from memory
 
-`ifdef SIM
+//`ifdef SIM
 
 /*
  * easy to read names in simulator output
@@ -356,10 +370,7 @@ always @*
 	    JMPI1:  statename = "JMPI1";
     endcase
 
-//always @( PC )
-	//$display( "%t, PC:%04x A:%02x X:%02x Y:%02x S:%02x C:%d Z:%d V:%d N:%d", $time, PC, A, X, Y, S, C, Z, V, N );
-
-`endif
+//`endif
 
 
 
@@ -370,10 +381,11 @@ always @*
  
 always @*
     case( state )
-	DECODE:	if( (~I & IRQ) | NMI_edge )
+	DECODE:		if( (~I & IRQ) | NMI_edge )
 			    PC_temp = { ABH, ABL };
 			else
 			    PC_temp = PC;
+
 
 	JMP1,
 	JMPI1,
@@ -385,9 +397,8 @@ always @*
 
 	BRA2:		PC_temp = { ADD, PCL };
 
-	BRK2: 		PC_temp = res ? 32'hffff_fffc
-                              : NMI_edge ? 32'hffff_fffa
-                                         : 32'hffff_fffe; // width should be parameterised
+	BRK2: 		PC_temp =      res ? 32'hffff_fffc : 
+				  NMI_edge ? 32'hffff_fffa : 32'hffff_fffe; // width should be parameterised
 
 	default:	PC_temp = PC;
     endcase
@@ -398,7 +409,7 @@ always @*
  
 always @*
     case( state )
-	DECODE:	 if( (~I & IRQ) | NMI_edge )
+	DECODE:	 	if( (~I & IRQ) | NMI_edge )
 			    PC_inc = 0;
 			else
 			    PC_inc = 1;
@@ -430,7 +441,7 @@ always @(posedge clk)
 /*
  * Address Generator 
  */
- 
+
 always @*
     case( state )
 	ABSX1,
@@ -451,7 +462,7 @@ always @*
 	PUSH1,
 	RTS0,
 	RTI0,
-	BRK0:		AB = { sp_reg, reg_do };
+	BRK0:		AB = { sp_reg, regfile };
 
 	BRK1,
 	JSR1,
@@ -484,10 +495,8 @@ always @*
  * source of the address, such as the ALU or DI.
  */
  
-always @(posedge clk)
-	if( state != PUSH0 && state != PUSH1 && RDY &&
-	    state != PULL0 && state != PULL1 && state != PULL2 )
-begin
+always @(posedge clk) begin
+if( state != PUSH0 && state != PUSH1 && RDY && state != PULL0 && state != PULL1 && state != PULL2 )
     ABL <= AB[dw-1:0];
     ABH <= AB[aw-1:dw];
 end
@@ -495,7 +504,7 @@ end
 /*
  * Data Out MUX 
  */
- 
+
 always @*
     case( state )
 	WRITE:	 DO = ADD;
@@ -508,9 +517,9 @@ always @*
 
 	PUSH1:	 DO = php ? P : ADD;
 
-	BRK2:	 DO = (IRQ | NMI_edge) ? P : P | 16'b0000_0000_0001_0000; // B bit should be parameterised
+	BRK2:	 DO = (IRQ | NMI_edge) ? (P & 16'b1111_1111_1110_1111) : P; // B bit should be parameterised
 
-	default: DO = reg_do;
+	default: DO = regfile;
     endcase
 
 /*
@@ -565,18 +574,11 @@ always @*
  * the PCL. This is possible, because the S register itself is stored in
  * the ALU during those cycles.
  */
-
-initial
-    $readmemh(pQAWXYS_INIT, QAWXYS, 0, 31);
-    
-assign reg_di = (state == JSR0) ? DIMUX : ADD;
-
+ 
 always @(posedge clk)
     if( write_register & RDY )
-        QAWXYS[regsel] <= reg_di;
-        
-assign reg_do = QAWXYS[regsel];	// Selected register output	
-
+	QAWXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
+	
 always @(posedge clk)
     if( write_register & RDY & (regsel == SEL_ZPP) )
        zp_reg <= ADD;
@@ -584,7 +586,7 @@ always @(posedge clk)
 always @(posedge clk)
     if( write_register & RDY & (regsel == SEL_SPP) )
        sp_reg <= ADD;
-
+		 
 /*
  * register select logic. This determines which of the A thru Q, W, X, Y or
  * S registers will be accessed. 
@@ -595,7 +597,7 @@ always @*
 	INDY1,
 	INDX0,
 	ZPX0,
-    ABSX0  : regsel = index_y ? SEL_Y : index_w ? SEL_W : SEL_X;
+    	ABSX0  : regsel = index_w ? SEL_W : index_y ? SEL_Y : SEL_X;
 
 	DECODE : regsel = dst_reg; 
 
@@ -611,7 +613,7 @@ always @*
 	RTS0,
 	RTS2   : regsel = SEL_S;
 
-    default: regsel = src_reg; 
+        default: regsel = src_reg; 
     endcase
 
 /*
@@ -640,24 +642,24 @@ ALU #(.dw(dw)) _ALU(
 
 always @*
     case( state )
-	READ:	    alu_op = op;
+	READ:	alu_op = op;
 
-	BRA1:  	    alu_op = backwards ? OP_SUB : OP_ADD; 
+	BRA1:  	alu_op = backwards ? OP_SUB : OP_ADD; 
 
 	FETCH,
-	REG : 	    alu_op = op; 
+	REG : 	alu_op = op; 
 
 	DECODE,
-	ABS1: 	    alu_op = 1'bx;
+	ABS1: 	alu_op = 1'bx;
 
 	PUSH1,
 	BRK0,
 	BRK1,
 	BRK2,
 	JSR0,
-	JSR1:	    alu_op = OP_SUB;
+	JSR1:	alu_op = OP_SUB;
 
-    default:    alu_op = OP_ADD;
+     default:   alu_op = OP_ADD;
     endcase
 
 /*
@@ -666,9 +668,9 @@ always @*
 
 always @*
     if( state == FETCH || state == REG || state == READ )
-        alu_shift_right = shift_right;
+	alu_shift_right = shift_right;
     else
-        alu_shift_right = 0;
+	alu_shift_right = 0;
 
 /*
  * Sign extend branch offset.  
@@ -676,7 +678,7 @@ always @*
 
 always @(posedge clk)
     if( RDY )
-        backwards <= DIMUX[dw-1];
+	backwards <= DIMUX[dw-1];
 
 /* 
  * ALU A Input MUX 
@@ -690,7 +692,7 @@ always @*
 	RTI2,
 	BRK1,
 	BRK2,
-	INDX1:  	AI = ADD;
+	INDX1: 	AI = ADD;
 
 	REG,
 	ZPX0,
@@ -704,17 +706,17 @@ always @*
 	PULL0,
 	INDY1,
 	PUSH0,
-	PUSH1:	    AI = reg_do;
+	PUSH1:	AI = regfile;
 
 	BRA0,
-	READ:	    AI = DIMUX;
+	READ:	AI = DIMUX;
 
-	BRA1: 	    AI = ABH;	// don't use PCH in case we're 
+	BRA1: 	AI = ABH;	// don't use PCH in case we're 
 
-	FETCH:	    AI = load_only ? 0 : reg_do;
+	FETCH:	AI = load_only ? 0 : regfile;
 
 	DECODE,
-	ABS1:	    AI = {dw{1'bx}};	// don't care
+	ABS1:	AI = {dw{1'bx}};	// don't care
 
 	default: 	AI = 0;
     endcase
@@ -743,12 +745,12 @@ always @*
 	 PUSH0,	
 	 PUSH1,
 	 PULL0,
-	 RTS0:	    BI = {dw{1'b0}};
+	 RTS0:	BI = {dw{1'b0}};
 
-	 BRA0:	    BI = PCL;
+	 BRA0:	BI = PCL;
 
 	 DECODE,
-	 ABS1:      BI = {dw{1'bx}};	// don't care
+	 ABS1:  BI = {dw{1'bx}};	// don't care
 
 	 default:	BI = DIMUX;
     endcase
@@ -761,20 +763,18 @@ always @*
     case( state )
 	INDY2,
 	BRA1,
-	ABSX1:	    CI = CO;
+	ABSX1:	CI = CO;
 
 	DECODE,
- 	ABS1:	    CI = 1'bx;
+ 	ABS1:	CI = 1'bx;
 
 	READ,
-	REG:	    CI = rotate ? C 
-                            : shift ? 0
-                                    : inc;
+	REG:	CI = rotate ? C :
+		     shift ? 0 : inc;
 
-	FETCH:	    CI = rotate ? C  
-                            : compare ? 1
-                                      : (shift | load_only) ? 0
-                                                            : C;
+	FETCH:	CI = rotate  ? C : 
+		     compare ? 1 : 
+		     (shift | load_only) ? 0 : C;
 
 	PULL0,
 	RTI0,
@@ -783,7 +783,7 @@ always @*
 	RTS0,
 	RTS1,
 	INDY0,
-	INDX1:	    CI = 1; 
+	INDX1:	CI = 1; 
 
 	default:	CI = 0;
     endcase
@@ -799,18 +799,18 @@ always @*
  
 always @(posedge clk )
     if( shift && state == WRITE ) 
-        C <= CO;
+	C <= CO;
     else if( state == RTI2 )
     	C <= DIMUX[0];
     else if( ~write_back && state == DECODE ) begin
-        if( adc_sbc | shift | compare )
-            C <= CO;
-        else if( plp )
-            C <= ADD[0];
-        else begin
-            if( sec ) C <= 1;
-            if( clc ) C <= 0;
-        end
+	if( adc_sbc | shift | compare )
+	    C <= CO;
+	else if( plp )
+	    C <= ADD[0];
+	else begin
+	    if( sec ) C <= 1;
+	    if( clc ) C <= 0;
+	end
     end
 
 /*
@@ -819,28 +819,28 @@ always @(posedge clk )
 
 always @(posedge clk) 
     if( state == WRITE ) 
-        Z <= AZ;
+	Z <= AZ;
     else if( state == RTI2 )
     	Z <= DIMUX[1];
     else if( state == DECODE ) begin
-        if( plp )
-            Z <= ADD[1];
-        else if( (load_reg & (regsel != SEL_S)) | compare | BIT )
-            Z <= AZ;
+	if( plp )
+	    Z <= ADD[1];
+	else if( (load_reg & (regsel != SEL_S)) | compare | BIT )
+	    Z <= AZ;
     end
 
 always @(posedge clk)
     if( state == WRITE )
-        N <= AN;
+	N <= AN;
     else if( state == RTI2 )
     	N <= DIMUX[dw-1];
     else if( state == DECODE ) begin
-        if( plp )
-            N <= ADD[dw-1];
-        else if( (load_reg & (regsel != SEL_S)) | compare )
-            N <= AN;
+	if( plp )
+	    N <= ADD[dw-1];
+	else if( (load_reg & (regsel != SEL_S)) | compare )
+	    N <= AN;
     end else if( state == FETCH && BIT ) 
-        N <= DIMUX[dw-1];
+	N <= DIMUX[dw-1];
 
 /*
  * Update I flag
@@ -848,14 +848,15 @@ always @(posedge clk)
 
 always @(posedge clk)
     if( state == BRK3 )
-        I <= 1;
+	I <= 1;
     else if( state == RTI2 )
     	I <= DIMUX[2];
-    else if( state == DECODE ) begin
-        if( sei ) I <= 1;
-        if( cli ) I <= 0;
-        if( plp ) I <= ADD[2];
+    else if( state == REG ) begin
+		if( sei ) I <= 1;
+		if( cli ) I <= 0;
     end
+	else if( state == DECODE )
+		if( plp ) I <= ADD[2];
 
 /*
  * Update V flag (next to top bit)
@@ -863,13 +864,13 @@ always @(posedge clk)
  
 always @(posedge clk )
     if( state == RTI2 ) 
-        V <= DIMUX[dw-2];
+	V <= DIMUX[dw-2];
     else if( state == DECODE ) begin
-        if( adc_sbc ) V <= AV;
-        if( clv )     V <= 0;
-        if( plp )     V <= ADD[dw-2];
+	if( adc_sbc ) V <= AV;
+	if( clv )     V <= 0;
+	if( plp )     V <= ADD[dw-2];
     end else if( state == FETCH && BIT ) 
-        V <= DIMUX[dw-2];
+	V <= DIMUX[dw-2];
 
 /*
  * Instruction decoder
@@ -894,11 +895,11 @@ always @(posedge clk )
     if( reset )
         IRHOLD_valid <= 0;
     else if( RDY ) begin
-        if( state == PULL0 || state == PUSH0 ) begin
-            IRHOLD <= DIMUX;
-            IRHOLD_valid <= 1;
-        end else if( state == DECODE )
-            IRHOLD_valid <= 0;
+	if( state == PULL0 || state == PUSH0 ) begin
+	    IRHOLD <= DIMUX;
+	    IRHOLD_valid <= 1;
+	end else if( state == DECODE )
+	    IRHOLD_valid <= 0;
     end
 
 assign IR = (IRQ & ~I) | NMI_edge ? {dw{1'b0}} :
@@ -909,20 +910,20 @@ assign DIMUX = ~RDY1 ? DIHOLD : DI;
 /*
  * Microcode state machine
  */
-
+ 
 always @(posedge clk or posedge reset)
     if( reset )
         state <= BRK0;
     else if( RDY )
         case( state )
         DECODE  : 
-            casex ( IR[15:0] )  							// decode all 16 bits:
-                //
-                //  IR[15:12]: used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
-                //	IR[15:8]: 0000_0000 is NMOS 6502 compatible opcode.
-				//	IR[15:14,11:10]: src_reg.
-				//	IR[13:12,9:8]  : dst_reg.
-                //
+            casex ( IR[15:0] )									// decode all 16 bits:
+																			//
+																			// IR[15:12] used for reg [3:0] E_Reg (Shift Distance Register) on all <shift,rotate> opcodes only.
+																			//	IR[15:8] 0000_0000 is NMOS 6502 compatible opcode.
+																			//	IR[15:14,11:10] src_reg.
+																			//	IR[13:12,9:8]   dst_reg.
+																			//
                 16'b0000_0000_0000_0000:	state <= BRK0;
                 16'b0000_0000_0010_0000:	state <= JSR0;
                 16'bxxxx_xxxx_0010_1100:	state <= ABS0;  // BIT abs
@@ -1059,8 +1060,8 @@ always @(posedge clk)
 always @(posedge clk)
     if( state == DECODE && RDY )
         casex( IR[15:0] )				
-        16'bxxxx_0000_0xxx_x110,	// ASL, ROL, LSR, ROR (abs, absx, zpg, zpgx)
-        16'bxxxx_xxxx_0xx0_1010 :	// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (acc)
+        16'bxxxx_0000_0xxx_x110,			// ASL, ROL, LSR, ROR (abs, absx, zpg, zpgx)
+        16'bxxxx_xxxx_0xx0_1010 :		// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (acc)
                 E_Reg <= IR[15:12]+1;	//note: no shift will occur when 'illegal' <shift, rotate> opcodes IR[15:12] = 1111. A +1 ensures compatibility with original NMOS6502 <shift,rotate> opcodes.
 
         default : E_Reg <= ADD;		
@@ -1080,7 +1081,6 @@ always @(posedge clk)
 		16'b0000_0000_1111_0100,	
 		16'bxxxx_xxxx_0xxx_0101,
 		16'bxxxx_xxxx_1x1x_0101,
-		//16'bxxxx_0000_0xxx_0110,
 		16'b0000_0000_101x_0110,
 		16'bxxxx_xxxx_00xx_0111,
 		16'b0000_0000_101x_0111,	
@@ -1099,7 +1099,6 @@ always @(posedge clk)
 		16'b0000_0000_1101_1100,	// LDW ax
 		16'bxxxx_xxxx_0xxx_1101,
 		16'bxxxx_xxxx_1x1x_1101,
-		//16'bxxxx_0000_0xxx_1110,
 		16'b0000_0000_101x_1110,
 		16'bxxxx_xxxx_0xxx_1111,
 		16'b0000_0000_101x_1111:
