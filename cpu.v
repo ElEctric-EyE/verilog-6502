@@ -7,9 +7,9 @@
  *			Removed BCD mode & SED,CLD opcodes
  *			Added full 16-bit IR decoding
  *		 	Added Arlet's updates
- *			Added B thru Q accumulators
+ *			Added B thru Q accumulators		http://forum.6502.org/viewtopic.php?f=10&t=1824&start=54
  *			Added full accumulator to accumulator transfer opcodes
- *			Added BigEd's 16-bit barrel shifter logic to A thru D Acc's
+ *			Added BigEd's 16-bit barrel shifter logic to A thru D Acc's			
  *			Added compatible WDC65C02 PHX,PHY,PLX,PLY opcodes
  *			Added compatible WDC65C02 INC[A], DEC[A] opcodes, also INC[B..Q], DEC[B..Q]
  *			Added W index register with same addressing modes as Y register
@@ -41,15 +41,15 @@
  * on the output pads if external memory is required.
  */
 
-module cpu( input clk,					// CPU clock 
-				input reset,				// reset signal
-				output reg [aw-1:0] AB,	// address bus
-				input [dw-1:0] DI,		// data in, read bus
-				output [dw-1:0] DO, 		// data out, write bus
-				output WE,					// write enable
-				input IRQ,					// interrupt request
-				input NMI,					// non-maskable interrupt request
-				input RDY					// Ready signal. Pauses CPU when RDY=0  );
+module cpu( input clk,          // CPU clock 
+				input reset,            // reset signal
+				output reg [aw-1:0] AB, // address bus
+				input [dw-1:0] DI,      // data in, read bus
+				output reg [dw-1:0] DO,     // data out, write bus
+				output reg WE,              // write enable
+				input IRQ,              // interrupt request
+				input NMI,              // non-maskable interrupt request
+				input RDY               // Ready signal. Pauses CPU when RDY=0  );
 				);
 				
 parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
@@ -66,29 +66,29 @@ wire [dw-1:0] ADD;		// Adder Hold Register (registered in ALU)
 
 reg  [dw-1:0] DIHOLD;	// Hold for Data In
 reg  DIHOLD_valid; 		//
-wire [dw-1:0] DIMUX;		//
+wire [dw-1:0] DIMUX;	//
 
 reg  [dw-1:0] IRHOLD;	// Hold for Instruction register 
 reg  IRHOLD_valid;		// Valid instruction in IRHOLD
 
-reg  C = 0;					// carry flag (init at zero to avoid X's in ALU sim)
-reg  Z = 0;					// zero flag
-reg  I = 0;					// interrupt flag
-reg  V = 0;					// overflow flag
-reg  N = 0;					// negative flag
-wire AZ;						// ALU Zero flag
-wire AV;						// ALU overflow flag
-wire AN;						// ALU negative flag
+reg  C = 0;					  // carry flag (init at zero to avoid X's in ALU sim)
+reg  Z = 0;					  // zero flag
+reg  I = 0;					  // interrupt flag
+reg  V = 0;					  // overflow flag
+reg  N = 0;					  // negative flag
+wire AZ;						  // ALU Zero flag
+wire AV;						  // ALU overflow flag
+wire AN;						  // ALU negative flag
 
 reg  [dw-1:0] AI;			// ALU Input A
 reg  [dw-1:0] BI;  		// ALU Input B
 reg  [3:0] E_Reg; 		// Shift Distance Register
-wire [dw-1:0] DI;			// Data In
+//wire [dw-1:0] DI;			// Data In
 wire [dw-1:0] IR;			// Instruction register
-reg  [dw-1:0] DO;			// Data Out 
-reg  WE;						// Write Enable
-reg  CI;						// Carry In
-wire CO;						// Carry Out 
+//reg  [dw-1:0] DO;			// Data Out 
+//reg  WE;						  // Write Enable
+reg  CI;						  // Carry In
+wire CO;						  // Carry Out 
 wire [dw-1:0] PCH = PC[aw-1:dw];
 wire [dw-1:0] PCL = PC[dw-1:0];
 
@@ -97,11 +97,11 @@ reg NMI_edge = 0;			// captured NMI edge
 //  Define register file components: address, RAM, data input/output busses
 
 reg [dw-1:0] QAWXYS[31:0]; 					// A thru Q, W, X, Y, Z, S, SPP, ZPP register file
-reg [4:0] regsel;									// A thru Q, W, X, Y, Z, S, SPP, ZPP register select
+reg [4:0] regsel;									  // A thru Q, W, X, Y, Z, S, SPP, ZPP register select
 wire [dw-1:0] regfile = QAWXYS[regsel];	// Selected register output
 
 parameter
-	SEL_A    = 5'd0,
+	SEL_A   = 5'd0,
 	SEL_B		= 5'd1,
 	SEL_C		= 5'd2,
 	SEL_D		= 5'd3,
@@ -117,39 +117,39 @@ parameter
 	SEL_N		= 5'd13,
 	SEL_O		= 5'd14,
 	SEL_Q		= 5'd15,		//P = processor status
-	SEL_X	   = 5'd16,
-	SEL_Y    = 5'd17,
+	SEL_X	  = 5'd16,
+	SEL_Y   = 5'd17,
 	SEL_W		= 5'd18,
-	SEL_S    = 5'd19,
+	SEL_S   = 5'd19,
 	SEL_ZPP	= 5'd20,
 	SEL_SPP	= 5'd21;
 
 initial
 	begin
-		QAWXYS[SEL_Q] = 0;
-		QAWXYS[SEL_O] = 0;
-		QAWXYS[SEL_N] = 0;
-		QAWXYS[SEL_M] = 0;
-		QAWXYS[SEL_L] = 0;
-		QAWXYS[SEL_K] = 0;
-		QAWXYS[SEL_J] = 0;
-		QAWXYS[SEL_I] = 0;
-		QAWXYS[SEL_H] = 0;
-		QAWXYS[SEL_G] = 0;
-		QAWXYS[SEL_F] = 0;
-		QAWXYS[SEL_E] = 0;
-		QAWXYS[SEL_D] = 0;
-		QAWXYS[SEL_C] = 0;
-		QAWXYS[SEL_B] = 0;
-		QAWXYS[SEL_A] = 0;
-		QAWXYS[SEL_X] = 0;
-		QAWXYS[SEL_Y] = 0;
-		QAWXYS[SEL_W] = 0;
-		QAWXYS[SEL_S] = 0; 	//init stack 
-		QAWXYS[SEL_ZPP] = 0;
-		QAWXYS[SEL_SPP] = 1; //init stack pointer to same as zero page, set to 1 for 'original' stack decoding @ $0001_0000-$0001_FFFF
-		zp_reg = 0;
-		sp_reg = 1; 			//shoud be same value as QAWXYS[SEL_SPP] for proper simulation
+		QAWXYS[SEL_Q] = 16'h0000;
+		QAWXYS[SEL_O] = 16'h0000;
+		QAWXYS[SEL_N] = 16'h0000;
+		QAWXYS[SEL_M] = 16'h0000;
+		QAWXYS[SEL_L] = 16'h0000;
+		QAWXYS[SEL_K] = 16'h0000;
+		QAWXYS[SEL_J] = 16'h0000;
+		QAWXYS[SEL_I] = 16'h0000;
+		QAWXYS[SEL_H] = 16'h0000;
+		QAWXYS[SEL_G] = 16'h0000;
+		QAWXYS[SEL_F] = 16'h0000;
+		QAWXYS[SEL_E] = 16'h0000;
+		QAWXYS[SEL_D] = 16'h0000;
+		QAWXYS[SEL_C] = 16'h0000;
+		QAWXYS[SEL_B] = 16'h0000;
+		QAWXYS[SEL_A] = 16'h0000;
+		QAWXYS[SEL_X] = 16'h0000;
+		QAWXYS[SEL_Y] = 16'h0000;
+		QAWXYS[SEL_W] = 16'h0000;
+		QAWXYS[SEL_S] = 16'h0000;    //init stack 
+		QAWXYS[SEL_ZPP] = 16'h0000;
+		QAWXYS[SEL_SPP] = 16'h0001;  //init stack pointer to same as zero page, set to 1 for 'original' stack decoding @ $0001_0000-$0001_FFFF
+		zp_reg = 16'h0000;
+		sp_reg = 16'h0001;           //shoud be same value as QAWXYS[SEL_SPP] for proper simulation
 	end
 
 /*
@@ -193,31 +193,31 @@ reg [5:0] state;
  * control signals
  */
 
-reg PC_inc;					// Increment PC
+reg PC_inc;					    // Increment PC
 reg [aw-1:0] PC_temp; 	// intermediate value of PC 
 
-reg [4:0] src_reg;		// source register index
-reg [4:0] dst_reg;		// destination register index
+reg [4:0] src_reg;		  // source register index
+reg [4:0] dst_reg;		  // destination register index
 reg [dw-1:0] zp_reg;		// shadow ZPP write register
-reg [dw-1:0] sp_reg;		// shadow SPP write register
-reg index_y;				// if set, then Y is index reg
-reg index_w;				// if set, then W is index reg, otherwise X is index reg
-reg load_reg;				// loading a register (A thru Q, W, X, Y, S) in this instruction
-reg inc;						// increment
-reg write_back;			// set if memory is read/modified/written 
-reg load_only;				// LD[A..Q]/LDW/LDX/LDY instruction
-reg store;					// doing store (ST[A..Q]/STW/STX/STY)
-reg adc_sbc;				// doing ADC/SBC
-reg compare;				// doing CMP/CPY/CPX/CPW
-reg shift;					// doing shift/rotate instruction
-reg rotate;					// doing rotate (no shift)
-reg backwards;				// backwards branch
-reg cond_true;				// branch condition is true
+reg [dw-1:0] sp_reg;		// shadow SPP write register		http://forum.6502.org/viewtopic.php?f=10&t=1842&start=264
+reg index_y;				    // if set, then Y is index reg
+reg index_w;				    // if set, then W is index reg, otherwise X is index reg
+reg load_reg;           // loading a register (A thru Q, W, X, Y, S) in this instruction
+reg inc;						    // increment
+reg write_back;			    // set if memory is read/modified/written 
+reg load_only;				  // LD[A..Q]/LDW/LDX/LDY instruction
+reg store;              // doing store (ST[A..Q]/STW/STX/STY)
+reg adc_sbc;				    // doing ADC/SBC
+reg compare;				    // doing CMP/CPY/CPX/CPW
+reg shift;              // doing shift/rotate instruction
+reg rotate;					    // doing rotate (no shift)
+reg backwards;				  // backwards branch
+reg cond_true;				  // branch condition is true
 reg [2:0] cond_code;		// condition code bits from instruction
-reg shift_right;			// Instruction ALU shift/rotate right 
+reg shift_right;        // Instruction ALU shift/rotate right 
 reg alu_shift_right;		// Current cycle shift right enable
-reg [3:0] op;				// Main ALU operation for instruction
-reg [3:0] alu_op;			// Current cycle ALU operation 
+reg [3:0] op;           // Main ALU operation for instruction
+reg [3:0] alu_op;			  // Current cycle ALU operation 
 
 /* 
  * some flip flops to remember we're doing special instructions. These
