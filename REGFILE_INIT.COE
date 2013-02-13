@@ -1,33 +1,32 @@
-//This initialization file should be in the same folder as cpu.v
-0000      //A Acc
-0000      //B Acc
-0000      //C Acc
-0000      //D Acc
-0000      //E Acc
-0000      //F Acc
-0000      //G Acc
-0000      //H Acc
-0000      //I Acc
-0000      //J Acc
-0000      //K Acc
-0000      //L Acc
-0000      //M Acc
-0000      //N Acc
-0000      //O Acc
-0000      //Q Acc
-0000      //X Reg
-0000      //Y Reg
-0000      //W Reg
-FFFF      //S Stack
-0000      //ZPP Zero Page Pointer 
-0000      //SPP Stack Page Pointer
-0000      //
-0000      //
-0000      //
-0000      //
-0000      //
-0000      //
-0000      //
-0000      //
-0000      //
-0000      //
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+FFFF
+0000
+0001
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
+0000
