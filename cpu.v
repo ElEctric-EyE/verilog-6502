@@ -17,7 +17,8 @@
  *			Added transfer opcodes for stack and zero pages registers
  *			Added transfer opcodes for index register W
  *			That's it for .b CORE!
- *
+ *			added QAWXYS Register I/O Bus thanks to Michael A. Morris
+ 
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License version 2.1 as published by the Free Software Foundation.
@@ -83,10 +84,7 @@ wire AN;						  // ALU negative flag
 reg  [dw-1:0] AI;			// ALU Input A
 reg  [dw-1:0] BI;  		// ALU Input B
 reg  [3:0] E_Reg; 		// Shift Distance Register
-//wire [dw-1:0] DI;			// Data In
 wire [dw-1:0] IR;			// Instruction register
-//reg  [dw-1:0] DO;			// Data Out 
-//reg  WE;						  // Write Enable
 reg  CI;						  // Carry In
 wire CO;						  // Carry Out 
 wire [dw-1:0] PCH = PC[aw-1:dw];
@@ -98,7 +96,7 @@ reg NMI_edge = 0;			// captured NMI edge
 
 reg [dw-1:0] QAWXYS[31:0]; 					// A thru Q, W, X, Y, Z, S, SPP, ZPP register file
 reg [4:0] regsel;									  // A thru Q, W, X, Y, Z, S, SPP, ZPP register select
-wire [dw-1:0] regfile = QAWXYS[regsel];	// Selected register output
+wire [dw-1:0] reg_di, reg_do;					 // Register file input/output data busses
 
 parameter
 	SEL_A   = 5'd0,
@@ -462,7 +460,7 @@ always @*
 	PUSH1,
 	RTS0,
 	RTI0,
-	BRK0:		AB = { sp_reg, regfile };
+	BRK0:		AB = { sp_reg, reg_do };
 
 	BRK1,
 	JSR1,
@@ -519,7 +517,7 @@ always @*
 
 	BRK2:	 DO = (IRQ | NMI_edge) ? (P & 16'b1111_1111_1110_1111) : P; // B bit should be parameterised
 
-	default: DO = regfile;
+	default: DO = reg_do;
     endcase
 
 /*
@@ -575,10 +573,17 @@ always @*
  * the ALU during those cycles.
  */
  
+initial
+    $readmemh("REGFILE_INIT.COE", QAWXYS, 0, 31);
+
+assign reg_di = (state == JSR0) ? DIMUX : ADD;
+
 always @(posedge clk)
     if( write_register & RDY )
-	QAWXYS[regsel] <= (state == JSR0) ? DIMUX : ADD;
-	
+        QAWXYS[regsel] <= reg_di;
+
+assign reg_do = QAWXYS[regsel];				// Selected register output\par
+
 always @(posedge clk)
     if( write_register & RDY & (regsel == SEL_ZPP) )
        zp_reg <= ADD;
@@ -706,14 +711,14 @@ always @*
 	PULL0,
 	INDY1,
 	PUSH0,
-	PUSH1:	AI = regfile;
+	PUSH1:	AI = reg_do;
 
 	BRA0,
 	READ:	AI = DIMUX;
 
 	BRA1: 	AI = ABH;	// don't use PCH in case we're 
 
-	FETCH:	AI = load_only ? 0 : regfile;
+	FETCH:	AI = load_only ? 0 : reg_do;
 
 	DECODE,
 	ABS1:	AI = {dw{1'bx}};	// don't care
