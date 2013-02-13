@@ -5,9 +5,9 @@
  *
  *  (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
  *  (C) 2011 Ed Spittles, <ed.spittles@gmail.com>
- *  (C) 2011 Sam Gaskill, <sammy.gasket@gmail.com>
- *
- *  Added BigEd's barrel shifter logic on port EI
+ *  (C) 2011,2012,2013 Sam Gaskill, <sammy.gasket@gmail.com>
+ *      Added BigEd's barrel shifter logic on port EI
+ *  
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -28,30 +28,23 @@
  * 1111   AI
  */
 
-module ALU( clk, op, right, rotate, AI, BI, CI, EI, CO, OUT, V, Z, N, RDY );
+module ALU( input clk,
+    			input right,
+				input rotate,
+				input [3:0] op,     // operation
+				input [dw-1:0] AI,
+				input [dw-1:0] BI,
+				input [3:0] EI,     // variable shift in
+				input CI,
+				output reg [dw-1:0] OUT,
+				output reg CO,
+				output V,
+				output Z,
+				output reg N,
+				input RDY
+			);
 
-    parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
-
-    input clk;
-    input right;
-    input rotate;
-    input [3:0] op;     // operation
-    input [dw-1:0] AI;
-    input [dw-1:0] BI;
-    input [3:0] EI;     // variable shift in
-    input CI;
-    output [dw-1:0] OUT;
-    output CO;
-    output V;
-    output Z;
-    output N;
-    input RDY;
-
-reg [dw-1:0] OUT;
-reg CO;
-wire V;
-wire Z;
-reg N;
+parameter dw = 16; // data width (8 for 6502, 16 for 65Org16)
 
 reg AI7;
 reg BI7;
