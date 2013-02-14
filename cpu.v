@@ -17,8 +17,9 @@
  *			Added transfer opcodes for stack and zero pages registers
  *			Added transfer opcodes for index register W
  *			That's it for .b CORE!
- *			added QAWXYS Register I/O Bus thanks to Michael A. Morris
- 
+ *			Added QAWXYS Register I/O Bus thanks to Michael A. Morris
+ *			Added ZPPout, SPPout signals for zeropage and stackpage address decoding
+ * 
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License version 2.1 as published by the Free Software Foundation.
@@ -42,12 +43,14 @@
  * on the output pads if external memory is required.
  */
 
-module cpu( input clk,          // CPU clock 
-				input reset,            // reset signal
-				output reg [aw-1:0] AB, // address bus
-				input [dw-1:0] DI,      // data in, read bus
-				output reg [dw-1:0] DO,     // data out, write bus
-				output reg WE,              // write enable
+module CPU( input clk,          // CPU clock 
+				input rst,            // reset signal
+				output reg [aw-1:0] addr, // address bus
+				input [dw-1:0] din,      // data in, read bus
+				output reg [dw-1:0] dout,     // data out, write bus
+				output reg we,              // write enable
+				output [dw-1:0] ZPPout,	//Zeropage pointer
+				output [dw-1:0] SPPout,	//Stackpage pointer
 				input IRQ,              // interrupt request
 				input NMI,              // non-maskable interrupt request
 				input RDY               // Ready signal. Pauses CPU when RDY=0  );
@@ -98,6 +101,9 @@ reg [dw-1:0] QAWXYS[31:0]; 					// A thru Q, W, X, Y, Z, S, SPP, ZPP register fi
 reg [4:0] regsel;									  // A thru Q, W, X, Y, Z, S, SPP, ZPP register select
 wire [dw-1:0] reg_di, reg_do;					 // Register file input/output data busses
 
+assign ZPPout = QAWXYS[20];
+assign SPPout = QAWXYS[21];
+
 parameter
 	SEL_A   = 5'd0,
 	SEL_B		= 5'd1,
@@ -121,34 +127,6 @@ parameter
 	SEL_S   = 5'd19,
 	SEL_ZPP	= 5'd20,
 	SEL_SPP	= 5'd21;
-
-initial
-	begin
-		QAWXYS[SEL_Q] = 16'h0000;
-		QAWXYS[SEL_O] = 16'h0000;
-		QAWXYS[SEL_N] = 16'h0000;
-		QAWXYS[SEL_M] = 16'h0000;
-		QAWXYS[SEL_L] = 16'h0000;
-		QAWXYS[SEL_K] = 16'h0000;
-		QAWXYS[SEL_J] = 16'h0000;
-		QAWXYS[SEL_I] = 16'h0000;
-		QAWXYS[SEL_H] = 16'h0000;
-		QAWXYS[SEL_G] = 16'h0000;
-		QAWXYS[SEL_F] = 16'h0000;
-		QAWXYS[SEL_E] = 16'h0000;
-		QAWXYS[SEL_D] = 16'h0000;
-		QAWXYS[SEL_C] = 16'h0000;
-		QAWXYS[SEL_B] = 16'h0000;
-		QAWXYS[SEL_A] = 16'h0000;
-		QAWXYS[SEL_X] = 16'h0000;
-		QAWXYS[SEL_Y] = 16'h0000;
-		QAWXYS[SEL_W] = 16'h0000;
-		QAWXYS[SEL_S] = 16'h0000;    //init stack 
-		QAWXYS[SEL_ZPP] = 16'h0000;
-		QAWXYS[SEL_SPP] = 16'h0001;  //init stack pointer to same as zero page, set to 1 for 'original' stack decoding @ $0001_0000-$0001_FFFF
-		zp_reg = 16'h0000;
-		sp_reg = 16'h0001;           //shoud be same value as QAWXYS[SEL_SPP] for proper simulation
-	end
 
 /*
  * define some signals for watching in simulator output
@@ -176,7 +154,7 @@ wire [dw-1:0]   Y = QAWXYS[SEL_Y];		// Y register
 wire [dw-1:0]   W = QAWXYS[SEL_W];		// W register 
 wire [dw-1:0]   S = QAWXYS[SEL_S];		// Stack pointer
 wire [dw-1:0]	ZPP = QAWXYS[SEL_ZPP];	// Zero Page Pointer
-wire [dw-1:0]	STP = QAWXYS[SEL_SPP];	// Stack Page Pointer
+wire [dw-1:0]	SPP = QAWXYS[SEL_SPP];	// Stack Page Pointer
 //`endif
 
 wire [dw-1:0] P = { 8'b0, N, V, 3'b110, I, Z, C };
@@ -448,19 +426,19 @@ always @*
 	JMP1,
 	JMPI1,
 	RTI4,
-	ABS1:		AB = { DIMUX, ADD };
+	ABS1:		addr = { DIMUX, ADD };
 
 	BRA2,
 	INDY3,
-	ABSX2:		AB = { ADD, ABL };
+	ABSX2:		addr = { ADD, ABL };
 
-	BRA1:		AB = { ABH, ADD };
+	BRA1:		addr = { ABH, ADD };
 
 	JSR0,
 	PUSH1,
 	RTS0,
 	RTI0,
-	BRK0:		AB = { sp_reg, reg_do };
+	BRK0:		addr = { sp_reg, reg_do };
 
 	BRK1,
 	JSR1,
@@ -470,33 +448,33 @@ always @*
 	RTI1,
 	RTI2,
 	RTI3,
-	BRK2:		AB = { sp_reg, ADD };
+	BRK2:		addr = { sp_reg, ADD };
 
 	INDY1,
 	INDX1,
 	ZPX1,
-	INDX2:		AB = { zp_reg, ADD };
+	INDX2:		addr = { zp_reg, ADD };
 
 	ZP0,
-	INDY0:		AB = { zp_reg, DIMUX };
+	INDY0:		addr = { zp_reg, DIMUX };
 
 	REG,
 	READ,
-	WRITE:		AB = { ABH, ABL };
+	WRITE:		addr = { ABH, ABL };
 
-	default:	AB = PC;
+	default:	addr = PC;
     endcase
 
 /*
  * ABH/ABL pair is used for registering previous address bus state.
  * This can be used to keep the current address, freeing up the original
- * source of the address, such as the ALU or DI.
+ * source of the address, such as the ALU or din.
  */
  
 always @(posedge clk) begin
 if( state != PUSH0 && state != PUSH1 && RDY && state != PULL0 && state != PULL1 && state != PULL2 )
-    ABL <= AB[dw-1:0];
-    ABH <= AB[aw-1:dw];
+    ABL <= addr[dw-1:0];
+    ABH <= addr[aw-1:dw];
 end
 
 /*
@@ -505,19 +483,19 @@ end
 
 always @*
     case( state )
-	WRITE:	 DO = ADD;
+	WRITE:	 dout = ADD;
 
 	JSR0,
-	BRK0:	 DO = PCH;
+	BRK0:	 dout = PCH;
 
 	JSR1,
-	BRK1:	 DO = PCL;
+	BRK1:	 dout = PCL;
 
-	PUSH1:	 DO = php ? P : ADD;
+	PUSH1:	 dout = php ? P : ADD;
 
-	BRK2:	 DO = (IRQ | NMI_edge) ? (P & 16'b1111_1111_1110_1111) : P; // B bit should be parameterised
+	BRK2:	 dout = (IRQ | NMI_edge) ? (P & 16'b1111_1111_1110_1111) : P; // B bit should be parameterised
 
-	default: DO = reg_do;
+	default: dout = reg_do;
     endcase
 
 /*
@@ -532,16 +510,16 @@ always @*
 	JSR0,
 	JSR1,
 	PUSH1,
-	WRITE: 	 WE = 1;
+	WRITE: 	 we = 1;
 
 	INDX3,	// only if doing a STA, STX or STY
 	INDY3,
 	ABSX2,
 	ABS1,
 	ZPX1,
-        ZP0:	 WE = store;
+        ZP0:	 we = store;
 
-	default: WE = 0;
+	default: we = 0;
     endcase
 
 /*
@@ -882,7 +860,7 @@ always @(posedge clk )
  */
 
 /*
- * IR register/mux. Hold previous DI value in IRHOLD in PULL0 and PUSH0
+ * IR register/mux. Hold previous din value in IRHOLD in PULL0 and PUSH0
  * states. In these states, the IR has been prefetched, and there is no
  * time to read the IR again before the next decode.
  */
@@ -894,10 +872,10 @@ always @(posedge clk )
 
 always @(posedge clk )
     if( ~RDY && RDY1 )
-        DIHOLD <= DI;
+        DIHOLD <= din;
 
 always @(posedge clk )
-    if( reset )
+    if( rst )
         IRHOLD_valid <= 0;
     else if( RDY ) begin
 	if( state == PULL0 || state == PUSH0 ) begin
@@ -910,14 +888,14 @@ always @(posedge clk )
 assign IR = (IRQ & ~I) | NMI_edge ? {dw{1'b0}} :
                      IRHOLD_valid ? IRHOLD : DIMUX;
 
-assign DIMUX = ~RDY1 ? DIHOLD : DI;
+assign DIMUX = ~RDY1 ? DIHOLD : din;
 
 /*
  * Microcode state machine
  */
  
-always @(posedge clk or posedge reset)
-    if( reset )
+always @(posedge clk or posedge rst)
+    if( rst )
         state <= BRK0;
     else if( RDY )
         case( state )
@@ -1057,7 +1035,7 @@ always @(posedge clk or posedge reset)
  */
 
 always @(posedge clk)
-    if( reset )
+    if( rst )
         res <= 1;
     else if( state == DECODE )
         res <= 0;
