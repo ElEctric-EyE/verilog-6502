@@ -907,7 +907,7 @@ CMPOi             .MACRO param          ;CMPO #$xxxx
 CMPQi             .MACRO param          ;CMPQ #$xxxx
                   .BYTE $CCC9,  param
                   .ENDM
-CMPWi             .MACRO param
+CPWi              .MACRO param
                   .BYTE $00E2,  param
                   .ENDM
 
