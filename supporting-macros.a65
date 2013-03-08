@@ -1,4 +1,4 @@
-; NEW 65O16 OPCODES!   6/5/2012
+; NEW 65O16 OPCODES!   3/8/2013
 ;LDA #$xxxx             $00A9
 LDBi              .MACRO param                      ;LDB #$xxxx
                   .BYTE $01A9,  param
@@ -859,6 +859,130 @@ STOaw             .MACRO param          ;STO $xxxxxxxx,w
 STQaw             .MACRO param          ;STQ $xxxxxxxx,w
                   .BYTE $CC9B
 		  .WORD  param	
+                  .ENDM
+
+;STA ($xxxx),y          $0091
+STBiy             .MACRO param          ;STB ($xxxx),y
+                  .BYTE $0491
+		  .WORD  param
+                  .ENDM
+STCiy             .MACRO param          ;STC ($xxxx),y
+                  .BYTE $0891
+		  .WORD  param
+                  .ENDM
+STDiy             .MACRO param          ;STD ($xxxx),y
+                  .BYTE $0C91
+		  .WORD  param
+                  .ENDM
+STEiy             .MACRO param          ;STE ($xxxx),y
+                  .BYTE $4091
+		  .WORD  param
+                  .ENDM
+STFiy             .MACRO param          ;STF ($xxxx),y
+                  .BYTE $4491
+		  .WORD  param
+                  .ENDM
+STGiy             .MACRO param          ;STG ($xxxx),y
+                  .BYTE $4891
+		  .WORD  param
+                  .ENDM
+STHiy             .MACRO param          ;STH ($xxxx),y
+                  .BYTE $4C91
+		  .WORD  param
+                  .ENDM
+STIiy             .MACRO param          ;STI ($xxxx),y
+                  .BYTE $8091
+		  .WORD  param
+                  .ENDM
+STJiy             .MACRO param          ;STJ ($xxxx),y
+                  .BYTE $8491
+		  .WORD  param
+                  .ENDM
+STKiy             .MACRO param          ;STK ($xxxx),y
+                  .BYTE $8891
+		  .WORD  param
+                  .ENDM
+STLiy             .MACRO param          ;STL ($xxxx),y
+                  .BYTE $8C91
+		  .WORD  param
+                  .ENDM
+STMiy             .MACRO param          ;STM ($xxxx),y
+                  .BYTE $C091
+		  .WORD  param
+                  .ENDM
+STNiy             .MACRO param          ;STN ($xxxx),y
+                  .BYTE $C491
+		  .WORD  param
+                  .ENDM
+STOiy             .MACRO param          ;STO ($xxxx),y
+                  .BYTE $C891
+		  .WORD  param
+                  .ENDM
+STQiy             .MACRO param          ;STQ ($xxxx),y
+                  .BYTE $CC91
+		  .WORD  param
+                  .ENDM
+
+;STA ($xxxx),w          $0092
+STBiw             .MACRO param          ;STB ($xxxx),w
+                  .BYTE $0492
+		  .WORD  param
+                  .ENDM
+STCiw             .MACRO param          ;STC ($xxxx),w
+                  .BYTE $0892
+		  .WORD  param
+                  .ENDM
+STDiw             .MACRO param          ;STD ($xxxx),w
+                  .BYTE $0C92
+		  .WORD  param
+                  .ENDM
+STEiw             .MACRO param          ;STE ($xxxx),w
+                  .BYTE $4092
+		  .WORD  param
+                  .ENDM
+STFiw             .MACRO param          ;STF ($xxxx),w
+                  .BYTE $4492
+		  .WORD  param
+                  .ENDM
+STGiw             .MACRO param          ;STG ($xxxx),w
+                  .BYTE $4892
+		  .WORD  param
+                  .ENDM
+STHiw             .MACRO param          ;STH ($xxxx),w
+                  .BYTE $4C92
+		  .WORD  param
+                  .ENDM
+STIiw             .MACRO param          ;STI ($xxxx),w
+                  .BYTE $8092
+		  .WORD  param
+                  .ENDM
+STJiw             .MACRO param          ;STJ ($xxxx),w
+                  .BYTE $8492
+		  .WORD  param
+                  .ENDM
+STKiw             .MACRO param          ;STK ($xxxx),w
+                  .BYTE $8892
+		  .WORD  param
+                  .ENDM
+STLiw             .MACRO param          ;STL ($xxxx),w
+                  .BYTE $8C92
+		  .WORD  param
+                  .ENDM
+STMiw             .MACRO param          ;STM ($xxxx),w
+                  .BYTE $C092
+		  .WORD  param
+                  .ENDM
+STNiw             .MACRO param          ;STN ($xxxx),w
+                  .BYTE $C492
+		  .WORD  param
+                  .ENDM
+STOiw             .MACRO param          ;STO ($xxxx),w
+                  .BYTE $C892
+		  .WORD  param
+                  .ENDM
+STQiw             .MACRO param          ;STQ ($xxxx),w
+                  .BYTE $CC92
+		  .WORD  param
                   .ENDM
 
 ;CMPAi                  $00C9                  
