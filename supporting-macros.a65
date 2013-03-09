@@ -404,101 +404,102 @@ LDQaw             .MACRO param
 		  .WORD  param
                   .ENDM
 ;LDA ($xxxx),y		$00B1
-LDBindy            .MACRO param          
+LDBiy             .MACRO param          
                   .BYTE $01B1,  param
                   .ENDM
-LDCindy            .MACRO param          
+LDCiy             .MACRO param          
                   .BYTE $02B1,  param
                   .ENDM
-LDDindy            .MACRO param          
+LDDiy             .MACRO param          
                   .BYTE $03B1,  param
                   .ENDM
-LDEindy            .MACRO param          
+LDEiy             .MACRO param          
                   .BYTE $10B1,  param
                   .ENDM
-LDFindy            .MACRO param          
+LDFiy             .MACRO param          
                   .BYTE $11B1,  param
                   .ENDM
-LDGindy            .MACRO param          
+LDGiy             .MACRO param          
                   .BYTE $12B1,  param
                   .ENDM
-LDHindy            .MACRO param          
+LDHiy             .MACRO param          
                   .BYTE $13B1,  param
                   .ENDM
-LDIindy            .MACRO param          
+LDIiy             .MACRO param          
                   .BYTE $20B1,  param
                   .ENDM
-LDJindy            .MACRO param          
+LDJiy             .MACRO param          
                   .BYTE $21B1,  param
                   .ENDM
-LDKindy            .MACRO param          
+LDKiy             .MACRO param          
                   .BYTE $22B1,  param
                   .ENDM
-LDLindy            .MACRO param          
+LDLiy             .MACRO param          
                   .BYTE $23B1,  param
                   .ENDM
-LDMindy            .MACRO param          
+LDMiy             .MACRO param          
                   .BYTE $30B1,  param
                   .ENDM
-LDNindy            .MACRO param          
+LDNiy             .MACRO param          
                   .BYTE $31B1,  param
                   .ENDM
-LDOindy            .MACRO param          
+LDOiy             .MACRO param          
                   .BYTE $32B1,  param
                   .ENDM
-LDQindy            .MACRO param          
+LDQiy             .MACRO param          
                   .BYTE $33B1,  param
                   .ENDM
-LDWindy            .MACRO param
+LDWiy             .MACRO param
                   .BYTE $00F4,  param
                   .ENDM
 
-LDAindw		  .MACRO param		;LDA ($xxxx),w
+;LDA ($0000),w
+LDAiw 		  .MACRO param
 		  .BYTE $00B2, param
 		  .ENDM
-LDBindw            .MACRO param          
+LDBiw             .MACRO param          
                   .BYTE $01B2,  param
                   .ENDM
-LDCindw            .MACRO param          
+LDCiw             .MACRO param          
                   .BYTE $02B2,  param
                   .ENDM
-LDDindw            .MACRO param          
+LDDiw             .MACRO param          
                   .BYTE $03B2,  param
                   .ENDM
-LDEindw            .MACRO param          
+LDEiw             .MACRO param          
                   .BYTE $10B2,  param
                   .ENDM
-LDFindw            .MACRO param          
+LDFiw             .MACRO param          
                   .BYTE $11B2,  param
                   .ENDM
-LDGindw            .MACRO param          
+LDGiw             .MACRO param          
                   .BYTE $12B2,  param
                   .ENDM
-LDHindw            .MACRO param          
+LDHiw             .MACRO param          
                   .BYTE $13B2,  param
                   .ENDM
-LDIindw            .MACRO param          
+LDIiw             .MACRO param          
                   .BYTE $20B2,  param
                   .ENDM
-LDJindw            .MACRO param          
+LDJiw             .MACRO param          
                   .BYTE $21B2,  param
                   .ENDM
-LDKindw            .MACRO param          
+LDKiw             .MACRO param          
                   .BYTE $22B2,  param
                   .ENDM
-LDLindw            .MACRO param          
+LDLiw             .MACRO param          
                   .BYTE $23B2,  param
                   .ENDM
-LDMindw            .MACRO param          
+LDMiw             .MACRO param          
                   .BYTE $30B2,  param
                   .ENDM
-LDNindw            .MACRO param          
+LDNiw             .MACRO param          
                   .BYTE $31B2,  param
                   .ENDM
-LDOindw            .MACRO param          
+LDOiw             .MACRO param          
                   .BYTE $32B2,  param
                   .ENDM
-LDQindw            .MACRO param          
+LDQiw             .MACRO param          
                   .BYTE $33B2,  param
                   .ENDM
                   
