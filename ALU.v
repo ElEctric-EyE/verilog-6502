@@ -83,7 +83,7 @@ wire [dw-1:0]lowmask  =  ((2 << (~EI)) - 1);
 // rotate is easy, and left is just a masking.  Sign extension is a bit more work.
 
 wire [dw:0]tempmasked = rotate ? tempshifted
-                               : right ? (tempshifted & lowmask) | ({dw{AI[dw-1]}} & ~lowmask)
+                               : right ? (tempshifted & lowmask) | ({dw{BI[dw-1]}} & ~lowmask)
                                        : tempshifted & highmask;
 
 // bypass the 6502-style ALU if we're doing OP_ROL or OP_A
