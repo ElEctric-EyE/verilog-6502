@@ -1045,7 +1045,7 @@ always @(posedge clk)
         casex( IR[15:0] )				
         16'bxxxx_0000_0xxx_x110,			// ASL, ROL, LSR, ROR (abs, absx, zpg, zpgx)
         16'bxxxx_xxxx_0xx0_1010 :		// ASL[A..D]op[A..D], ROL[A..D]op[A..D], LSR[A..D]op[A..D], ROR[A..D]op[A..D] (acc)
-                E_Reg <= IR[15:12]+1;	//note: no shift will occur when 'illegal' <shift, rotate> opcodes IR[15:12] = 1111. A +1 ensures compatibility with original NMOS6502 <shift,rotate> opcodes.
+                  E_Reg <= IR[15:12]+4'b0001;	//note: no shift will occur when 'illegal' <shift, rotate> opcodes IR[15:12] = 1111. A +1 ensures compatibility with original NMOS6502 <shift,rotate> opcodes.
 
         default : E_Reg <= ADD;		
         endcase
@@ -1070,7 +1070,7 @@ always @(posedge clk)
 				
 		16'bxxxx_xxxx_xxx0_1000,   
 		16'b00xx_00xx_1001_1000,	// TY[A..Q]
-		16'b0000_0000_11x1_1000,
+		//16'b0000_0000_11x1_1000,
 		16'bxxxx_xxxx_0xxx_1001,	
 		16'bxxxx_xxxx_1x1x_1001,
 		16'bxxxx_xxxx_xxxx_1010,
