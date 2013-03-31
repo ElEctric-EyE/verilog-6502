@@ -1913,7 +1913,10 @@ always @(posedge clk )
      	casex( IR[15:0] ) 	   	
 		16'bxxxx_xxxx_011x_xx01,	// ADC[A..Q]i, (zpx), (zp)y, zp, zpx, ay, ax, a op[A..Q]
 		16'bxxxx_xxxx_0111_0010,	// ADC[A..Q](zp)w op[A..Q]
-		16'bxxxx_xxxx_0111_1011:	// ADC[A..Q] aw op[A..Q]
+		16'bxxxx_xxxx_0111_1011,	// ADC[A..Q]aw op[A..Q]
+		16'bxxxx_xxxx_111x_xx01,	// SBC[A..Q]i, (zpx), (zp)y, zp, zpx, ay, ax, a op[A..Q]
+		16'bxxxx_xxxx_1111_0010,	// SBC[A..Q](zp)w op[A..Q]
+		16'bxxxx_xxxx_1111_1011:	// SBC[A..Q]aw op[A..Q] 
 					adc_sbc <= 1;
 
 		default:	adc_sbc <= 0;
