@@ -1816,7 +1816,7 @@ THO               .MACRO
                   .BYTE $7E8B
                   .ENDM
 THQ               .MACRO
-                  .BYTE $7BF8B
+                  .BYTE $7F8B
                   .ENDM
                   
 TIA               .MACRO
