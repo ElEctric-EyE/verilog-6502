@@ -1,6 +1,6 @@
-; NEW 65O16 OPCODES!   3/8/2013
+; NEW 65O16 OPCODES!   4/30/2013
 ;LDA #$xxxx             $00A9
-LDBi              .MACRO param                      ;LDB #$xxxx
+LDBi              .MACRO param    	;LDB #$xxxx
                   .BYTE $01A9,  param
                   .ENDM
 LDCi              .MACRO param    	;LDC #$xxxx
@@ -403,6 +403,7 @@ LDQaw             .MACRO param
                   .BYTE $33BB
 		  .WORD  param
                   .ENDM
+                  
 ;LDA ($xxxx),y		$00B1
 LDBiy             .MACRO param          
                   .BYTE $01B1,  param
@@ -453,10 +454,10 @@ LDWiy             .MACRO param
                   .BYTE $00F4,  param
                   .ENDM
 
-;LDA ($0000),w
-LDAiw 		  .MACRO param
-		  .BYTE $00B2, param
-		  .ENDM
+;LDA ($xxxx),w
+LDAiw 		        .MACRO param		
+		              .BYTE $00B2, param
+		              .ENDM
 LDBiw             .MACRO param          
                   .BYTE $01B2,  param
                   .ENDM
@@ -549,7 +550,7 @@ STOzp             .MACRO param          ;STO $xxxx
 STQzp             .MACRO param          ;STQ $xxxx
                   .BYTE $CC85,  param
                   .ENDM
-STWzp             .MACRO param
+STWzp             .MACRO param          ;STW $xxxx
                   .BYTE $0087,  param
                   .ENDM
 
@@ -614,7 +615,7 @@ STQa              .MACRO param          ;STQ $xxxxxxxx
                   .BYTE $CC8D
 		  .WORD  param
                   .ENDM
-STWa              .MACRO param
+STWa              .MACRO param          ;STW $xxxxxxxx
                   .BYTE $008F
 		  .WORD  param
                   .ENDM
@@ -665,7 +666,7 @@ STOzpx            .MACRO param          ;STO $xxxx,x
 STQzpx            .MACRO param          ;STQ $xxxx,x
                   .BYTE $CC95,  param
                   .ENDM
-STWzpx            .MACRO param
+STWzpx            .MACRO param          ;STW $xxxx,x
                   .BYTE $0074,  param
                   .ENDM
                   
@@ -730,7 +731,7 @@ STQax             .MACRO param          ;STQ $xxxxxxxx,x
                   .BYTE $CC9D
 		  .WORD  param
                   .ENDM
-STWax             .MACRO param
+STWax             .MACRO param          ;STW $xxxxxxxx,x
                   .BYTE $0087
 		  .WORD  param
                   .ENDM
@@ -24926,7 +24927,7 @@ TQSP              .MACRO
                   .BYTE $CC37
                   .ENDM 
 
-TZPA              .MACRO            ;Transfer Teropage Pointer to A Acc
+TZPA              .MACRO            ;Transfer Zeropage Pointer to A Acc
                   .BYTE $0007
                   .ENDM
 TZPB              .MACRO
@@ -25022,4 +25023,29 @@ TSPO              .MACRO
                   .ENDM
 TSPQ              .MACRO
                   .BYTE $3327
+                  .ENDM
+
+CCB0              .MACRO               ;CLEAR CONTROL BIT 0
+                  .BYTE $0118
+                  .ENDM
+SCB0              .MACRO               ;SET CONTROL BIT 0
+                  .BYTE $0318
+                  .ENDM
+CCB1              .MACRO
+                  .BYTE $0518
+                  .ENDM
+SCB1              .MACRO
+                  .BYTE $0718
+                  .ENDM
+CCB2              .MACRO
+                  .BYTE $0918
+                  .ENDM
+SCB2              .MACRO
+                  .BYTE $0B18
+                  .ENDM
+CCB3              .MACRO
+                  .BYTE $0D18
+                  .ENDM
+SCB3              .MACRO
+                  .BYTE $0F18
                   .ENDM
