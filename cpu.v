@@ -959,6 +959,7 @@ always @(posedge clk or posedge rst)
                 16'b0000_0000_0110_1011:	state <= PULL0; // PLW
                 
                 16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
+                16'b0000_xxx1_0001_1000:        state <= REG;	 // CCB0, SCB0
                 
                 16'b0000_0000_1xx0_00x0:	state <= FETCH; // IMM, row 8,A,C,E, column 0,2
                 
@@ -2068,7 +2069,8 @@ always @(posedge clk )
 	scb1 <= (IR[15:0] == 16'h0718);
 	ccb2 <= (IR[15:0] == 16'h0918);
 	scb2 <= (IR[15:0] == 16'h0b18);
-	ccb3 <= (IR[15:0] == 16'h0f18);
+	ccb3 <= (IR[15:0] == 16'h0d18);
+	scb3 <= (IR[15:0] == 16'h0f18);
      end
 
 always @(posedge clk)
