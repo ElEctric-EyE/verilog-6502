@@ -1,4 +1,4 @@
-/*FILE: /relocatable stack and zero page/cpu.v DATE:02/12/2013 -- remember to uncomment 4 'ifdef/endif SIM' statements when not running simulation. --
+/*FILE: /optimized and control bits/cpu.v DATE:04/30/2013 -- remember to uncomment 4 'ifdef/endif SIM' statements when not running simulation. --
  * verilog-6502 project: verilog model of 6502 and 65OrgXX.x CPU cores
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
@@ -19,7 +19,10 @@
  *			That's it for .b CORE!
  *			Added QAWXYS Register I/O Bus thanks to Michael A. Morris
  *			Added ZPPout, SPPout signals for zeropage and stackpage address decoding
- * 		Optimized states ABSX and INDY per Arlet's suggestion: http://forum.6502.org/viewtopic.php?f=10&t=2500&start=26
+ *			Optimized states ABSX and INDY per Arlet's suggestion: http://forum.6502.org/viewtopic.php?f=10&t=2500&start=26
+ *			Enter .d core ->
+ *			Added B Accumulator output for RGB pixel color control
+ * 		        Added 4 control bits in the processor status register for output. 8 opcodes to set or clear each bit
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -52,6 +55,11 @@ module CPU( input clk,          // CPU clock
 				output reg we,              // write enable
 				output [dw-1:0] ZPPout,	//Zeropage pointer
 				output [dw-1:0] SPPout,	//Stackpage pointer
+				output [dw-1:0] BACCout,
+				output CB0out,				// output control bits from
+				output CB1out,				//
+				output CB2out,				//
+				output CB3out,				//
 				input IRQ,              // interrupt request
 				input NMI,              // non-maskable interrupt request
 				input RDY               // Ready signal. Pauses CPU when RDY=0  );
@@ -81,6 +89,10 @@ reg  Z = 0;					  // zero flag
 reg  I = 0;					  // interrupt flag
 reg  V = 0;					  // overflow flag
 reg  N = 0;					  // negative flag
+reg  CB0 = 0;					// control bit 1
+reg  CB1 = 0;					// control bit 2
+reg  CB2 = 0;					// control bit 3
+reg  CB3 = 0;					// control bit 4
 wire AZ;						  // ALU Zero flag
 wire AV;						  // ALU overflow flag
 wire AN;						  // ALU negative flag
@@ -104,6 +116,11 @@ wire [dw-1:0] reg_di, reg_do;					 // Register file input/output data busses
 
 assign ZPPout = QAWXYS[20];
 assign SPPout = QAWXYS[21];
+assign BACCout = QAWXYS[1];
+assign CB0out = P[8];
+assign CB1out = P[9];
+assign CB2out = P[10];
+assign CB3out = P[11];
 
 parameter
 	SEL_A   = 5'd0,
@@ -210,7 +227,14 @@ reg cli;		// clear interrupt
 reg sei;		// set interrupt
 reg clv;		// clear overflow 
 reg brk;		// doing BRK
-
+reg ccb0;	// clear control bit0
+reg ccb1;	// clear control bit1
+reg ccb2;	// clear control bit2
+reg ccb3;	// clear control bit3
+reg scb0;	// set control bit0
+reg scb1;	// set control bit1
+reg scb2;	// set control bit2
+reg scb3;	// set control bit3
 reg res;		// in reset
 
 /*
@@ -771,6 +795,21 @@ always @*
  * Processor Status Register update
  *
  */
+
+/*
+ * Update control bit flags
+ */
+ 
+always @(posedge clk) begin
+	if (scb0) CB0 <= 1;
+	if (ccb0) CB0 <= 0;
+	if (scb1) CB1 <= 1;
+	if (ccb1) CB1 <= 0;
+	if (scb2) CB2 <= 1;
+	if (ccb2) CB2 <= 0;
+	if (scb3) CB3 <= 1;
+	if (ccb3) CB3 <= 0;
+end
 
 /*
  * Update C flag when doing ADC/SBC, shift/rotate, compare
@@ -2023,6 +2062,13 @@ always @(posedge clk )
 	sei <= (IR[15:0] == 16'h0078);
 	clv <= (IR[15:0] == 16'h00b8);
 	brk <= (IR[15:0] == 16'h0000);
+	ccb0 <= (IR[15:0] == 16'h0118);
+	scb0 <= (IR[15:0] == 16'h0318);
+	ccb1 <= (IR[15:0] == 16'h0518);
+	scb1 <= (IR[15:0] == 16'h0718);
+	ccb2 <= (IR[15:0] == 16'h0918);
+	scb2 <= (IR[15:0] == 16'h0b18);
+	ccb3 <= (IR[15:0] == 16'h0f18);
      end
 
 always @(posedge clk)
