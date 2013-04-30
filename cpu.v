@@ -175,7 +175,7 @@ wire [dw-1:0]	ZPP = QAWXYS[SEL_ZPP];	// Zero Page Pointer
 wire [dw-1:0]	SPP = QAWXYS[SEL_SPP];	// Stack Page Pointer
 `endif
 
-wire [dw-1:0] P = { 8'b0, N, V, 3'b110, I, Z, C };
+wire [dw-1:0] P = { 4'b0, CB3, CB2, CB1, CB0, N, V, 3'b110, I, Z, C };
 
 /*
  * instruction decoder/sequencer
