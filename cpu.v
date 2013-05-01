@@ -1,4 +1,4 @@
-/*FILE: /optimized and control bits/cpu.v DATE:04/30/2013 -- remember to uncomment 4 'ifdef/endif SIM' statements when not running simulation. --
+/*FILE: /optimized, control bits and branches/cpu.v DATE:05/1/2013 -- remember to uncomment 4 'ifdef/endif SIM' statements when not running simulation. --
  * verilog-6502 project: verilog model of 6502 and 65OrgXX.x CPU cores
  *
  * (C) 2011 Arlet Ottens, <arlet@c-scape.nl>
@@ -22,8 +22,9 @@
  *			Optimized states ABSX and INDY per Arlet's suggestion: http://forum.6502.org/viewtopic.php?f=10&t=2500&start=26
  *			Enter .d core ->
  *			Added B Accumulator output for RGB pixel color control
- * 		        Added 4 control bits in the processor status register for output. 8 opcodes to set or clear each bit
- *
+ * 		Added 4 control bits in the processor status register for output. 8 opcodes to set or clear each bit
+ *			Added 4 inputs to the processor status register and 8 branch opcodes to test each bit for set or clear
+ *			
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License version 2.1 as published by the Free Software Foundation.
@@ -56,10 +57,14 @@ module CPU( input clk,          // CPU clock
 				output [dw-1:0] ZPPout,	//Zeropage pointer
 				output [dw-1:0] SPPout,	//Stackpage pointer
 				output [dw-1:0] BACCout,
-				output CB0out,				// output control bits from
-				output CB1out,				//
-				output CB2out,				//
-				output CB3out,				//
+				output reg CB0out,				// output control bits
+				output reg CB1out,				//
+				output reg CB2out,				//
+				output reg CB3out,				//
+				input CF0in,				// control flag input bits
+				input CF1in,				//
+				input CF2in,				//
+				input CF3in,				//
 				input IRQ,              // interrupt request
 				input NMI,              // non-maskable interrupt request
 				input RDY               // Ready signal. Pauses CPU when RDY=0  );
@@ -93,6 +98,10 @@ reg  CB0 = 0;					// control bit 1
 reg  CB1 = 0;					// control bit 2
 reg  CB2 = 0;					// control bit 3
 reg  CB3 = 0;					// control bit 4
+reg  CF0 = 0;					// control flag 1
+reg  CF1 = 0;					// control flag 2
+reg  CF2 = 0;					// control flag 3
+reg  CF3 = 0;					// control flag 4
 wire AZ;						  // ALU Zero flag
 wire AV;						  // ALU overflow flag
 wire AN;						  // ALU negative flag
@@ -117,10 +126,6 @@ wire [dw-1:0] reg_di, reg_do;					 // Register file input/output data busses
 assign ZPPout = QAWXYS[20];
 assign SPPout = QAWXYS[21];
 assign BACCout = QAWXYS[1];
-assign CB0out = P[8];
-assign CB1out = P[9];
-assign CB2out = P[10];
-assign CB3out = P[11];
 
 parameter
 	SEL_A   = 5'd0,
@@ -175,8 +180,19 @@ wire [dw-1:0]	ZPP = QAWXYS[SEL_ZPP];	// Zero Page Pointer
 wire [dw-1:0]	SPP = QAWXYS[SEL_SPP];	// Stack Page Pointer
 `endif
 
-wire [dw-1:0] P = { 4'b0, CB3, CB2, CB1, CB0, N, V, 3'b110, I, Z, C };
+wire [dw-1:0] P = { CF3, CF2, CF1, CF0, CB3, CB2, CB1, CB0, N, V, 3'b110, I, Z, C };
 
+always @(posedge clk) begin
+	CB0out <= CB0;
+	CB1out <= CB1;
+	CB2out <= CB2;
+	CB3out <= CB3;
+	CF0 <= CF0in;
+	CF1 <= CF1in;
+	CF2 <= CF2in;
+	CF3 <= CF3in;
+end
+	
 /*
  * instruction decoder/sequencer
  */
@@ -207,7 +223,7 @@ reg shift;              // doing shift/rotate instruction
 reg rotate;					    // doing rotate (no shift)
 reg backwards;				  // backwards branch
 reg cond_true;				  // branch condition is true
-reg [2:0] cond_code;		// condition code bits from instruction
+reg [3:0] cond_code;		// condition code bits from instruction
 reg shift_right;        // Instruction ALU shift/rotate right 
 reg alu_shift_right;		// Current cycle shift right enable
 reg [3:0] op;           // Main ALU operation for instruction
@@ -577,10 +593,10 @@ initial
 assign reg_di = (state == JSR0) ? DIMUX : ADD;
 
 always @(posedge clk)
-    if( write_register & RDY )
+    if ( write_register & RDY )
         QAWXYS[regsel] <= reg_di;
 
-assign reg_do = QAWXYS[regsel];				// Selected register output\par
+assign reg_do = QAWXYS[regsel];				// Selected register output
 
 always @(posedge clk)
     if( write_register & RDY & (regsel == SEL_ZPP) )
@@ -590,6 +606,7 @@ always @(posedge clk)
     if( write_register & RDY & (regsel == SEL_SPP) )
        sp_reg <= ADD;
 		 
+		
 /*
  * register select logic. This determines which of the A thru Q, W, X, Y or
  * S registers will be accessed. 
@@ -797,7 +814,7 @@ always @*
  */
 
 /*
- * Update control bit flags
+ * Update control bits
  */
  
 always @(posedge clk) begin
@@ -959,7 +976,7 @@ always @(posedge clk or posedge rst)
                 16'b0000_0000_0110_1011:	state <= PULL0; // PLW
                 
                 16'b0000_0000_0xx1_1000:	state <= REG;   // CLC, SEC, CLI, SEI
-                16'b0000_xxx1_0001_1000:        state <= REG;	 // CCB0, SCB0
+					 16'b0000_xxx1_0001_1000:  state <= REG;	 // CCB[0..3], SCB[0..3]
                 
                 16'b0000_0000_1xx0_00x0:	state <= FETCH; // IMM, row 8,A,C,E, column 0,2
                 
@@ -978,7 +995,7 @@ always @(posedge clk or posedge rst)
                 16'bxxxx_xxxx_0xx0_1101:	state <= ABS0;  // rows 0,2,4,6, column D
                 16'bxxxx_0000_0xx0_1110:	state <= ABS0;  // rows 0,2,4,6, column E
                 
-                16'b0000_0000_xxx1_0000:	state <= BRA0;  // odd rows, column 0
+                16'b0000_000x_xxx1_0000:	state <= BRA0;  // odd rows, column 0
                 
                 16'bxxxx_xxxx_xxx1_0001:	state <= INDY0; // odd rows, column 1 --(zp),y
                 16'bxxxx_xxxx_xxx1_0010:	state <= INDY0; // odd rows, column 2 --(zp),w
@@ -1485,14 +1502,14 @@ always @(posedge clk)
 				
 		16'b00xx_00xx_0010_0111:	// TS[A..Q]
 				src_reg <= SEL_SPP;
-		
+			
 		16'b00xx_00xx_0110_1000,	// PL[A..Q]
 		16'b0000_0000_x111_1010,	// PLX, PLY
 		16'b0000_0000_0110_1011,	// PLW
 		16'b0000_0000_0010_1000,	// PLP
 		16'b0000_0000_1011_1010:	// TSX 
 				src_reg <= SEL_S; 
-
+		
 		16'b0000_0000_100x_x110,	// STX zp,zpy,a,ay
 		16'b0000_0000_1001_x111,	// STX zpw,aw
 		16'b00xx_00xx_100x_1010,	// TX[A..Q], TXS
@@ -1544,7 +1561,7 @@ always @(posedge clk)
 		16'b0000_0000_0010_x100:	// BIT[A] zp, a
             src_reg <= SEL_A; 
       
-		16'b0000_0100_00x1_0111,	// T[B]Z, T[B]S		
+		16'b0000_0100_00x1_0111,	// T[B]Z, T[B]S
 		16'b00xx_01xx_1000_1011,	// T[B][A..Q]
 		16'b0000_0101_00x1_1010,	// INC[B], DEC[B]
 		16'b0000_0100_0100_1000,	// PH[B]
@@ -1863,7 +1880,7 @@ always @(posedge clk)
 				src_reg <= SEL_Q;
 	
 	endcase
-
+		
 always @(posedge clk) 
      if( state == DECODE && RDY )
      	casex( IR[15:0] )  			
@@ -2075,18 +2092,26 @@ always @(posedge clk )
 
 always @(posedge clk)
     if( RDY )
-	cond_code <= IR[7:5];
+	cond_code <= IR[8:5];
 
 always @*
     case( cond_code )
-	    3'b000: cond_true <= ~N;
-	    3'b001: cond_true <= N;
-	    3'b010: cond_true <= ~V;
-	    3'b011: cond_true <= V;
-	    3'b100: cond_true <= ~C;
-	    3'b101: cond_true <= C;
-	    3'b110: cond_true <= ~Z;
-	    3'b111: cond_true <= Z;
+	    4'b0000: cond_true <= ~N;
+	    4'b0001: cond_true <= N;
+	    4'b0010: cond_true <= ~V;
+	    4'b0011: cond_true <= V;
+	    4'b0100: cond_true <= ~C;
+	    4'b0101: cond_true <= C;
+	    4'b0110: cond_true <= ~Z;
+	    4'b0111: cond_true <= Z;
+	    4'b1000: cond_true <= ~CF0;
+	    4'b1001: cond_true <= CF0;
+	    4'b1010: cond_true <= ~CF1;
+	    4'b1011: cond_true <= CF1;
+	    4'b1100: cond_true <= ~CF2;
+	    4'b1101: cond_true <= CF2;
+	    4'b1110: cond_true <= ~CF3;
+	    4'b1111: cond_true <= CF3;
     endcase
 
 
