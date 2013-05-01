@@ -1,4 +1,4 @@
-; NEW 65O16 OPCODES!   4/30/2013
+; NEW 65O16 OPCODES!   5/1/2013
 ;LDA #$xxxx             $00A9
 LDBi              .MACRO param    	;LDB #$xxxx
                   .BYTE $01A9,  param
@@ -1327,8 +1327,8 @@ TXO               .MACRO
                   .ENDM
 TXQ               .MACRO
                   .BYTE $338A
-                  .ENDM
-                  
+                  .ENDM 
+                                                    
 TAW               .MACRO
                   .BYTE $001F
                   .ENDM
@@ -25048,4 +25048,29 @@ CCB3              .MACRO
                   .ENDM
 SCB3              .MACRO
                   .BYTE $0F18
+                  .ENDM
+                  
+BCF0C             .MACRO param            ;BRANCH if CONTROL FLAG0 = 0
+                  .BYTE $0110,  param
+                  .ENDM
+BCF0S             .MACRO param            ;BRANCH if CONTROL FLAG0 = 1
+                  .BYTE $0130,  param
+                  .ENDM
+BCF1C             .MACRO param
+                  .BYTE $0150,  param
+                  .ENDM
+BCF1S             .MACRO param
+                  .BYTE $0170,  param
+                  .ENDM
+BCF2C             .MACRO param
+                  .BYTE $0190,  param
+                  .ENDM
+BCF2S             .MACRO param
+                  .BYTE $01B0,  param
+                  .ENDM
+BCF3C             .MACRO param
+                  .BYTE $01D0,  param
+                  .ENDM
+BCF3S             .MACRO param
+                  .BYTE $01F0,  param
                   .ENDM
