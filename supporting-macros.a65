@@ -909,7 +909,9 @@ STQiy             .MACRO param          ;STQ ($xxxx),y
                   .BYTE $CC91,  param
                   .ENDM
                   
-;STA ($xxxx),w          $0092
+STAiw             .MACRO param          ;STA ($xxxx),w
+                  .BYTE $0092,  param
+                  .ENDM
 STBiw             .MACRO param          ;STB ($xxxx),w
                   .BYTE $0492,  param
                   .ENDM
