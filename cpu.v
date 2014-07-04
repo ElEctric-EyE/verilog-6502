@@ -954,7 +954,8 @@ always @(posedge clk or posedge rst)
                 16'bxxxx_xxxx_1xx1_11xx:	state <= ABSX0; // rows 9,B,D,F, column C,D,E,F
                         
                 16'bxxxx_xxxx_00xx_0111:	state <= REG;	 // T[A..Q]Z, T[A..Q]S, TZ[A..Q], TS[A..Q]
-                16'bxxxx_xxxx_xxxx_1010:	state <= REG;   // <shift/rotate> [A..Q], TX[A..Q]
+                16'bxxxx_xxxx_x0xx_1010:	state <= REG;   // <shift/rotate> [A..Q], TX[A..Q]
+		16'bxxxx_xxxx_x1x0_1010:	state <= REG;   // <shift/rotate> [A..Q], TX[A..Q]
                 16'bxxxx_xxxx_1xx0_1011:	state <= REG;	 // T[A..Q][A..Q],TYX,TXY
                 16'bxxxx_xxxx_0xxx_1111:	state <= REG;	 // TW[A..Q], T[A..Q]W, TWX, TWY, TXW, TYW
             endcase
