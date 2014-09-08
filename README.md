@@ -14,7 +14,7 @@ CPU cores with other goals.
 
 Please note:
 
-- The core has had next to no testing,
+- The core has had extensive testing on a video project by ElEctric_EyE on multiple threads in the Programmable Logic Section of www.forum.6502.org/
 
 - Some tools exist: see [this forum thread](http://forum.6502.org/viewtopic.php?f=1&t=1982)
 
@@ -24,9 +24,6 @@ Please note:
   which is implemented over i2c. The i2c module is not included for
   copyright reasons.  The system is absolutely minimal but is a work
   in progress,
-
-- As a secondary goal it might be possible to configure the HDL as
-  a 6502-compatible core with 8-bit bytes.
 
 - LGPL license v2.1 is used for compatibility with opencores.org and to
   encourage redistribution of any source code improvements.
@@ -38,7 +35,7 @@ Notes on the cpu core:
 - reset, IRQ and NMI are active high
 - WE replaces, and is inverse sense of, read not write.
 - databus has separate DI and DO
-- RDY is not implemented
+- RDY is implemented
 - external memory is assumed synchronous, so external pipelining is needed
 - `define SIM for extra simulation instrumentation
 - memory accesses may diverge from the original
