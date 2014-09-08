@@ -14,7 +14,7 @@ CPU cores with other goals.
 
 Please note:
 
-- The core has had extensive testing on a video project by ElEctric_EyE on multiple threads in the Programmable Logic Section of www.forum.6502.org/
+- The core has had extensive testing on a video project by ElEctric_EyE on multiple threads in the Programmable Logic Section of http://forum.6502.org
 
 - Some tools exist: see [this forum thread](http://forum.6502.org/viewtopic.php?f=1&t=1982)
 
